@@ -28,7 +28,7 @@ async def on_ready():
     print(f"{bot.user.name} でログインしました")
     ch = bot.get_channel(int(config['log_channel_id']))
     await bot.change_presence(activity=discord.Game(name=f"{bot.command_prefix}help | {len(bot.guilds)}Guilds |"
-                                                         f" {len(bot.users)}", type=1))
+                                                         f" {len(bot.users)}Users", type=1))
     log_msg = discord.Embed(description=f'BOTが起動しました\n```\nユーザー数: {len(bot.users)}\n'
                                         f'サーバー数: {len(bot.guilds)}\n```')
     log_msg.set_author(name=f'{bot.user} 起動ログ', url=bot.user.avatar_url)

@@ -31,10 +31,10 @@ class Bot(commands.Cog):
         embed = discord.Embed(title=f'{self.bot.user}')
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         embed.add_field(name='開発者',
-                        value=f'```c\n# {(await self.bot.application_info()).owner}\n```',
+                        value=f'```c\n# discord: {(await self.bot.application_info()).owner}\n```',
                         inline=False)
         embed.add_field(name='開発言語',
-                        value=f'```yml\nPython: {sys.version}\ndiscord.py: {discord.__version__}\n```',
+                        value=f'```yml\nPython:\n{sys.version}\ndiscord.py: {discord.__version__}\n```',
                         inline=False)
         embed.add_field(name='Prefix',
                         value=f'```yml\n{self.bot.command_prefix}\n'

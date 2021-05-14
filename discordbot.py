@@ -87,6 +87,7 @@ if __name__ == '__main__':
         'cogs.owner',
         'cogs.utils',
         'cogs.bot',
+        'cogs.info',
         'cogs.join',
         'cogs.leave',
         'jishaku'

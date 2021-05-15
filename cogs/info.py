@@ -178,6 +178,7 @@ class Info(commands.Cog):
             else:
                 for num in reversed(range(len(user_info.roles) - 15, len(user_info.roles))):
                     user_role += (user_info.roles[num].mention + ', ')
+                user_role += '...以下略'
 
             oauth_0_url = f'https://discord.com/oauth2/authorize?client_id={user_id}&permissions=0&scope=bot'
             oauth_all_url = f'https://discord.com/oauth2/authorize?client_id={user_id}&permissions=4294967287&scope=bot'

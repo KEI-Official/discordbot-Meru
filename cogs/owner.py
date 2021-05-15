@@ -70,7 +70,7 @@ class Owner(commands.Cog):
 
     @commands.command(pass_context=True, hidden=True, aliases=['api_user', 'api_ui'])
     @commands.is_owner()
-    async def search_user(self, ctx, args):
+    async def search_user(self, ctx, args=None):
         if not args:
             return await ctx.reply('ユーザーIDを指定してください', allowed_mentions=AllowedMentions.none())
 
@@ -96,6 +96,57 @@ class Owner(commands.Cog):
         info_msg.add_field(name='共通サーバー数', value=f'{user_info["user_guilds"]}')
 
         return await ctx.reply(embed=info_msg, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(pass_context=True, hidden=True, aliases=['api_server', 'api_si'])
+    @commands.is_owner()
+    async def search_server(self, ctx, args=None):
+        if not args:
+            return await ctx.reply('サーバーIDを指定してください', allowed_mentions=AllowedMentions.none())
+
+        fetched_guild = self.bot.get_guild(int(args))
+        if not fetched_guild:
+            return await ctx.reply('ユーザーが見つかりませんでした', allowed_mentions=AllowedMentions.none())
+
+        guild = fetched_guild
+        server_name = guild.name
+        server_id = guild.id
+        server_icon = guild.icon_url
+        server_owner = guild.owner
+        server_created = guild.created_at
+        server_region = guild.region
+
+        server_all_ch_count = len(guild.channels)
+        server_t_ch_count = len(guild.text_channels)
+        server_v_ch_count = len(guild.voice_channels)
+        server_c_ch_count = len(guild.categories)
+
+        server_all_member_count = len(guild.members)
+        server_m_count = len([m for m in guild.members if not m.bot])
+        server_b_count = len([b for b in guild.members if b.bot])
+        server_ban_m_count = len(await guild.bans())
+        server_e_count = len([e for e in guild.emojis if not e.animated])
+        server_ani_e_count = len([ae for ae in guild.emojis if ae.animated])
+        server_e_limit = guild.emoji_limit
+
+        embed = Embed(title=server_name, description=f'ID: `{server_id}`')
+        embed.add_field(name='オーナー', value=f'{server_owner} ({server_owner.id})', inline=False)
+        embed.add_field(name='作成日時',
+                        value=f'{server_created.astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")}')
+        embed.add_field(name='地域', value=server_region)
+        embed.add_field(name=f'チャンネル - {server_all_ch_count}/500',
+                        value=f'```diff\n+ カテゴリーチャンネル: {server_c_ch_count}\n+ テキストチャンネル: {server_t_ch_count}'
+                              f'\n+ ボイスチャンネル: {server_v_ch_count}\n```',
+                        inline=False)
+        embed.add_field(name=f'メンバー - {server_all_member_count}',
+                        value=f'```diff\n+ メンバー: {server_m_count}\n+ BOT: {server_b_count}'
+                              f'\n+ Banされた人数: {server_ban_m_count}\n```',
+                        inline=False)
+        embed.add_field(name=f'絵文字',
+                        value=f'```diff\n+ 通常: {server_e_count}/{server_e_limit}'
+                              f'\n+ アニメーション: {server_ani_e_count}/{server_e_limit}\n```',
+                        inline=False)
+        embed.set_thumbnail(url=server_icon)
+        await ctx.send(embed=embed)
 
     @commands.command(pass_context=True, hidden=True)
     @commands.is_owner()

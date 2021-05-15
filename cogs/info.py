@@ -1,6 +1,7 @@
 import re
 import discord
 from discord.ext import commands
+from pytz import timezone
 
 
 class Info(commands.Cog):
@@ -43,7 +44,7 @@ class Info(commands.Cog):
         embed = discord.Embed(title=server_name, description=f'ID: `{server_id}`')
         embed.set_thumbnail(url=server_icon)
         embed.add_field(name='オーナー', value=f'{server_owner} ({server_owner.id})', inline=False)
-        embed.add_field(name='作成日時', value=f'{server_created.strftime("%Y/%m/%d %H:%M:%S")}')
+        embed.add_field(name='作成日時', value=f'{server_created.astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")}')
         embed.add_field(name='地域', value=server_region)
         embed.add_field(name=f'チャンネル - {server_all_ch_count}/500',
                         value=f'```diff\n+ カテゴリーチャンネル: {server_c_ch_count}\n+ テキストチャンネル: {server_t_ch_count}'
@@ -110,7 +111,7 @@ class Info(commands.Cog):
                 role_member += ' ...以下略'
 
             embed = discord.Embed(title=f'Role - {role_name}', color=role_color, description=f'**ID**: `{role_id}`')
-            embed.add_field(name='作成日時', value=f'{role_created.strftime("%Y/%m/%d %H:%M:%S")}')
+            embed.add_field(name='作成日時', value=f'{role_created.astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")}')
             embed.add_field(name='メンション可/不可', value=f'{role_mentionable}')
             embed.add_field(name='外部サービスとの連携', value=f'{role_managed}')
             embed.add_field(name='役職の色', value=f'{role_color}')
@@ -184,8 +185,10 @@ class Info(commands.Cog):
             embed = discord.Embed(title=f'{user_info}', description=f'**ID**: `{user_id}`', color=user_color)
             embed.set_thumbnail(url=user_icon)
             embed.add_field(name='名前', value=f'`{user_name}`')
-            embed.add_field(name='アカウント作成日時', value=f'`{user_created.strftime("%Y/%m/%d %H:%M:%S")}`')
-            embed.add_field(name='サーバー入室日時', value=f'`{user_joined.strftime("%Y/%m/%d %H:%M:%S")}`')
+            embed.add_field(name='アカウント作成日時',
+                            value=f'`{user_created.astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")}`')
+            embed.add_field(name='サーバー入室日時',
+                            value=f'`{user_joined.astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")}`')
             embed.add_field(name='ステータス', value=f'{user_status}')
             embed.add_field(name='BotかUser', value=f'`{user_bot}`')
             embed.add_field(name=f'役職 - {len(user_info.roles)}', value=user_role, inline=False)

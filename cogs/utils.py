@@ -13,7 +13,8 @@ class Utils(commands.Cog):
         self.user_info = None
         self.avatar_url = None
 
-    @commands.command()
+    @commands.command(description='ユーザーのアイコンを表示します',
+                      usage='[対戦ルールタイプ] <-n(次の時間帯)>')
     async def spla2(self, ctx, s_type=None, s_next=None):
         def get_stage(game, time_next: bool):
             if game == 'regular':

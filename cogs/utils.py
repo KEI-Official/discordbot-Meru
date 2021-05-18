@@ -137,7 +137,7 @@ class Utils(commands.Cog):
 
         await ctx.send(f'翻訳結果：\n >>> {ctx}')
 
-    @commands.command(descriptions='ユーザーのアイコンを表示します',
+    @commands.command(description='ユーザーのアイコンを表示します',
                       usage='<UserID/名前/メンション>')
     async def avatar(self, ctx, user=None):
         if user is None:

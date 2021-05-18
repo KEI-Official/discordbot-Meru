@@ -1,7 +1,8 @@
-from discord import Embed, AllowedMentions
+from discord import Embed, AllowedMentions, utils
 from discord.ext import commands
 import requests
 import random
+import re
 
 
 class Utils(commands.Cog):
@@ -9,6 +10,8 @@ class Utils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.stage_info = None
+        self.user_info = None
+        self.avatar_url = None
 
     @commands.command()
     async def spla2(self, ctx, s_type=None, s_next=None):
@@ -132,6 +135,43 @@ class Utils(commands.Cog):
         print(target_language, text)
 
         await ctx.send(f'翻訳結果：\n >>> {ctx}')
+
+    @commands.command(descriptions='ユーザーのアイコンを表示します',
+                      usage='<UserID/名前/メンション>')
+    async def avatar(self, ctx, user=None):
+        if user is None:
+            self.avatar_url = f'{ctx.author.avatar_url}'.replace('1024', '128')
+            self.user_info = ctx.author
+        elif ctx.message.mentions:
+            self.user_info = ctx.message.mentions[0]
+            self.avatar_url = f'{self.user_info.avatar_url}'.replace('1024', '128')
+        elif re.search(r'[0-9]{18}', str(user)) is not None:
+            pre_user = ctx.guild.get_member(int(user))
+            if pre_user:
+                self.user_info = pre_user
+                self.avatar_url = f'{self.user_info.avatar_url}'.replace('1024', '128')
+            else:
+                no_user_msg = Embed(description='ユーザーが見つかりませんでした\n**考えられる原因**```'
+                                                '\n・IDは間違っていませんか？\n・ユーザーはサーバーにいますか？\n```')
+                return await ctx.reply(embed=no_user_msg, allowed_mentions=AllowedMentions.none())
+        else:
+            pre_user = utils.get(ctx.guild.members, name=user)
+            if pre_user:
+                self.user_info = pre_user
+                self.avatar_url = f'{self.user_info.avatar_url}'.replace('1024', '128')
+            else:
+                no_user_msg = Embed(description='ユーザーが見つかりませんでした\n**考えられる原因**```'
+                                                '\n・名前は間違っていませんか？\n・ユーザーはサーバーにいますか？\n```')
+                return await ctx.reply(embed=no_user_msg, allowed_mentions=AllowedMentions.none())
+
+        avatar_png_url = self.avatar_url.replace('webp', 'png')
+        avatar_jpg_url = self.avatar_url.replace('webp', 'jpg')
+        avatar_jpeg_url = self.avatar_url.replace('webp', 'jpeg')
+        embed = Embed(description=f'[webp]({self.avatar_url}) | [png]({avatar_png_url}) | '
+                                  f'[jpg]({avatar_jpg_url}) | [jpeg]({avatar_jpeg_url})')
+        embed.set_author(name=f'{self.user_info}')
+        embed.set_image(url=self.avatar_url)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

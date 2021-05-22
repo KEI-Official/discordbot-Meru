@@ -19,7 +19,8 @@ intents.dm_messages = False
 intents.dm_reactions = False
 bot = commands.Bot(
     command_prefix=config['prefix'],
-    intents=intents
+    intents=intents,
+    help_command=None
 )
 
 

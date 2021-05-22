@@ -57,6 +57,27 @@ class Bot(commands.Cog):
     async def status(self, ctx):
         await ctx.send(f'')
 
+    @commands.command(description='Botの負荷状況を表示します')
+    async def help(self, ctx, command_names=None):
+        if command_names is None:
+            embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {self.bot.command_prefix} `')
+            embed.set_footer(text=f'コマンドの詳しい説明: {self.bot.command_prefix} <コマンド名>')
+            commands_list = list(self.bot.commands)
+            command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
+                             'Game': '🎮 ゲームコマンド', 'Admin': '🛠 サーバー管理者用コマンド'}
+            help_cmg_list = []
+            for cg in command_group:
+                for cl in commands_list:
+                    if cl.cog_name == cg:
+                        help_cmg_list.append(f'`{cl.name}`')
+                if help_cmg_list == []:
+                    help_cmg_list.append('`コマンドなし`')
+                else:
+                    help_cmg_list.sort()
+                embed.add_field(name=command_group.get(cg), value=f'> {", ".join(help_cmg_list)}', inline=False)
+                help_cmg_list = []
+            await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Bot(bot))

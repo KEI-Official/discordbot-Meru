@@ -77,6 +77,28 @@ class Bot(commands.Cog):
                 embed.add_field(name=command_group.get(cg), value=f'> {", ".join(help_cmg_list)}', inline=False)
                 help_cmg_list = []
             await ctx.send(embed=embed)
+        else:
+            cmd_get_name = self.bot.get_command(command_names)
+            cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.commands))
+            no_cmd_error = discord.Embed(title='📃 CommandHelp Error',
+                                         description='指定されたコマンド又はカテゴリーが見つかりませんでした')
+            if cmd_get_name is None:
+                if cmd_find_name is not None:
+                    no_cmd_error.add_field(name='もしかして...', value=f'`{cmd_find_name}`')
+                await ctx.reply(embed=no_cmd_error, allowed_mentions=discord.AllowedMentions.none())
+            else:
+                command = cmd_get_name
+                command_aliase = []
+                if command.aliases == [] or command.aliases == ():
+                    command_aliase.append('`なし`')
+                else:
+                    for ca in command.aliases:
+                        command_aliase.append(f'`{ca}`')
+
+                help_command = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
+                                             description=f'{command.description}')
+                help_command.add_field(name='エイリアス', value=f'{",".join(command_aliase)}', inline=False)
+                await ctx.send(embed=help_command)
 
 
 def setup(bot):

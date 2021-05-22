@@ -57,7 +57,7 @@ class Bot(commands.Cog):
     async def status(self, ctx):
         await ctx.send(f'')
 
-    @commands.command(description='Botの負荷状況を表示します')
+    @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
         if command_names is None:
             embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {self.bot.command_prefix} `')

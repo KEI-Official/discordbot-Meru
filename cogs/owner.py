@@ -166,6 +166,32 @@ class Owner(commands.Cog):
         await i_get_guild.leave()
         return await ctx.reply('サーバーから退出しました', allowed_mentions=AllowedMentions.none())
 
+    @commands.command(pass_context=True, hidden=True,
+                      description='指定されたCog名を再読み込みします',
+                      usage='[Cog/-all]')
+    @commands.is_owner()
+    async def reload(self, ctx, args=None):
+        extensions = [filename[:-3] for filename in os.listdir("./cogs") if filename.endswith(".py")]
+        cog_blacklist = ['__init__', 'owner']
+        if args is None:
+            cog_error = Embed(description='再読み込みするCog名を指定してください')
+            return await ctx.reply(embed=cog_error, allowed_mentions=AllowedMentions.none())
+        elif args == '-all':
+            for name in extensions:
+                if not name in cog_blacklist:
+                    self.bot.reload_extension(f'cogs.{name}')
+            cog_all_done = Embed(description='Cogを全て再読み込みしました')
+            return await ctx.reply(embed=cog_all_done, allowed_mentions=AllowedMentions.none())
+
+        elif args in extensions:
+            self.bot.reload_extension(f'cogs.{args}')
+            cog_done = Embed(description='Cogを再読み込みしました')
+            return await ctx.reply(embed=cog_done, allowed_mentions=AllowedMentions.none())
+
+        else:
+            cog_error = Embed(description=f'`{args}`が見つかりませんでした')
+            return await ctx.reply(embed=cog_error, allowed_mentions=AllowedMentions.none())
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))

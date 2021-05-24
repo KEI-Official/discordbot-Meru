@@ -6,6 +6,7 @@ import traceback
 import textwrap
 from pytz import timezone
 from contextlib import redirect_stdout
+import os
 
 import cogs
 
@@ -68,7 +69,9 @@ class Owner(commands.Cog):
                 s_msg2 = Embed(title='Success', description=f'```py\n{value}{ret}\n```')
                 await ctx.reply(embed=s_msg2, allowed_mentions=AllowedMentions.none())
 
-    @commands.command(pass_context=True, hidden=True, aliases=['api_user', 'api_ui'])
+    @commands.command(pass_context=True, hidden=True,
+                      aliases=['api_user', 'api_ui'],
+                      description='ユーザーをAPI上から検索します')
     @commands.is_owner()
     async def search_user(self, ctx, args=None):
         if not args:
@@ -97,7 +100,9 @@ class Owner(commands.Cog):
 
         return await ctx.reply(embed=info_msg, allowed_mentions=AllowedMentions.none())
 
-    @commands.command(pass_context=True, hidden=True, aliases=['api_server', 'api_si'])
+    @commands.command(pass_context=True, hidden=True,
+                      aliases=['api_server', 'api_si'],
+                      description='サーバーをAPI上から検索します')
     @commands.is_owner()
     async def search_server(self, ctx, args=None):
         if not args:
@@ -148,7 +153,8 @@ class Owner(commands.Cog):
         embed.set_thumbnail(url=server_icon)
         await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True, hidden=True)
+    @commands.command(pass_context=True, hidden=True,
+                      description='サーバーをAPI上から検索します')
     @commands.is_owner()
     async def leave(self, ctx, args=None):
         if args is None:

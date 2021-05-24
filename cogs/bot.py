@@ -43,6 +43,9 @@ class Bot(commands.Cog):
         embed.add_field(name='詳細',
                         value=f'```yml\n[導入サーバー数] {info_guilds}\n[ユーザー数] {info_user}\n[チャンネル数] {info_ch}\n```',
                         inline=False)
+        embed.add_field(name='一部機能の引用元',
+                        value=f'コマンド名: rtfm```\n[Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny)\n```',
+                        inline=False)
         embed.add_field(name='各種リンク',
                         value=f'[BOTの招待リンク]({oauth_url}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
                               f' | [ブログサイト](https://syutarou.xyz)',
@@ -64,7 +67,7 @@ class Bot(commands.Cog):
             embed.set_footer(text=f'コマンドの詳しい説明: {self.bot.command_prefix} <コマンド名>')
             commands_list = list(self.bot.commands)
             command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
-                             'Game': '🎮 ゲームコマンド', 'Admin': '🛠 サーバー管理者用コマンド'}
+                             'Game': '🎮 ゲームコマンド', 'RTFM': '📃リファレンスコマンド', 'Admin': '🛠 サーバー管理者用コマンド'}
             help_cmg_list = []
             for cg in command_group:
                 for cl in commands_list:

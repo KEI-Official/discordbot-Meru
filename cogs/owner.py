@@ -42,8 +42,8 @@ class Owner(commands.Cog):
         try:
             exec(to_compile, env)
         except Exception as e:
-            e_msg1 = Embed(title='Error', description=f'```py\n{e.__class__.__name__}: {e}\n```')
-            return await ctx.reply(embed=e_msg1, allowed_mentions=AllowedMentions.none())
+            e_msg1 = f'Error\n```py\n{e.__class__.__name__}: {e}\n```'
+            return await ctx.reply(e_msg1, allowed_mentions=AllowedMentions.none())
 
         func = env['func']
         try:
@@ -51,8 +51,8 @@ class Owner(commands.Cog):
                 ret = await func()
         except Exception as e:
             value = stdout.getvalue()
-            e_msg2 = Embed(title='Error', description=f'```py\n{value}{traceback.format_exc()}\n```')
-            await ctx.reply(embed=e_msg2, allowed_mentions=AllowedMentions.none())
+            e_msg2 = f'Error\n```py\n{value}{traceback.format_exc()}\n```'
+            await ctx.reply(e_msg2, allowed_mentions=AllowedMentions.none())
         else:
             value = stdout.getvalue()
             try:
@@ -62,12 +62,12 @@ class Owner(commands.Cog):
 
             if ret is None:
                 if value:
-                    s_msg1 = Embed(title='Success', description=f'```py\n{value}\n```')
-                    await ctx.reply(embed=s_msg1, allowed_mentions=AllowedMentions.none())
+                    s_msg1 = f'Success\n```py\n{value}\n```'
+                    return await ctx.reply(s_msg1, allowed_mentions=AllowedMentions.none())
             else:
                 self._last_result = ret
-                s_msg2 = Embed(title='Success', description=f'```py\n{value}{ret}\n```')
-                await ctx.reply(embed=s_msg2, allowed_mentions=AllowedMentions.none())
+                s_msg2 = f'Success\n```py\n{value}{ret}\n```'
+                return await ctx.reply(s_msg2, allowed_mentions=AllowedMentions.none())
 
     @commands.command(pass_context=True, hidden=True,
                       aliases=['api_user', 'api_ui'],

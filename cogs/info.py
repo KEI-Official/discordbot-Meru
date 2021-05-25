@@ -1,3 +1,4 @@
+import asyncio
 import re
 import discord
 from discord.ext import commands
@@ -97,7 +98,7 @@ class Info(commands.Cog):
             role_mentionable = role_info.mentionable
             role_managed = role_info.managed
             role_color = role_info.color
-            role_permission = role_info.permissions.value
+            role_permission = role_info.permissions
             role_members = role_info.members
             role_member = ''
             if len(role_members) == 0:
@@ -116,10 +117,82 @@ class Info(commands.Cog):
             embed.add_field(name='メンション可/不可', value=f'{role_mentionable}')
             embed.add_field(name='外部サービスとの連携', value=f'{role_managed}')
             embed.add_field(name='役職の色', value=f'{role_color}')
-            embed.add_field(name='権限', value=f'{role_permission}')
+            embed.add_field(name='権限', value=f'{role_permission.value}')
             embed.add_field(name=f'持っている人 - {len(role_members)}人',
                             value=f'{role_member}', inline=False)
-            await ctx.send(embed=embed)
+            embed_msg = await ctx.send(embed=embed)
+            await embed_msg.add_reaction('▶')
+
+            def check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) == '▶'
+
+            try:
+                await self.bot.wait_for('reaction_add', timeout=20, check=check)
+            except asyncio.TimeoutError:
+                await embed_msg.clear_reactions()
+            else:
+                await embed_msg.clear_reactions()
+                server_permission = {
+                    'administrator': '管理者', 'read_messages': 'チャンネルを見る', 'manage_channels': 'チャンネルの管理',
+                    'manage_roles': 'ロールの管理', 'manage_emojis': '絵文字の管理',
+                    'view_audit_log': '監査ログの表示', 'view_guild_insights': 'サーバーインサイトを見る',
+                    'manage_webhooks': 'ウェブフックの管理', 'manage_guild': 'サーバー管理'
+                }
+                member_permission = {
+                    'create_instant_invite': '招待を作成', 'change_nickname': 'ニックネームの変更',
+                    'manage_nicknames': 'ニックネームの管理', 'kick_members': 'メンバーをキック',
+                    'ban_members': 'メンバーをBAN'
+                }
+                ch_permission = {
+                    'send_messages': 'メッセージを送信', 'embed_links': '埋め込みリンク', 'attach_files': 'ファイルを添付',
+                    'add_reactions': 'リアクションの追加', 'external_emojis': '外部の絵文字の利用',
+                    'mention_everyone': '@everyone、@here、全てのロールにメンション', 'manage_messages': 'メッセージの管理',
+                    'read_message_history': 'メッセージ履歴を読む', 'send_tts_messages': 'テキスト読み上げメッセージを送信する',
+                    'use_slash_commands': 'スラッシュコマンドを使用'
+                }
+                voice_permission = {
+                    'connect': '接続', 'speak': '発言', 'stream': '動画',
+                    'use_voice_activation': '音声検出を使用', 'priority_speaker': '優先スピーカー',
+                    'mute_members': 'メンバーをミュート', 'deafen_members': 'メンバーのスピーカーをミュート',
+                    'move_members': 'メンバーを移動', 'request_to_speak': 'スピーカー参加をリクエスト'
+                }
+
+                s_perm_text = ''
+                m_perm_text = ''
+                c_perm_text = ''
+                v_perm_text = ''
+                role_permission_list = []
+                for rp in list(role_permission):
+                    if rp[1]:
+                        role_permission_list.append(rp[0])
+
+                for sp in list(server_permission):
+                    if sp in role_permission_list:
+                        s_perm_text += f"✅:{server_permission[sp]}\n"
+                    else:
+                        s_perm_text += f"❌:{server_permission[sp]}\n"
+                for sp in list(member_permission):
+                    if sp in role_permission_list:
+                        m_perm_text += f"✅:{member_permission[sp]}\n"
+                    else:
+                        m_perm_text += f"❌:{member_permission[sp]}\n"
+                for sp in list(ch_permission):
+                    if sp in role_permission_list:
+                        c_perm_text += f"✅:{ch_permission[sp]}\n"
+                    else:
+                        c_perm_text += f"❌:{ch_permission[sp]}\n"
+                for sp in list(voice_permission):
+                    if sp in role_permission_list:
+                        v_perm_text += f"✅:{voice_permission[sp]}\n"
+                    else:
+                        v_perm_text += f"❌:{voice_permission[sp]}\n"
+
+                permission_embed = discord.Embed(title=f'権限リスト: {role_name}')
+                permission_embed.add_field(name='サーバー全般の権限', value=f'```\n{s_perm_text}\n```')
+                permission_embed.add_field(name='メンバーシップ権限', value=f'```\n{m_perm_text}\n```')
+                permission_embed.add_field(name='テキストチャンネル権限', value=f'```\n{c_perm_text}\n```', inline=False)
+                permission_embed.add_field(name='ボイスチャンネル権限', value=f'```\n{v_perm_text}\n```')
+                await embed_msg.edit(embed=permission_embed)
 
     @commands.command(description='ユーザーの情報を表示します',
                       usage='<ID/メンション/名前>',

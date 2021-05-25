@@ -62,6 +62,19 @@ class Bot(commands.Cog):
 
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
+        def send_embed(command):
+            command_aliase = []
+            if command.aliases == [] or command.aliases == ():
+                command_aliase.append('`なし`')
+            else:
+                for ca in command.aliases:
+                    command_aliase.append(f'`{ca}`')
+
+            command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
+                                         description=f'{command.description}')
+            command_embed.add_field(name='エイリアス', value=f'{",".join(command_aliase)}', inline=False)
+            return command_embed
+
         if command_names is None:
             embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {self.bot.command_prefix} `')
             embed.set_footer(text=f'コマンドの詳しい説明: {self.bot.command_prefix} <コマンド名>')
@@ -94,19 +107,18 @@ class Bot(commands.Cog):
                 if cmd_find_name is not None:
                     no_cmd_error.add_field(name='もしかして...', value=f'`{cmd_find_name}`')
                 await ctx.reply(embed=no_cmd_error, allowed_mentions=discord.AllowedMentions.none())
-            else:
-                command = cmd_get_name
-                command_aliase = []
-                if command.aliases == [] or command.aliases == ():
-                    command_aliase.append('`なし`')
-                else:
-                    for ca in command.aliases:
-                        command_aliase.append(f'`{ca}`')
 
-                help_command = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
-                                             description=f'{command.description}')
-                help_command.add_field(name='エイリアス', value=f'{",".join(command_aliase)}', inline=False)
-                await ctx.send(embed=help_command)
+            elif cmd_get_name.hidden:
+                if ctx.author.id == 534994298827964416:
+                    beta_command = discord.Embed(title=f'📃 CommandHelp - `{cmd_get_name.name}`',
+                                                 description='非公開コマンドです')
+                    return await ctx.send(embed=beta_command)
+                else:
+                    help_command = send_embed(cmd_get_name)
+                    return await ctx.send(embed=help_command)
+            else:
+                help_command = send_embed(cmd_get_name)
+                return await ctx.send(embed=help_command)
 
 
 def setup(bot):

@@ -46,6 +46,7 @@ class Info(commands.Cog):
         embed.add_field(name='オーナー', value=f'{server_owner} ({server_owner.id})', inline=False)
         embed.add_field(name='作成日時', value=f'{server_created.astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")}')
         embed.add_field(name='地域', value=server_region)
+        embed.add_field(name='サーバーアイコン', value=f'[Here]({server_icon})')
         embed.add_field(name=f'チャンネル - {server_all_ch_count}/500',
                         value=f'```diff\n+ カテゴリーチャンネル: {server_c_ch_count}\n+ テキストチャンネル: {server_t_ch_count}'
                               f'\n+ ボイスチャンネル: {server_v_ch_count}\n+ システムチャンネル: {server_system_ch}\n```',

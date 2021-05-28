@@ -1,8 +1,8 @@
+import json
 import os
 import traceback
-from datetime import datetime
-
 import discord
+from datetime import datetime
 from discord.ext import commands
 from dotenv import load_dotenv
 load_dotenv()
@@ -43,8 +43,27 @@ async def on_command_error(ctx, error):
         # CommandNotFound
         if isinstance(error, commands.CommandNotFound):
             return
+
+        # CommandMissingPermission
+        elif isinstance(error, commands.MissingPermissions):
+            try:
+                with open("./data/permission_list.json", "r", encoding='UTF-8') as perm_list:
+                    data = json.load(perm_list)
+                missing_perm = []
+                for error_permission in error.missing_perms:
+                    if error_permission in data:
+                        missing_perm.append(f'`{data[error_permission]}`')
+                print(missing_perm)
+                err_embed = discord.Embed(title='権限エラー', description='このコマンドを利用するには以下の権限が必要です。')
+                err_embed.add_field(name='必要な権限', value=f'{",".join(missing_perm)}')
+                return await ctx.reply(embed=err_embed, allowed_mentions=discord.AllowedMentions.none())
+            except:
+                raise error
+
+        # NotOwner
         elif isinstance(error, commands.NotOwner):
             return await ctx.reply("このコマンドは開発者専用コマンドです")
+
         # BotMissingPermissions
         elif isinstance(error, commands.BotMissingPermissions):
             permission = {'read_messages': "メッセージを読む", 'send_messages': "メッセージを送信",
@@ -64,6 +83,7 @@ async def on_command_error(ctx, error):
             await app_info.owner.send(embed=no_msg)
         else:
             raise error
+
     except Exception as e:
         err_ch = await bot.fetch_channel(config['err_channel_id'])
         err_msg = discord.Embed(title='⚠エラーが発生しました',

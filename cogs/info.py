@@ -166,22 +166,22 @@ class Info(commands.Cog):
                     if rp[1]:
                         role_permission_list.append(rp[0])
 
-                for sp in list(server_permission):
+                for sp in server_permission:
                     if sp in role_permission_list:
                         s_perm_text += f"✅:{server_permission[sp]}\n"
                     else:
                         s_perm_text += f"❌:{server_permission[sp]}\n"
-                for sp in list(member_permission):
+                for sp in member_permission:
                     if sp in role_permission_list:
                         m_perm_text += f"✅:{member_permission[sp]}\n"
                     else:
                         m_perm_text += f"❌:{member_permission[sp]}\n"
-                for sp in list(ch_permission):
+                for sp in ch_permission:
                     if sp in role_permission_list:
                         c_perm_text += f"✅:{ch_permission[sp]}\n"
                     else:
                         c_perm_text += f"❌:{ch_permission[sp]}\n"
-                for sp in list(voice_permission):
+                for sp in voice_permission:
                     if sp in role_permission_list:
                         v_perm_text += f"✅:{voice_permission[sp]}\n"
                     else:

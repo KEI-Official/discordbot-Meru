@@ -10,7 +10,7 @@ class Game(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(description='三字熟語のトレーニングが出来ます。')
     async def tt(self, ctx):
         with open("./data/tt_data.json", "r", encoding='UTF-8') as config:
             data = json.load(config)

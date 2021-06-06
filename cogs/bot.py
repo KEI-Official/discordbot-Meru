@@ -62,22 +62,31 @@ class Bot(commands.Cog):
 
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
+        command_prefix = self.bot.command_prefix
+
         def send_embed(command):
-            command_aliase = []
-            if command.aliases == [] or command.aliases == ():
-                command_aliase.append('`なし`')
+            command_aliases = []
+            command_usage = ''
+            if not command.aliases:
+                command_aliases.append('`なし`')
             else:
                 for ca in command.aliases:
-                    command_aliase.append(f'`{ca}`')
+                    command_aliases.append(f'`{ca}`')
+
+            if command.usage:
+                command_usage += command.usage
+            else:
+                command_usage += ''
 
             command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
-                                         description=f'{command.description}')
-            command_embed.add_field(name='エイリアス', value=f'{",".join(command_aliase)}', inline=False)
+                                          description=f'{command.description}')
+            command_embed.add_field(name='エイリアス', value=f'{",".join(command_aliases)}', inline=False)
+            command_embed.add_field(name='使い方', value=f'`{command_prefix}{command.name} {command_usage}`', inline=False)
             return command_embed
 
         if command_names is None:
-            embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {self.bot.command_prefix} `')
-            embed.set_footer(text=f'コマンドの詳しい説明: {self.bot.command_prefix} <コマンド名>')
+            embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {command_prefix} `')
+            embed.set_footer(text=f'コマンドの詳しい説明: {command_prefix} <コマンド名>')
             commands_list = list(self.bot.commands)
             if ctx.author.id == 534994298827964416:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
@@ -109,7 +118,7 @@ class Bot(commands.Cog):
                 await ctx.reply(embed=no_cmd_error, allowed_mentions=discord.AllowedMentions.none())
 
             elif cmd_get_name.hidden:
-                if ctx.author.id == 534994298827964416:
+                if ctx.author.id != 534994298827964416:
                     beta_command = discord.Embed(title=f'📃 CommandHelp - `{cmd_get_name.name}`',
                                                  description='非公開コマンドです')
                     return await ctx.send(embed=beta_command)

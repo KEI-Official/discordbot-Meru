@@ -12,6 +12,10 @@ class Utils(commands.Cog):
         self.stage_info = None
         self.user_info = None
         self.avatar_url = None
+        self.azure_endpoint = os.getenv('AZURE_ENDPOINT')
+        self.azure_api_key = os.getenv('AZURE_API_KEY')
+        self.azure_translate_key = os.getenv('AZURE_TRANS_KEY')
+        self.azure_translate_endpoint = os.getenv('AZURE_TRANS_ENDPOINT')
 
     @commands.command(description='ユーザーのアイコンを表示します',
                       usage='[対戦ルールタイプ] <-n(次の時間帯)>')
@@ -173,6 +177,68 @@ class Utils(commands.Cog):
         embed.set_author(name=f'{self.user_info}')
         embed.set_image(url=self.avatar_url)
         await ctx.send(embed=embed)
+
+    @commands.command(description='指定された画像の文字をおこして、送信します',
+                      usage='[画像URL | 画像を添付する] ',
+                      aliases=['iw', 'imageword'])
+    @commands.is_owner()
+    @commands.cooldown(rate=1, per=120.0)
+    async def image_word(self, ctx, url=None):
+        if url is None:
+            no_image_msg = Embed(description='画像URLを指定してください')
+            await ctx.reply(embed=no_image_msg, allowed_mentions=AllowedMentions.none())
+        else:
+            params = {'visualFeatures': 'Categories,Description,Color'}
+
+            if url is not None:
+                headers = {
+                    'Ocp-Apim-Subscription-Key': self.azure_api_key,
+                    'Content-Type': 'application/json',
+                }
+                data = {'url': url}
+                response = requests.post(
+                    self.azure_endpoint,
+                    headers=headers,
+                    params=params,
+                    json=data
+                )
+
+            status = response.status_code
+            data = response.json()
+
+            if status != 200:
+
+                if data['error']['code'] == 'InvalidImageSize':
+                    text = '画像のサイズが大きすぎます\n50MB以下のものを指定してください。'
+
+                elif data['error']['code'] == 'InvalidImageURL':
+                    text = 'この画像URLからは取得できません\nURLを確認してください。'
+
+                elif data['error']['code'] == 'UnsupportedImageFormat':
+                    text = '対応していない画像形式です\n\n対応拡張子\n```\n・JPEG\n・PNG\n・BMP\n```'
+
+                elif data['error']['code'] == 'InvalidImageDimension':
+                    text = '入力画像の大きさが範囲外です\n```\n最小: 50x50 ピクセル\n最大: 10000x10000 ピクセル\n```'
+                else:
+                    text = '予期しないエラーが発生しました'
+
+                err_msg = Embed(title='APIエラー', description=text)
+                return await ctx.reply(embed=err_msg, allowed_mentions=AllowedMentions.none())
+
+            text = ''
+            for region in data['regions']:
+                for line in region['lines']:
+                    for word in line['words']:
+                        text += word.get('text', '')
+                        if data['language'] != 'ja':
+                            text += ' '
+                text += '\n'
+
+            if len(text) == 0:
+                text += '文字が検出できませんでした'
+
+            su_msg = Embed(title='文字認識 - 結果', description=f'```\n{text}\n```')
+            return await ctx.reply(embed=su_msg, allowed_mentions=AllowedMentions.none())
 
 
 def setup(bot):

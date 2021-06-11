@@ -1,8 +1,11 @@
-from discord import Embed, AllowedMentions, utils
+from discord import Embed, AllowedMentions, utils, File
 from discord.ext import commands
 import requests
 import random
 import re
+import os
+import uuid
+import json
 
 
 class Utils(commands.Cog):
@@ -12,6 +15,7 @@ class Utils(commands.Cog):
         self.stage_info = None
         self.user_info = None
         self.avatar_url = None
+        self.lang = None
         self.azure_endpoint = os.getenv('AZURE_ENDPOINT')
         self.azure_api_key = os.getenv('AZURE_API_KEY')
         self.azure_translate_key = os.getenv('AZURE_TRANS_KEY')
@@ -132,17 +136,57 @@ class Utils(commands.Cog):
             embed.set_image(url=image_url)
             await ctx.send(embed=embed)
 
-    @commands.command()
-    async def translate(self, ctx, target_language, *, text: str) -> None:
-        encode_length = len(text.encode('utf-8'))
-        if encode_length > 1024:
-            return await ctx.send('文字数が多すぎます。1024文字までで指定してください。')
-        print(target_language, text)
+    @commands.command(description='送られた文字を指定された言語に翻訳します',
+                      usage='[翻訳先言語 | <-list>] [翻訳する文章]',
+                      aliases=['trans'])
+    @commands.cooldown(rate=1, per=10.0)
+    async def translate(self, ctx, tolang=None, translate_text=None):
 
-        await ctx.send(f'翻訳結果：\n >>> {ctx}')
+        with open('./data/translate_lang_list.json', 'r', encoding='UTF-8') as lang_list:
+            data = json.load(lang_list)
+
+        if tolang is None:
+            no_lang_msg = Embed(description='翻訳先の言語を指定してください')
+            return await ctx.reply(embed=no_lang_msg, allowed_mentions=AllowedMentions.none())
+
+        elif tolang == '--list':
+            return await ctx.reply(file=File('./data/lang_list.md'), allowed_mentions=AllowedMentions.none())
+
+        elif translate_text is None:
+            no_text_msg = Embed(description='翻訳する文章を送信してください')
+            return await ctx.reply(embed=no_text_msg, allowed_mentions=AllowedMentions.none())
+
+        else:
+            if tolang in data:
+                load_emoji = self.bot.get_emoji(852849151628935198)
+                await_msg = await ctx.reply(embed=Embed(description=f'{load_emoji} 翻訳中です...'),
+                                            allowed_mentions=AllowedMentions.none())
+                params = '&to=' + tolang
+                constructed_url = f'{self.azure_translate_endpoint}/translate?api-version=3.0{params}'
+                headers = {
+                    'Ocp-Apim-Subscription-Key': f'{self.azure_translate_key}',
+                    'Ocp-Apim-Subscription-Region': 'japaneast',
+                    'Content-type': 'application/json',
+                    'X-ClientTraceId': str(uuid.uuid4())
+                }
+                body = [{
+                    'text': f'{translate_text}'
+                }]
+                request = requests.post(constructed_url, headers=headers, json=body)
+                response = request.json()
+                trans_done = Embed(title='翻訳結果',
+                                   description=f'```\n{response[0]["translations"][0]["text"]}\n```')
+                trans_done.add_field(name='翻訳前言語', value=f'{data[response[0]["detectedLanguage"]["language"]]}')
+                trans_done.add_field(name='翻訳先言語', value=f'{data[tolang]}')
+                return await await_msg.edit(embed=trans_done, allowed_mentions=AllowedMentions.none())
+            else:
+                lang_none = Embed(title='翻訳言語エラー',
+                                  description=f'指定された言語が見つかりませんでした\n'
+                                              f'言語リストは、`{self.bot.command_prefix}translate --list` で見ることが出来ます')
+                return await ctx.reply(embed=lang_none, allowed_mentions=AllowedMentions.none())
 
     @commands.command(description='ユーザーのアイコンを表示します',
-                      usage='<UserID/名前/メンション>')
+                      usage='<User ID/名前/メンション>')
     async def avatar(self, ctx, user=None):
         if user is None:
             self.avatar_url = f'{ctx.author.avatar_url}'.replace('1024', '128')
@@ -181,7 +225,6 @@ class Utils(commands.Cog):
     @commands.command(description='指定された画像の文字をおこして、送信します',
                       usage='[画像URL | 画像を添付する] ',
                       aliases=['iw', 'imageword'])
-    @commands.is_owner()
     @commands.cooldown(rate=1, per=120.0)
     async def image_word(self, ctx, url=None):
         if url is None:

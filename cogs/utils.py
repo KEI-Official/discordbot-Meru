@@ -6,6 +6,7 @@ import re
 import os
 import uuid
 import json
+import asyncio
 
 
 class Utils(commands.Cog):
@@ -20,6 +21,7 @@ class Utils(commands.Cog):
         self.azure_api_key = os.getenv('AZURE_API_KEY')
         self.azure_translate_key = os.getenv('AZURE_TRANS_KEY')
         self.azure_translate_endpoint = os.getenv('AZURE_TRANS_ENDPOINT')
+        self.bitly_key = os.getenv('BITLY_KEY')
 
     @commands.command(description='ユーザーのアイコンを表示します',
                       usage='[対戦ルールタイプ] <-n(次の時間帯)>')
@@ -282,6 +284,39 @@ class Utils(commands.Cog):
 
             su_msg = Embed(title='文字認識 - 結果', description=f'```\n{text}\n```')
             return await ctx.reply(embed=su_msg, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(description='指定されたURLの短縮リンクを作成します。',
+                      usage='[短縮するURL]',
+                      aliases=['surl', 'shurl', 'shorturl'])
+    async def short_url(self, ctx, url=None):
+        if url is None:
+            no_url_msg = Embed(description='短縮するURLを指定してください')
+            await ctx.reply(embed=no_url_msg, allowed_mentions=AllowedMentions.none())
+        elif not url.startswith('https://') or url.startswith('http://'):
+            no_url_type = Embed(description='URLの形式で指定してください')
+            await ctx.reply(embed=no_url_type, allowed_mentions=AllowedMentions.none())
+        else:
+
+            headers = {
+                'Authorization': f'Bearer {self.bitly_key}',
+                'Content-Type': 'application/json',
+            }
+            data = {'long_url': f'{url}'}
+            response = requests.post(
+                'https://api-ssl.bitly.com/v4/shorten',
+                headers=headers,
+                json=data
+            )
+            status = response.status_code
+            re_data = response.json()
+
+            if status != 200:
+                api_err_msg = Embed(title=f'APIエラー - {status}',
+                                    description=f'エラーメッセージ\n```\n{re_data["errors"][0]["message"]}\n```')
+                await ctx.reply(embed=api_err_msg, allowed_mentions=AllowedMentions.none())
+            else:
+                await ctx.reply('短縮URLを作成しました', allowed_mentions=AllowedMentions.none())
+                await ctx.send(f'`{re_data["link"]}`')
 
 
 def setup(bot):

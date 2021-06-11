@@ -318,6 +318,54 @@ class Utils(commands.Cog):
                 await ctx.reply('短縮URLを作成しました', allowed_mentions=AllowedMentions.none())
                 await ctx.send(f'`{re_data["link"]}`')
 
+    @commands.command(description='指定されたキーワードの画像をPixaBay上から検索します',
+                      usage='[キーワード]',
+                      aliases=['simage', 'pixabay', 's_image'])
+    async def search_image(self, ctx, *keyword: str) -> None:
+        pixabay_key = os.getenv('PIXABAY_KEY')
+        if not keyword:
+            no_key_msg = Embed(description='検索する画像のキーワードを指定してください')
+            await ctx.reply(embed=no_key_msg, allowed_mentions=AllowedMentions.none())
+        else:
+            keyword_text = '+'.join(keyword)
+            data = {
+                'key': pixabay_key,
+                'q': keyword_text,
+                'lang': 'ja'
+            }
+            res_pixabay = requests.get(
+                'https://pixabay.com/api/',
+                params=data
+            )
+            status = res_pixabay.status_code
+            re_data = res_pixabay.json()
+
+            if status != 200:
+                api_err_msg = Embed(title=f'APIエラー - {status}',
+                                    description=f'エラーメッセージ\n```\n{re_data["errors"][0]["message"]}\n```')
+                await ctx.reply(embed=api_err_msg, allowed_mentions=AllowedMentions.none())
+            else:
+                if not re_data["hits"]:
+                    no_image_msg = Embed(title='PixaBay - 画像検索ツール',
+                                         description=f'画像が見つかりませんでした')
+                    no_image_msg.set_author(name='PixaBay', url='https://pixabay.com/ja/')
+                    await ctx.reply(embed=no_image_msg, allowed_mentions=AllowedMentions.none())
+                else:
+                    image = re_data["hits"][0]
+                    res_image = Embed(title='PixaBay - 画像検索ツール',
+                                      description=f'総Hit数: {re_data["total"]}\nダウンロードする際はライセンスをよくお読みください')
+                    res_image.add_field(name='総閲覧数', value=f'{image["views"]} 回')
+                    res_image.add_field(name='総ダウンロード数', value=f'{image["downloads"]} 回')
+                    res_image.add_field(name='関連画像', value=f'[1枚目]({re_data["hits"][1]["pageURL"]}) | '
+                                                           f'[2枚目]({re_data["hits"][2]["pageURL"]}) | '
+                                                           f'[3枚目]({re_data["hits"][3]["pageURL"]}) | '
+                                                           f'[4枚目]({re_data["hits"][4]["pageURL"]})',
+                                        inline=False)
+                    res_image.set_image(url=image["webformatURL"])
+                    res_image.set_author(name='PixaBay', url=image["pageURL"])
+                    res_image.set_footer(text=f'❤: {image["favorites"]} | 👍: {image["likes"]} | 💬: {image["comments"]}')
+                    return await ctx.reply(embed=res_image, allowed_mentions=AllowedMentions.none())
+
 
 def setup(bot):
     bot.add_cog(Utils(bot))

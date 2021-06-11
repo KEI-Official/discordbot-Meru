@@ -139,7 +139,7 @@ class Utils(commands.Cog):
     @commands.command(description='送られた文字を指定された言語に翻訳します',
                       usage='[翻訳先言語 | <-list>] [翻訳する文章]',
                       aliases=['trans'])
-    @commands.cooldown(rate=1, per=10.0)
+    @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.user)
     async def translate(self, ctx, tolang=None, translate_text=None):
 
         with open('./data/translate_lang_list.json', 'r', encoding='UTF-8') as lang_list:
@@ -225,7 +225,7 @@ class Utils(commands.Cog):
     @commands.command(description='指定された画像の文字をおこして、送信します',
                       usage='[画像URL | 画像を添付する] ',
                       aliases=['iw', 'imageword'])
-    @commands.cooldown(rate=1, per=120.0)
+    @commands.cooldown(rate=1, per=120.0, type=commands.BucketType.user)
     async def image_word(self, ctx, url=None):
         if url is None:
             no_image_msg = Embed(description='画像URLを指定してください')

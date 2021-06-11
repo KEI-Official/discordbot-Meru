@@ -10,7 +10,8 @@ load_dotenv()
 config = {
     'log_channel_id': os.getenv('LOG_CHANNEL_ID'),
     'err_channel_id': os.getenv('ERR_CHANNEL_ID'),
-    'prefix': os.getenv('PREFIX')
+    'prefix': os.getenv('PREFIX'),
+    'owner_id': os.getenv('OWNER_ID')
 }
 
 intents = discord.Intents.all()
@@ -76,11 +77,12 @@ async def on_command_error(ctx, error):
                 del permission[all_error_permission]
             for all_arrow_permission in list(permission.values()):
                 text += f"✅:{all_arrow_permission}\n"
-            app_info = await bot.application_info()
+
+            owner = await bot.fetch_user(int(config['owner_id']))
             no_msg = discord.Embed(title='Missing Permission',
                                    description=f'『{ctx.guild.name}』での{bot.user}の必要な権限\n'
                                                f'```\n{text}\n```')
-            await app_info.owner.send(embed=no_msg)
+            await owner.send(embed=no_msg)
 
         elif isinstance(error, commands.CommandOnCooldown):
             r_after = error.retry_after
@@ -107,8 +109,8 @@ async def on_command_error(ctx, error):
         error_log_msg = discord.Embed(description=f'```py\n{error_msg}\n```')
         error_log_msg.set_footer(text=f'サーバー: {ctx.guild.name} | 送信者: {ctx.author}')
 
-        app_info = await bot.application_info()
-        await app_info.owner.send(embed=error_log_msg)
+        owner = await bot.fetch_user(int(config['owner_id']))
+        await owner.send(embed=error_log_msg)
         await err_ch.send(embed=error_log_msg)
 
 if __name__ == '__main__':

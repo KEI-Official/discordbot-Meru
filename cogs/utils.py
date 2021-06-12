@@ -352,15 +352,17 @@ class Utils(commands.Cog):
                     await ctx.reply(embed=no_image_msg, allowed_mentions=AllowedMentions.none())
                 else:
                     image = re_data["hits"][0]
+                    related_images = []
+                    for num in range(1, 6):
+                        try:
+                            related_images.append(f'[{num}枚目]({re_data["hits"][num]["pageURL"]})')
+                        except IndexError:
+                            pass
                     res_image = Embed(title='PixaBay - 画像検索ツール',
                                       description=f'総Hit数: {re_data["total"]}\nダウンロードする際はライセンスをよくお読みください')
                     res_image.add_field(name='総閲覧数', value=f'{image["views"]} 回')
                     res_image.add_field(name='総ダウンロード数', value=f'{image["downloads"]} 回')
-                    res_image.add_field(name='関連画像', value=f'[1枚目]({re_data["hits"][1]["pageURL"]}) | '
-                                                           f'[2枚目]({re_data["hits"][2]["pageURL"]}) | '
-                                                           f'[3枚目]({re_data["hits"][3]["pageURL"]}) | '
-                                                           f'[4枚目]({re_data["hits"][4]["pageURL"]})',
-                                        inline=False)
+                    res_image.add_field(name='関連画像', value=' | '.join(related_images), inline=False)
                     res_image.set_image(url=image["webformatURL"])
                     res_image.set_author(name='PixaBay', url=image["pageURL"])
                     res_image.set_footer(text=f'❤: {image["favorites"]} | 👍: {image["likes"]} | 💬: {image["comments"]}')

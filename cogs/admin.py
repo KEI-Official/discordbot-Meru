@@ -1,7 +1,7 @@
 import asyncio
 import re
 from typing import Optional
-from discord import Embed, AllowedMentions, ChannelType
+from discord import Embed, AllowedMentions, ChannelType, utils
 from discord.ext import commands
 
 
@@ -10,6 +10,7 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.get_user = None
+        self.get_channel = None
 
     # FIXME: 要確認
     @commands.command(description='指定されたユーザーのBANを行います',
@@ -114,6 +115,94 @@ class Admin(commands.Cog):
                     elif str(reaction) == '❎':
                         await re_msg.clear_reactions()
                         return await re_msg.edit(embed=Embed(description='❎ 操作をキャンセルしました'))
+
+    @commands.command(description='指定されたチャンネルを複製します',
+                      usage='[チャンネル ID/名前/メンション] <c=複製回数(数値) | n=複製先の名前>',
+                      brief='・そのまま複製\n{cmd}clone 740381404952000000\n'
+                            '・5回複製\n{cmd}clone 740381404952000000 c=5\n'
+                            '・testで複製\n{cmd}clone 740381404952000000 n=test')
+    @commands.has_permissions(manage_channels=True)
+    async def clone(self, ctx, ch=None, name_int=None):
+        if ch is None:
+            no_ch_msg = Embed(description='チャンネルを以下の形で指定してください\n```\n・ID\n・名前\n・メンション\n```')
+            return await ctx.reply(embed=no_ch_msg, allowed_mentions=AllowedMentions.none())
+
+        elif ctx.message.channel_mentions:
+            self.get_channel = ctx.message.channel_mentions[0]
+
+        elif re.search(r'[0-9]{18}', str(ch)) is not None:
+            pre_ch = ctx.guild.get_channel(int(ch))
+            if pre_ch:
+                self.get_channel = pre_ch
+            else:
+                no_ch_msg = Embed(description='チャンネルが見つかりませんでした\nチャンネルIDは間違っていませんか？')
+                return await ctx.reply(embed=no_ch_msg, allowed_mentions=AllowedMentions.none())
+        else:
+            pre_ch = utils.get(ctx.guild.channels, name=ch)
+            if pre_ch:
+                self.get_channel = pre_ch
+            else:
+                no_ch_msg = Embed(description='チャンネルが見つかりませんでした\nチャンネルの名前は間違っていませんか？')
+                return await ctx.reply(embed=no_ch_msg, allowed_mentions=AllowedMentions.none())
+
+        if self.get_channel is not None:
+            get_channel = self.get_channel
+            if name_int is None:
+                cloned_ch = await get_channel.clone()
+                return await ctx.reply(embed=Embed(description=f'✅ 指定されたチャンネルを複製しました\nチャンネル: {cloned_ch.mention}'),
+                                       allowed_mentions=AllowedMentions.none())
+            elif str(name_int).startswith('n='):
+                change_name = name_int.replace('n=', '')
+                if not change_name:
+                    return await ctx.reply(embed=Embed(description='名前を指定してください'),
+                                           allowed_mentions=AllowedMentions.none())
+                else:
+                    cloned_ch = await get_channel.clone(name=change_name)
+                    return await ctx.reply(embed=Embed(description=f'✅ 指定されたチャンネルを複製しました\nチャンネル: {cloned_ch.mention}'),
+                                           allowed_mentions=AllowedMentions.none())
+            elif str(name_int).startswith('c='):
+                repeat_count = name_int.replace('c=', '')
+                if not repeat_count:
+                    return await ctx.reply(embed=Embed(description='回数を指定してください'),
+                                           allowed_mentions=AllowedMentions.none())
+                elif int(repeat_count) > 10:
+                    high_int_msg = Embed(description='一度に複製できる回数は10回までです')
+                    return await ctx.reply(embed=high_int_msg, allowed_mentions=AllowedMentions.none())
+                else:
+                    pre_embed = Embed(description=f'{get_channel.name} の複製を {repeat_count} 回行いますか？')
+                    pre_ch_msg = await ctx.reply(embed=pre_embed, allowed_mentions=AllowedMentions.none())
+                    await pre_ch_msg.add_reaction('✅')
+                    await pre_ch_msg.add_reaction('❎')
+
+                    def check(p_reaction, p_user):
+                        return p_user == ctx.author and p_reaction.message == pre_ch_msg
+
+                    try:
+                        reaction, user = await self.bot.wait_for('reaction_add', timeout=15, check=check)
+                    except asyncio.TimeoutError:
+                        await pre_ch_msg.clear_reactions()
+                        return await pre_ch_msg.edit(embed=Embed(description='時間切れです...'))
+                    else:
+                        if str(reaction) == '✅':
+                            await pre_ch_msg.clear_reactions()
+
+                            load_emoji = self.bot.get_emoji(852849151628935198)
+                            await pre_ch_msg.edit(embed=Embed(description=f'{load_emoji} チャンネルを{repeat_count}回複製中...'))
+
+                            for num in range(int(repeat_count)):
+                                await get_channel.clone()
+                                await pre_ch_msg.edit(embed=Embed(description=f'{load_emoji} チャンネルを{repeat_count}回複製中...\n'
+                                                                              f'{num+1}/{repeat_count} 回完了'))
+
+                            return await pre_ch_msg.edit(embed=Embed(description=f'✅ チャンネル: {get_channel.mention}'
+                                                                                 ' の複製が完了しました'))
+                        elif str(reaction) == '❎':
+                            await pre_ch_msg.clear_reactions()
+                            return await pre_ch_msg.edit(embed=Embed(description='❎ 操作をキャンセルしました'))
+            else:
+                no_embed = Embed(description=f'名前または回数を以下のように指定してください\n'
+                                             f'```\n・名前: n=名前\n・回数: c=回数(数値)\n```')
+                return await ctx.reply(embed=no_embed, allowed_mentions=AllowedMentions.none())
 
 
 def setup(bot):

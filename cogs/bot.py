@@ -13,6 +13,11 @@ class Bot(commands.Cog):
     async def ping(self, ctx):
         await ctx.send(f'🏓 Pong! - {math.floor(self.bot.latency * 1000)} ms')
 
+    @commands.command(description='隠しコマンド',
+                      hidden=True)
+    async def yutarou(self, ctx):
+        await ctx.reply(f'僕の開発者ですが、お呼びしましょうか？', allowed_mentions=discord.AllowedMentions.none())
+
     @commands.command(description='BOTの招待リンクを出します')
     async def invite(self, ctx):
         pe = 0
@@ -90,11 +95,12 @@ class Bot(commands.Cog):
             commands_list = list(self.bot.commands)
             if ctx.author.id == 534994298827964416:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
-                                 'Game': '🎮 ゲームコマンド', 'RTFM': '📃リファレンスコマンド', 'Admin': '🛠 サーバー管理者用コマンド',
-                                 'Owner': '⛏ BOT開発者用コマンド'}
+                                 'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド', 'RTFM': '📃リファレンスコマンド',
+                                 'Admin': '🛠 サーバー管理者用コマンド', 'Owner': '⛏ BOT開発者用コマンド'}
             else:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
-                                 'Game': '🎮 ゲームコマンド', 'RTFM': '📃リファレンスコマンド', 'Admin': '🛠 サーバー管理者用コマンド'}
+                                 'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド',
+                                 'RTFM': '📃リファレンスコマンド', 'Admin': '🛠 サーバー管理者用コマンド'}
             help_cmg_list = []
             for cg in command_group:
                 for cl in commands_list:

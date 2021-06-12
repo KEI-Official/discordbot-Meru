@@ -87,6 +87,10 @@ class Bot(commands.Cog):
                                           description=f'{command.description}')
             command_embed.add_field(name='エイリアス', value=f'{",".join(command_aliases)}', inline=False)
             command_embed.add_field(name='使い方', value=f'`{command_prefix}{command.name} {command_usage}`', inline=False)
+            if command.brief:
+                command_brief = command.brief.replace('{cmd}', command_prefix, -1)
+                command_embed.add_field(name='例', value=f'```\n{command_brief}\n```',
+                                        inline=False)
             return command_embed
 
         if command_names is None:

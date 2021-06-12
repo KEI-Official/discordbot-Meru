@@ -121,6 +121,7 @@ if __name__ == '__main__':
         'cogs.utils',
         'cogs.refe',
         'cogs.game',
+        'cogs.image',
         'cogs.bot',
         'cogs.info',
         'cogs.join',

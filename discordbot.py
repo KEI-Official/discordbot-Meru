@@ -99,6 +99,7 @@ async def on_command_error(ctx, error):
                                    description=f'『{ctx.guild.name}』での{bot.user}の必要な権限\n'
                                                f'```\n{text}\n```')
             await owner.send(embed=no_msg)
+            await ctx.reply(embed=no_msg, allowed_mentions=discord.AllowedMentions.none())
 
         elif isinstance(error, commands.CommandOnCooldown):
             r_after = error.retry_after
@@ -107,7 +108,7 @@ async def on_command_error(ctx, error):
                                          description=f'このコマンドは `{error.cooldown.per}` 秒/回 のクールダウンがあります。\n'
                                                      f'あと {round(r_after)} 秒後に、このコマンドは利用可能です。')
             err_msg = await ctx.reply(embed=cooldown_msg, allowed_mentions=discord.AllowedMentions.none())
-            await err_msg.delete(delay=5)
+            await err_msg.delete(delay=3)
 
         else:
             raise error

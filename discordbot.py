@@ -39,6 +39,23 @@ async def on_ready():
 
 
 @bot.event
+async def on_command(ctx):
+    log_channel = await bot.fetch_channel(config['log_channel_id'])
+    if log_channel:
+        msg_content = str(ctx.message.content).replace('`', '\`', -1)
+        log_embed = discord.Embed(title='コマンド実行ログ')
+        log_embed.add_field(name='ユーザー名', value=f'`{ctx.author}`')
+        log_embed.add_field(name='ユーザーID', value=f'`{ctx.author.id}`')
+        log_embed.add_field(name='発言場所', value=f'```\n・サーバー名 : {ctx.guild.name}\n・サーバーID : {ctx.guild.id}\n'
+                                               f'・チャンネル名 : {ctx.channel.name}\n・チャンネルID : {ctx.channel.id}\n```',
+                            inline=False)
+        log_embed.add_field(name='実行コマンド', value=f'```\n{msg_content}\n```', inline=False)
+        log_embed.set_thumbnail(url=ctx.author.avatar_url)
+        log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
+        await log_channel.send(embed=log_embed)
+
+
+@bot.event
 async def on_command_error(ctx, error):
     try:
         # CommandNotFound
@@ -54,7 +71,6 @@ async def on_command_error(ctx, error):
                 for error_permission in error.missing_perms:
                     if error_permission in data:
                         missing_perm.append(f'`{data[error_permission]}`')
-                print(missing_perm)
                 err_embed = discord.Embed(title='権限エラー', description='このコマンドを利用するには以下の権限が必要です。')
                 err_embed.add_field(name='必要な権限', value=f'{",".join(missing_perm)}')
                 return await ctx.reply(embed=err_embed, allowed_mentions=discord.AllowedMentions.none())

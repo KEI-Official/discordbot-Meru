@@ -27,6 +27,17 @@ class Join(commands.Cog):
 
             return await channel.send(embed=join_msg)
 
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if member.guild.id == 574802637598228480:
+            member_role = member.guild.get_role(601283421310025729)
+            bot_role = member.guild.get_role(601284694205792276)
+            if member_role:
+                if member.bot:
+                    await member.add_roles(member_role)
+                else:
+                    await member.add_roles(bot_role)
+
 
 def setup(bot):
     bot.add_cog(Join(bot))

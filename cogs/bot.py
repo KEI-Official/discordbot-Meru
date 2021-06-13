@@ -27,6 +27,7 @@ class Bot(commands.Cog):
 
     @commands.command(description='BOTの情報を表示します')
     async def about(self, ctx):
+        owner = await self.bot.fetch_user((await self.bot.application_info()).team.owner.id)
         info_guilds = len(self.bot.guilds)
         info_user = len(self.bot.users)
         info_ch = 0
@@ -36,7 +37,7 @@ class Bot(commands.Cog):
         embed = discord.Embed(title=f'{self.bot.user}')
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         embed.add_field(name='開発者',
-                        value=f'```c\n# discord: {(await self.bot.application_info()).owner}\n```',
+                        value=f'```c\n# discord: {owner}\n```',
                         inline=False)
         embed.add_field(name='開発言語',
                         value=f'```yml\nPython:\n{sys.version}\ndiscord.py: {discord.__version__}\n```',

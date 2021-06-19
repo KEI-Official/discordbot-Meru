@@ -96,7 +96,7 @@ class Owner(commands.Cog):
         info_msg.add_field(name='ユーザーID', value=f'{user_info["user_id"]}', inline=False)
         info_msg.add_field(name='ユーザー名', value=f'{user_info["user_name"]}', inline=False)
         info_msg.add_field(name='アカウント作成日時', value=f'{created_at_jst}')
-        info_msg.add_field(name='共通サーバー数', value=f'{user_info["user_guilds"]}')
+        info_msg.add_field(name='共通サーバー数', value=f'{len(user_info["user_guilds"])}')
 
         return await ctx.reply(embed=info_msg, allowed_mentions=AllowedMentions.none())
 

@@ -28,11 +28,11 @@ class Admin(commands.Cog):
                 self.get_user = pre_user
             else:
                 no_user_msg = Embed(description='ユーザーが見つかりませんでした\n**考えられる原因**```'
-                                                        '\n・IDは間違っていませんか？\n・ユーザーはサーバーにいますか？\n```')
+                                                '\n・IDは間違っていませんか？\n・ユーザーはサーバーにいますか？\n```')
                 return await ctx.reply(embed=no_user_msg, allowed_mentions=AllowedMentions.none())
         if self.get_user is not None:
             veri_msg = Embed(title='BAN確認画面',
-                                     description='以下のユーザーにBANを行います。\n行う場合は`y`、キャンセルする場合は`n`を送信してください。')
+                             description='以下のユーザーにBANを行います。\n行う場合は`y`、キャンセルする場合は`n`を送信してください。')
             veri_msg.add_field(name='名前', value=f'{self.get_user}')
             veri_msg.add_field(name='ID', value=f'{self.get_user.id}')
             if reason is not None:
@@ -191,9 +191,9 @@ class Admin(commands.Cog):
 
                             for num in range(int(repeat_count)):
                                 await get_channel.clone()
-                                await pre_ch_msg.edit(embed=Embed(description=f'{load_emoji} チャンネルを{repeat_count}回複製中...\n'
-                                                                              f'{num+1}/{repeat_count} 回完了'))
-
+                                embed = Embed(description=f'{load_emoji} チャンネルを{repeat_count}回複製中...\n'
+                                                          f'{num+1}/{repeat_count} 回完了')
+                                await pre_ch_msg.edit(embed=embed)
                             return await pre_ch_msg.edit(embed=Embed(description=f'✅ チャンネル: {get_channel.mention}'
                                                                                  ' の複製が完了しました'))
                         elif str(reaction) == '❎':

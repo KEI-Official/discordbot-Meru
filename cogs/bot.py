@@ -111,7 +111,7 @@ class Bot(commands.Cog):
                 for cl in commands_list:
                     if cl.cog_name == cg:
                         help_cmg_list.append(f'`{cl.name}`')
-                if help_cmg_list == []:
+                if not help_cmg_list:
                     help_cmg_list.append('`コマンドなし`')
                 else:
                     help_cmg_list.sort()

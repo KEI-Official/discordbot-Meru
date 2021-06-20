@@ -49,7 +49,7 @@ class Owner(commands.Cog):
         try:
             with redirect_stdout(stdout):
                 ret = await func()
-        except Exception as e:
+        except Exception:
             value = stdout.getvalue()
             e_msg2 = f'Error\n```py\n{value}{traceback.format_exc()}\n```'
             await ctx.reply(e_msg2, allowed_mentions=AllowedMentions.none())

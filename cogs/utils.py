@@ -6,7 +6,6 @@ import re
 import os
 import uuid
 import json
-import asyncio
 
 
 class Utils(commands.Cog):

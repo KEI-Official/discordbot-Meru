@@ -351,7 +351,7 @@ class Utils(commands.Cog):
             else:
                 if not re_data["hits"]:
                     no_image_msg = Embed(title='PixaBay - 画像検索ツール',
-                                         description=f'画像が見つかりませんでした')
+                                         description='画像が見つかりませんでした')
                     no_image_msg.set_author(name='PixaBay', url='https://pixabay.com/ja/')
                     await ctx.reply(embed=no_image_msg, allowed_mentions=AllowedMentions.none())
                 else:

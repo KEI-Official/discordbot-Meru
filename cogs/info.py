@@ -57,7 +57,7 @@ class Info(commands.Cog):
                         value=f'```diff\n+ メンバー: {server_m_count}\n+ BOT: {server_b_count}'
                               f'\n+ Banされた人数: {server_ban_m_count}\n```',
                         inline=False)
-        embed.add_field(name=f'絵文字',
+        embed.add_field(name='絵文字',
                         value=f'```diff\n+ 通常: {server_e_count}/{server_e_limit}'
                               f'\n+ アニメーション: {server_ani_e_count}/{server_e_limit}\n```',
                         inline=False)

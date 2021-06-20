@@ -13,6 +13,7 @@ import cogs
 
 class Owner(commands.Cog):
     """Owner関連コマンド"""
+
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
@@ -57,7 +58,7 @@ class Owner(commands.Cog):
             value = stdout.getvalue()
             try:
                 await ctx.message.add_reaction('\u2705')
-            except:
+            except Exception:
                 pass
 
             if ret is None:
@@ -146,7 +147,7 @@ class Owner(commands.Cog):
                         value=f'```diff\n+ メンバー: {server_m_count}\n+ BOT: {server_b_count}'
                               f'\n+ Banされた人数: {server_ban_m_count}\n```',
                         inline=False)
-        embed.add_field(name=f'絵文字',
+        embed.add_field(name='絵文字',
                         value=f'```diff\n+ 通常: {server_e_count}/{server_e_limit}'
                               f'\n+ アニメーション: {server_ani_e_count}/{server_e_limit}\n```',
                         inline=False)
@@ -178,8 +179,9 @@ class Owner(commands.Cog):
             return await ctx.reply(embed=cog_error, allowed_mentions=AllowedMentions.none())
         elif args == '-all':
             for name in extensions:
-                if not name in cog_blacklist:
-                    self.bot.reload_extension(f'cogs.{name}')
+                if name in cog_blacklist:
+                    continue
+                self.bot.reload_extension(f'cogs.{name}')
             cog_all_done = Embed(description='Cogを全て再読み込みしました')
             return await ctx.reply(embed=cog_all_done, allowed_mentions=AllowedMentions.none())
 

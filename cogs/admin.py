@@ -110,7 +110,7 @@ class Admin(commands.Cog):
                         else:
                             ch_list_text += '\n'.join(ch_list)
                         await re_msg.clear_reactions()
-                        return await re_msg.edit(embed=Embed(description=f'✅ 指定されたカテゴリー内のチャンネルをすべて削除しました\n'
+                        return await re_msg.edit(embed=Embed(description='✅ 指定されたカテゴリー内のチャンネルをすべて削除しました\n'
                                                                          f'```\n{ch_list_text}\n```'))
                     elif str(reaction) == '❎':
                         await re_msg.clear_reactions()
@@ -200,8 +200,8 @@ class Admin(commands.Cog):
                             await pre_ch_msg.clear_reactions()
                             return await pre_ch_msg.edit(embed=Embed(description='❎ 操作をキャンセルしました'))
             else:
-                no_embed = Embed(description=f'名前または回数を以下のように指定してください\n'
-                                             f'```\n・名前: n=名前\n・回数: c=回数(数値)\n```')
+                no_embed = Embed(description='名前または回数を以下のように指定してください\n'
+                                             '```\n・名前: n=名前\n・回数: c=回数(数値)\n```')
                 return await ctx.reply(embed=no_embed, allowed_mentions=AllowedMentions.none())
 
 

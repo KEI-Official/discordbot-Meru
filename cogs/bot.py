@@ -16,13 +16,13 @@ class Bot(commands.Cog):
     @commands.command(description='隠しコマンド',
                       hidden=True)
     async def yutarou(self, ctx):
-        await ctx.reply(f'僕の開発者ですが、お呼びしましょうか？', allowed_mentions=discord.AllowedMentions.none())
+        await ctx.reply('僕の開発者ですが、お呼びしましょうか？', allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='BOTの招待リンクを出します')
     async def invite(self, ctx):
         pe = 0
         bid = 689713740316540979
-        await ctx.send(f'招待リンクです\n'
+        await ctx.send('招待リンクです\n'
                        f'https://discord.com/api/oauth2/authorize?client_id={str(bid)}&permissions={str(pe)}&scope=bot')
 
     @commands.command(description='BOTの情報を表示します')
@@ -50,21 +50,21 @@ class Bot(commands.Cog):
                         value=f'```yml\n[導入サーバー数] {info_guilds}\n[ユーザー数] {info_user}\n[チャンネル数] {info_ch}\n```',
                         inline=False)
         embed.add_field(name='一部機能の引用元',
-                        value=f'・コマンド名「rtfm」: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny)',
+                        value='・コマンド名「rtfm」: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny)',
                         inline=False)
         embed.add_field(name='各種リンク',
                         value=f'[BOTの招待リンク]({oauth_url}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
-                              f' | [ブログサイト](https://syutarou.xyz)',
+                              ' | [ブログサイト](https://syutarou.xyz)',
                         inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(description='BOTの利用規約を表示します')
     async def terms(self, ctx):
-        await ctx.send(f'terms')
+        await ctx.send('terms')
 
     @commands.command(description='Botの負荷状況を表示します')
     async def status(self, ctx):
-        await ctx.send(f'')
+        await ctx.send('負荷情報を送信します')
 
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):

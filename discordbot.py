@@ -42,7 +42,7 @@ async def on_ready():
 async def on_command(ctx):
     log_channel = await bot.fetch_channel(config['log_channel_id'])
     if log_channel:
-        msg_content = str(ctx.message.content).replace('`', '\`', -1)
+        msg_content = str(ctx.message.content).replace('`', r'\`', -1)
         log_embed = discord.Embed(title='コマンド実行ログ')
         log_embed.add_field(name='ユーザー名', value=f'`{ctx.author}`')
         log_embed.add_field(name='ユーザーID', value=f'`{ctx.author.id}`')
@@ -74,7 +74,7 @@ async def on_command_error(ctx, error):
                 err_embed = discord.Embed(title='権限エラー', description='このコマンドを利用するには以下の権限が必要です。')
                 err_embed.add_field(name='必要な権限', value=f'{",".join(missing_perm)}')
                 return await ctx.reply(embed=err_embed, allowed_mentions=discord.AllowedMentions.none())
-            except:
+            except Exception:
                 raise error
 
         # NotOwner
@@ -113,7 +113,7 @@ async def on_command_error(ctx, error):
         else:
             raise error
 
-    except Exception as e:
+    except Exception:
         err_ch = await bot.fetch_channel(config['err_channel_id'])
         err_msg = discord.Embed(title='⚠エラーが発生しました',
                                 description='**内容**\n予期しないエラーが発生しました。\n'

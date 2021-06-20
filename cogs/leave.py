@@ -18,7 +18,7 @@ class Leave(commands.Cog):
             datetime_now = datetime.now().astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")
             value_text = f'```\nサーバー名: {guild.name}\nオーナーさん: {guild.owner}\n```'
 
-            leave_msg = Embed(title=f'{self.bot.user}が退出しました', description=f'サーバーから退出しました')
+            leave_msg = Embed(title=f'{self.bot.user}が退出しました', description='サーバーから退出しました')
             leave_msg.add_field(name='サーバー情報', value=value_text)
             leave_msg.set_footer(text=f'{datetime_now}')
 

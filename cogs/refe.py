@@ -6,7 +6,7 @@ import io
 import os
 import aiohttp
 import asyncio
-from .libs import fuzzy
+from libs import fuzzy
 
 
 class SphinxObjectFileReader:

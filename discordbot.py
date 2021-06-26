@@ -65,7 +65,7 @@ async def on_command(ctx):
     log_channel = await bot.fetch_channel(config['log_channel_id'])
     if log_channel:
         msg_content = str(ctx.message.content).replace('`', r'\`', -1)
-        log_embed = discord.Embed(title='コマンド実行ログ')
+        log_embed = discord.Embed(title='コマンド実行ログ', color=2474073)
         log_embed.add_field(name='ユーザー名', value=f'`{ctx.author}`')
         log_embed.add_field(name='ユーザーID', value=f'`{ctx.author.id}`')
         log_embed.add_field(name='発言場所', value=f'```\n・サーバー名 : {ctx.guild.name}\n・サーバーID : {ctx.guild.id}\n'

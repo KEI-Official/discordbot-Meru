@@ -184,6 +184,7 @@ if __name__ == '__main__':
         'cogs.info',
         'cogs.join',
         'cogs.leave',
+        'cogs.murl',
         'jishaku'
     ]
     for extension in extensions:

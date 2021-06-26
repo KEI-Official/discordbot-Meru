@@ -7,6 +7,7 @@ import textwrap
 from pytz import timezone
 from contextlib import redirect_stdout
 import os
+import sqlite3
 
 import cogs
 
@@ -193,6 +194,42 @@ class Owner(commands.Cog):
         else:
             cog_error = Embed(description=f'`{args}`が見つかりませんでした')
             return await ctx.reply(embed=cog_error, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(pass_context=True, hidden=True,
+                      description='指定されたユーザーを利用禁止にします',
+                      usage='[UserID]',
+                      aliases=['cmd_ban', 'exclusion', 'reject'])
+    @commands.is_owner()
+    async def prohibit(self, ctx, userid: int):
+        user = await self.bot.fetch_user(userid)
+        if user is None:
+            none_error = Embed(description=f'`{userid}` が見つかりませんでした')
+            return await ctx.reply(embed=none_error, allowed_mentions=AllowedMentions.none())
+        else:
+            try:
+                res = self.bot.db.mute_user_set(user.id)
+                if res:
+                    prohibit_done = Embed(description=f'{user} を利用禁止にしました')
+                    return await ctx.reply(embed=prohibit_done, allowed_mentions=AllowedMentions.none())
+            except sqlite3.IntegrityError:
+                integrity_error = Embed(description='既に利用禁止になっています')
+                return await ctx.reply(embed=integrity_error, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(pass_context=True, hidden=True,
+                      description='指定されたユーザーを利用可能にします',
+                      usage='[UserID]',
+                      aliases=['cmd_unban', 'unreject'])
+    @commands.is_owner()
+    async def release(self, ctx, userid: int):
+        user = await self.bot.fetch_user(userid)
+        if not user:
+            none_error = Embed(description=f'`{userid}` が見つかりませんでした')
+            return await ctx.reply(embed=none_error, allowed_mentions=AllowedMentions.none())
+        else:
+            res = self.bot.db.mute_user_unset(user.id)
+            if res:
+                release_done = Embed(description=f'{user} を利用可能にしました')
+                return await ctx.reply(embed=release_done, allowed_mentions=AllowedMentions.none())
 
 
 def setup(bot):

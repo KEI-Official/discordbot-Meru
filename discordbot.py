@@ -1,10 +1,13 @@
 import json
 import os
+import sys
 import traceback
 import discord
-from datetime import datetime
 from discord.ext import commands
+from datetime import datetime
 from dotenv import load_dotenv
+from libs.Database import Database
+from libs.Error import MuteUserCommand
 load_dotenv()
 
 config = {
@@ -14,15 +17,29 @@ config = {
     'owner_id': os.getenv('OWNER_ID')
 }
 
+
+class MyBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ban_users = []
+
+    async def get_context(self, message, *args, **kwargs):
+        if message.author.id in bot.ban_users:
+            raise MuteUserCommand(message)
+        return await super().get_context(message, *args, **kwargs)
+
+
 intents = discord.Intents.all()
 intents.typing = False
 intents.dm_messages = False
 intents.dm_reactions = False
-bot = commands.Bot(
+bot = MyBot(
     command_prefix=config['prefix'],
     intents=intents,
     help_command=None
 )
+
+bot.db = Database()
 
 
 @bot.event
@@ -36,6 +53,11 @@ async def on_ready():
     log_msg.set_author(name=f'{bot.user} 起動ログ', url=bot.user.avatar_url)
     log_msg.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
     await ch.send(embed=log_msg)
+
+
+@bot.listen('on_ready')
+async def get_ban_users():
+    bot.ban_users = bot.db.mute_user_get()
 
 
 @bot.event
@@ -53,6 +75,25 @@ async def on_command(ctx):
         log_embed.set_thumbnail(url=ctx.author.avatar_url)
         log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
         await log_channel.send(embed=log_embed)
+
+
+@bot.event
+async def on_error(event, args):
+    if sys.exc_info()[0].__name__ == 'MuteUserCommand':
+        msg = sys.exc_info()[1].args[0]
+        log_channel = await bot.fetch_channel(config['log_channel_id'])
+        if msg.content.startswith(bot.command_prefix):
+            if log_channel:
+                msg_content = str(msg.content).replace('`', r'\`', -1)
+                log_embed = discord.Embed(title='コマンド実行ログ', color=14363178)
+                log_embed.add_field(name='ユーザー名', value=f'`{msg.author}`')
+                log_embed.add_field(name='ユーザーID', value=f'`{msg.author.id}`')
+                log_embed.add_field(name='発言場所', value=f'```\n・サーバー名 : {msg.guild.name}\n・サーバーID : {msg.guild.id}\n```',
+                                    inline=False)
+                log_embed.add_field(name='実行コマンド', value=f'```\n{msg_content}\n```', inline=False)
+                log_embed.set_thumbnail(url=msg.author.avatar_url)
+                log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
+                await log_channel.send(embed=log_embed)
 
 
 @bot.event

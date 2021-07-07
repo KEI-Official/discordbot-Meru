@@ -97,12 +97,12 @@ class Bot(commands.Cog):
             if ctx.author.id == 534994298827964416:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
                                  'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド', 'RTFM': '📃リファレンスコマンド',
-                                 'MUrl': '🔗 メッセージURL展開機能', 'Admin': '🛠 サーバー管理者用コマンド', 'Owner': '⛏ BOT開発者用コマンド'
+                                 'Murl': '🔗 メッセージURL展開機能', 'Admin': '🛠 サーバー管理者用コマンド', 'Owner': '⛏ BOT開発者用コマンド'
                                  }
             else:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
                                  'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド',
-                                 'RTFM': '📃リファレンスコマンド', 'MUrl': '🔗 メッセージURL展開機能', 'Admin': '🛠 サーバー管理者用コマンド'
+                                 'RTFM': '📃リファレンスコマンド', 'Murl': '🔗 メッセージURL展開機能', 'Admin': '🛠 サーバー管理者用コマンド'
                                  }
             help_cmg_list = []
             for cg in command_group:

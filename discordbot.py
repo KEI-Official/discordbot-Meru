@@ -17,6 +17,8 @@ config = {
     'owner_id': os.getenv('OWNER_ID')
 }
 
+extensions_list = [f[:-3] for f in os.listdir("./cogs") if f.endswith(".py")]
+
 
 class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
@@ -173,20 +175,16 @@ async def on_command_error(ctx, error):
 
 if __name__ == '__main__':
     bot.config = config
-    extensions = [
-        'cogs.admin',
-        'cogs.owner',
-        'cogs.utils',
-        'cogs.refe',
-        'cogs.game',
-        'cogs.image',
-        'cogs.bot',
-        'cogs.info',
-        'cogs.join',
-        'cogs.leave',
-        'cogs.murl',
-        'jishaku'
-    ]
-    for extension in extensions:
-        bot.load_extension(extension)
+    other_extension = ['jishaku']
+    for o_extension in other_extension:
+        try:
+            bot.load_extension(o_extension)
+        except commands.ExtensionAlreadyLoaded:
+            bot.reload_extension(o_extension)
+    for extension in extensions_list:
+        try:
+            bot.load_extension(f'cogs.{extension}')
+        except commands.ExtensionAlreadyLoaded:
+            bot.reload_extension(f'cogs.{extension}')
+
     bot.run(os.getenv("DISCORD_BOT_TOKEN"))

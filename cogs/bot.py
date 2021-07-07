@@ -5,7 +5,7 @@ from discord.ext import commands
 
 
 class Bot(commands.Cog):
-    """Bot関連コマンド"""
+    """主にBOTのヘルプや概要を表示するコマンドがあるカテゴリーです"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -63,26 +63,31 @@ class Bot(commands.Cog):
 
         def send_embed(command):
             command_aliases = []
-            command_usage = ''
             if not command.aliases:
-                command_aliases.append('`なし`')
+                command_aliases.append('なし')
             else:
                 for ca in command.aliases:
-                    command_aliases.append(f'`{ca}`')
+                    command_aliases.append(f'{ca}')
 
-            if command.usage:
-                command_usage += command.usage
-            else:
-                command_usage += ''
+            how_use_text = f'`{command_prefix}{command.name} {command.usage if command.usage else ""}`'
 
             command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
                                           description=f'{command.description}')
-            command_embed.add_field(name='エイリアス', value=f'{",".join(command_aliases)}', inline=False)
-            command_embed.add_field(name='使い方', value=f'`{command_prefix}{command.name} {command_usage}`', inline=False)
+            command_embed.add_field(name='エイリアス', value=f'> {",".join(command_aliases)}')
+            command_embed.add_field(name='コマンドの権限',
+                                    value=f'> {command.brief[1]}'
+                                    if command.brief is not None and len(command.brief) == 2 else '> 誰でも利用可能')
+            command_embed.add_field(name='使い方', value=f'> {how_use_text}', inline=False)
+            command_embed.add_field(name='カテゴリー',
+                                    value=f'> 【 {command.cog_name} 】'
+                                          f'{self.bot.get_cog(command.cog_name).description}',
+                                    inline=False)
+
             if command.brief:
-                command_brief = command.brief.replace('{cmd}', command_prefix, -1)
+                command_brief = command.brief[0].replace('{cmd}', command_prefix, -1)
                 command_embed.add_field(name='説明', value=f'```\n{command_brief}\n```',
                                         inline=False)
+
             return command_embed
 
         if command_names is None:

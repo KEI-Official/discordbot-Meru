@@ -66,9 +66,9 @@ class Admin(commands.Cog):
 
     @commands.command(description='指定されたカテゴリー内にあるチャンネルを全て削除します',
                       usage='[カテゴリーID]',
-                      aliases=['delcategory'])
+                      aliases=['delc'])
     @commands.has_permissions(manage_channels=True)
-    async def delc(self, ctx, category_id: Optional[int]) -> None:
+    async def delcategory(self, ctx, category_id: Optional[int]) -> None:
         if category_id is None:
             no_id = Embed(description='削除を行うカテゴリーIDを指定してください')
             return await ctx.reply(embed=no_id, allowed_mentions=AllowedMentions.none())

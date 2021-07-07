@@ -73,21 +73,21 @@ class Image(commands.Cog):
             if status != 200:
                 api_err_msg = Embed(title=f'APIエラー - {status}',
                                     description=f'エラーメッセージ\n```\n{re_data["message"]}\n```\n'
-                                                f'解決できない際はお手数ですが、公式サーバーまでお越しください。')
+                                                '解決できない際はお手数ですが、公式サーバーまでお越しください。')
                 await ctx.reply(embed=api_err_msg, allowed_mentions=AllowedMentions.none())
             else:
                 if not re_data["data"]:
                     no_image_msg = Embed(title='GIPHY - GIF画像検索ツール',
-                                         description=f'GIF画像が見つかりませんでした')
+                                         description='GIF画像が見つかりませんでした')
                     no_image_msg.set_author(name='GIPHY', url='https://giphy.com/')
                     await ctx.reply(embed=no_image_msg, allowed_mentions=AllowedMentions.none())
                 else:
                     image = re_data["data"][0]
                     res_image = Embed(title='GIPHY - GIF画像検索ツール',
                                       description=f'総Hit数: {re_data["pagination"]["total_count"]}'
-                                                  f'\nダウンロードする際はライセンスをよくお読みください')
+                                                  '\nダウンロードする際はライセンスをよくお読みください')
                     res_image.set_author(name='GIPHY - ImageLink', url=image["url"])
-                    res_image.add_field(name='タイトル', value=f'{image["title"]}')
+                    res_image.add_field(name='タイトル', value=image["title"])
                     res_image.set_image(url=image["images"]["original"]["url"])
                     try:
                         res_image.add_field(name='アップロードユーザー',

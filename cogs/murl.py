@@ -4,8 +4,8 @@ from discord.ext import commands
 import sqlite3
 
 discord_message_url = (
-    'https://(ptb.|canary.)?discord(app)?.com/channels/'
-    '(?P<guild>[0-9]{18})/(?P<channel>[0-9]{18})/(?P<message>[0-9]{18})'
+    '(?!<)https://(ptb.|canary.)?discord(app)?.com/channels/'
+    '(?P<guild>[0-9]{18})/(?P<channel>[0-9]{18})/(?P<message>[0-9]{18})(?!>)'
 )
 
 
@@ -32,6 +32,7 @@ class MUrl(commands.Cog):
             try:
                 res = self.bot.db.message_expand_set(ctx.guild.id)
                 if res:
+                    self.expander.append(ctx.guild.id)
                     success_embed = Embed(description='メッセージURL展開の機能をオンにしました')
                     return await ctx.reply(embed=success_embed, allowed_mentions=AllowedMentions.none())
             except sqlite3.IntegrityError:
@@ -47,12 +48,16 @@ class MUrl(commands.Cog):
             res = self.bot.db.message_expand_unset(ctx.guild.id)
             if res:
                 success_embed = Embed(description='メッセージURL展開の機能をオフにしました')
+                self.expander.remove(ctx.guild.id)
                 return await ctx.reply(embed=success_embed, allowed_mentions=AllowedMentions.none())
 
     @commands.Cog.listener()
     async def on_message(self, message):
         guild = message.guild
         if guild.id in self.expander:
+            regex_res = re.findall(discord_message_url, message.content)
+            if regex_res[0] == '<' and regex_res[-1] == '>':
+                return
             if message.author.bot:
                 return
             messages = []
@@ -63,20 +68,19 @@ class MUrl(commands.Cog):
                 fetched_message = await channel.fetch_message(int(con['message']))
                 messages.append(fetched_message)
 
-            for m in messages:
+            for msg in messages:
                 embed = Embed(
-                    description=f'{m.content if not m.channel.is_nsfw() else "NSFWメッセージのため非表示"}\n\n'
-                                f'[元メッセージへ]({m.jump_url})',
-                    timestamp=m.created_at,
+                    description=f'{msg.content if not msg.channel.is_nsfw() else "NSFWメッセージのため非表示"}\n\n'
+                                f'[元メッセージへ]({msg.jump_url})',
+                    timestamp=msg.created_at,
                     color=0x2ECC69,
                 )
-                embed.set_author(name=m.author.display_name, icon_url=m.author.avatar_url)
-                embed.set_footer(text=f'{m.channel}', icon_url=m.guild.icon_url)
-                if m.attachments:
-                    embed.set_image(url=m.attachments[0].url)
-                embeds = embed
+                embed.set_author(name=msg.author.display_name, icon_url=msg.author.avatar_url)
+                embed.set_footer(text=f'{msg.channel}', icon_url=msg.guild.icon_url)
+                if msg.attachments:
+                    embed.set_image(url=msg.attachments[0].proxy_url)
 
-                await message.channel.send(embed=embeds)
+                await message.channel.send(embed=embed)
 
 
 def setup(bot):

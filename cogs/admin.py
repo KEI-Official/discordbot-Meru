@@ -14,7 +14,11 @@ class Admin(commands.Cog):
 
     # FIXME: 要確認
     @commands.command(description='指定されたユーザーのBANを行います',
-                      usage='[ID/メンション] <理由>')
+                      usage='[ID/メンション] <理由>',
+                      brief=['【実行例】\n'
+                             '・{cmd}ban 123456789012345678 荒らし',
+                             'ban_members']
+                      )
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user=None, reason=None):
         if user is None:
@@ -66,7 +70,11 @@ class Admin(commands.Cog):
 
     @commands.command(description='指定されたカテゴリー内にあるチャンネルを全て削除します',
                       usage='[カテゴリーID]',
-                      aliases=['delc'])
+                      aliases=['delc'],
+                      brief=['【実行例】\n'
+                             '・{cmd}delcategory 123456789012345678',
+                             'manage_channels']
+                      )
     @commands.has_permissions(manage_channels=True)
     async def delcategory(self, ctx, category_id: Optional[int]) -> None:
         if category_id is None:
@@ -117,11 +125,13 @@ class Admin(commands.Cog):
                         return await re_msg.edit(embed=Embed(description='❎ 操作をキャンセルしました'))
 
     @commands.command(description='指定されたチャンネルを複製します',
-                      usage='[チャンネル ID/名前/メンション] <c=複製回数(数値) | n=複製先の名前>',
-                      brief='【実行例】\n'
-                            '・そのまま複製\n{cmd}clone 740381404952000000\n'
-                            '・5回複製\n{cmd}clone 740381404952000000 c=5\n'
-                            '・testで複製\n{cmd}clone 740381404952000000 n=test')
+                      usage='[Channel ID/名前/メンション] <c=回数 | n=複製先の名前>',
+                      brief=['【実行例】\n'
+                             '・そのまま複製\n{cmd}clone 740381404952000000\n'
+                             '・5回複製\n{cmd}clone 740381404952000000 c=5\n'
+                             '・testで複製\n{cmd}clone 740381404952000000 n=test',
+                             'manage_channels']
+                      )
     @commands.has_permissions(manage_channels=True)
     async def clone(self, ctx, ch=None, name_int=None):
         if ch is None:

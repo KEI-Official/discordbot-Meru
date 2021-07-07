@@ -51,8 +51,8 @@ class Image(commands.Cog):
     @commands.command(description='指定されたキーワードのGIF画像をGIPHY上から検索します',
                       usage='[キーワード]',
                       aliases=['sgif', 'searchgif', 'find_gif', 'findgif'],
-                      brief='【コマンド例】\n'
-                            '{cmd}search_gif 夜景')
+                      brief=['【コマンド例】\n'
+                             '{cmd}search_gif 夜景'])
     async def search_gif(self, ctx, *keyword: str):
         giphy_key = os.getenv('GIPHY_KEY')
         if not keyword:

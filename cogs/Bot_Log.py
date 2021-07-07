@@ -1,0 +1,126 @@
+import json
+import sys
+import traceback
+import discord
+from discord.ext import commands
+from datetime import datetime
+
+
+class BotLog(commands.Cog):
+    """BOTのログ関係"""
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_command(self, ctx):
+        log_channel = await self.bot.fetch_channel(self.bot.config['log_channel_id'])
+        if log_channel:
+            msg_content = str(ctx.message.content).replace('`', r'\`', -1)
+            log_embed = discord.Embed(title='コマンド実行ログ', color=2474073)
+            log_embed.add_field(name='ユーザー名', value=f'`{ctx.author}`')
+            log_embed.add_field(name='ユーザーID', value=f'`{ctx.author.id}`')
+            log_embed.add_field(name='発言場所', value=f'```\n・サーバー名 : {ctx.guild.name}\n・サーバーID : {ctx.guild.id}\n'
+                                                   f'・チャンネル名 : {ctx.channel.name}\n・チャンネルID : {ctx.channel.id}\n```',
+                                inline=False)
+            log_embed.add_field(name='実行コマンド', value=f'```\n{msg_content}\n```', inline=False)
+            log_embed.set_thumbnail(url=ctx.author.avatar_url)
+            log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
+            await log_channel.send(embed=log_embed)
+
+    @commands.Cog.listener()
+    async def on_error(self, event, args):
+        if sys.exc_info()[0].__name__ == 'MuteUserCommand':
+            msg = sys.exc_info()[1].args[0]
+            log_channel = await self.bot.fetch_channel(self.bot.config['log_channel_id'])
+            if msg.content.startswith(self.bot.command_prefix):
+                if log_channel:
+                    msg_content = str(msg.content).replace('`', r'\`', -1)
+                    log_embed = discord.Embed(title='コマンド実行ログ', color=14363178)
+                    log_embed.add_field(name='ユーザー名', value=f'`{msg.author}`')
+                    log_embed.add_field(name='ユーザーID', value=f'`{msg.author.id}`')
+                    log_embed.add_field(name='発言場所',
+                                        value=f'```\n・サーバー名 : {msg.guild.name}\n・サーバーID : {msg.guild.id}\n```',
+                                        inline=False)
+                    log_embed.add_field(name='実行コマンド', value=f'```\n{msg_content}\n```', inline=False)
+                    log_embed.set_thumbnail(url=msg.author.avatar_url)
+                    log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
+                    await log_channel.send(embed=log_embed)
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        try:
+            # CommandNotFound
+            if isinstance(error, commands.CommandNotFound):
+                return
+
+            # CommandMissingPermission
+            elif isinstance(error, commands.MissingPermissions):
+                try:
+                    with open("./data/permission_list.json", "r", encoding='UTF-8') as perm_list:
+                        data = json.load(perm_list)
+                    missing_perm = []
+                    for error_permission in error.missing_perms:
+                        if error_permission in data:
+                            missing_perm.append(f'`{data[error_permission]}`')
+                    err_embed = discord.Embed(title='権限エラー', description='このコマンドを利用するには以下の権限が必要です。')
+                    err_embed.add_field(name='必要な権限', value=f'{",".join(missing_perm)}')
+                    return await ctx.reply(embed=err_embed, allowed_mentions=discord.AllowedMentions.none())
+                except Exception:
+                    raise error
+
+            # NotOwner
+            elif isinstance(error, commands.NotOwner):
+                return await ctx.reply("このコマンドは開発者専用コマンドです")
+
+            # BotMissingPermissions
+            elif isinstance(error, commands.BotMissingPermissions):
+                permission = {'read_messages': "メッセージを読む", 'send_messages': "メッセージを送信",
+                              'read_message_history': "メッセージ履歴を読む", 'manage_messages': "メッセージの管理",
+                              'embed_links': "埋め込みリンク", 'add_reactions': "リアクションの追加",
+                              'manage_channels': "チャンネルの管理"}
+                text = ""
+                for all_error_permission in error.missing_perms:
+                    text += f"❌:{permission[all_error_permission]}\n"
+                    del permission[all_error_permission]
+                for all_arrow_permission in list(permission.values()):
+                    text += f"✅:{all_arrow_permission}\n"
+
+                owner = await self.bot.fetch_user(int(self.bot.config['owner_id']))
+                no_msg = discord.Embed(title='Missing Permission',
+                                       description=f'『{ctx.guild.name}』での{self.bot.user}の必要な権限\n'
+                                                   f'```\n{text}\n```')
+                await owner.send(embed=no_msg)
+                await ctx.reply(embed=no_msg, allowed_mentions=discord.AllowedMentions.none())
+
+            elif isinstance(error, commands.CommandOnCooldown):
+                r_after = error.retry_after
+
+                cooldown_msg = discord.Embed(title='クールダウン中',
+                                             description=f'このコマンドは `{error.cooldown.per}` 秒/回 のクールダウンがあります。\n'
+                                                         f'あと {round(r_after)} 秒後に、このコマンドは利用可能です。')
+                err_msg = await ctx.reply(embed=cooldown_msg, allowed_mentions=discord.AllowedMentions.none())
+                await err_msg.delete(delay=3)
+
+            else:
+                raise error
+
+        except Exception:
+            err_ch = await self.bot.fetch_channel(self.bot.config['err_channel_id'])
+            err_msg = discord.Embed(title='⚠エラーが発生しました',
+                                    description='**内容**\n予期しないエラーが発生しました。\n'
+                                                'コマンドを正しく入力してもエラーが発生する場合は、お手数ですが\n'
+                                                '[公式サーバー](https://discord.gg/pvyMQhf)までお問い合わせ下さい。\n')
+            await ctx.reply(embed=err_msg, allowed_mentions=discord.AllowedMentions.none())
+
+            orig_error = getattr(error, "original", error)
+            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+            error_log_msg = discord.Embed(description=f'```py\n{error_msg}\n```')
+            error_log_msg.set_footer(text=f'サーバー: {ctx.guild.name} | 送信者: {ctx.author}')
+
+            owner = await self.bot.fetch_user(int(self.bot.config['owner_id']))
+            await owner.send(embed=error_log_msg)
+            await err_ch.send(embed=error_log_msg)
+
+
+def setup(bot):
+    bot.add_cog(BotLog(bot))

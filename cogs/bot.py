@@ -13,17 +13,9 @@ class Bot(commands.Cog):
     async def ping(self, ctx):
         await ctx.send(f'🏓 Pong! - {math.floor(self.bot.latency * 1000)} ms')
 
-    @commands.command(description='隠しコマンド',
-                      hidden=True)
-    async def yutarou(self, ctx):
-        await ctx.reply('僕の開発者ですが、お呼びしましょうか？', allowed_mentions=discord.AllowedMentions.none())
-
     @commands.command(description='BOTの招待リンクを出します')
     async def invite(self, ctx):
-        pe = 0
-        bid = 689713740316540979
-        await ctx.send('招待リンクです\n'
-                       f'https://discord.com/api/oauth2/authorize?client_id={str(bid)}&permissions={str(pe)}&scope=bot')
+        return await ctx.send(f'招待リンクです\n{self.bot.oauth_url}')
 
     @commands.command(description='BOTの情報を表示します')
     async def about(self, ctx):
@@ -33,7 +25,6 @@ class Bot(commands.Cog):
         info_ch = 0
         for guild in self.bot.guilds:
             info_ch += len(guild.channels)
-        oauth_url = 'https://discord.com/oauth2/authorize?client_id=702326747894644836&permissions=268528881&scope=bot'
         embed = discord.Embed(title=f'{self.bot.user}')
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         embed.add_field(name='開発者',
@@ -53,7 +44,7 @@ class Bot(commands.Cog):
                         value='・コマンド名「rtfm」: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny)',
                         inline=False)
         embed.add_field(name='各種リンク',
-                        value=f'[BOTの招待リンク]({oauth_url}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
+                        value=f'[BOTの招待リンク]({self.bot.oauth_url}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
                               ' | [ブログサイト](https://syutarou.xyz)',
                         inline=False)
         await ctx.send(embed=embed)
@@ -124,7 +115,7 @@ class Bot(commands.Cog):
             cmd_get_name = self.bot.get_command(command_names)
             cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.commands))
             no_cmd_error = discord.Embed(title='📃 CommandHelp Error',
-                                         description='指定されたコマンド又はカテゴリーが見つかりませんでした')
+                                         description='指定されたコマンドが見つかりませんでした')
             if cmd_get_name is None:
                 if cmd_find_name is not None:
                     no_cmd_error.add_field(name='もしかして...', value=f'`{cmd_find_name}`')

@@ -9,8 +9,6 @@ from contextlib import redirect_stdout
 import os
 import sqlite3
 
-import cogs
-
 
 class Owner(commands.Cog):
     """Owner関連コマンド"""
@@ -18,6 +16,12 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
+
+    @staticmethod
+    def cleanup_code(content):
+        if content.startswith('```') and content.endswith('```'):
+            return '\n'.join(content.split('\n')[1:-1])
+        return content.strip('` \n')
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     @commands.is_owner()
@@ -36,7 +40,7 @@ class Owner(commands.Cog):
 
         env.update(globals())
 
-        body = cogs.cleanup_code(body)
+        body = self.cleanup_code(body)
         stdout = io.StringIO()
 
         to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'

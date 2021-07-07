@@ -9,8 +9,8 @@ discord_message_url = (
 )
 
 
-class MUrl(commands.Cog):
-    """メッセージURL展開に関するコマンドが載っています"""
+class Murl(commands.Cog):
+    """メッセージURL展開機能に関するコマンドが載っています"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -86,4 +86,4 @@ class MUrl(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(MUrl(bot))
+    bot.add_cog(Murl(bot))

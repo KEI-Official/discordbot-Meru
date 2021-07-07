@@ -6,7 +6,7 @@ from pytz import timezone
 
 
 class Info(commands.Cog):
-    """Info関連コマンド"""
+    """チャンネルなどの情報を見るためなどのコマンドがあるカテゴリーです"""
     def __init__(self, bot):
         self.bot = bot
         self.role_info = None

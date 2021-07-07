@@ -5,7 +5,7 @@ import os
 
 
 class Image(commands.Cog):
-    """主に画像検索のコマンドがのっています"""
+    """主に画像検索のコマンドがあるカテゴリーです"""
 
     def __init__(self, bot):
         self.bot = bot

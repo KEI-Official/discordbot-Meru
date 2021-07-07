@@ -11,7 +11,7 @@ import sqlite3
 
 
 class Owner(commands.Cog):
-    """Owner関連コマンド"""
+    """BOT開発者専用のコマンドがあるカテゴリーです"""
 
     def __init__(self, bot):
         self.bot = bot

@@ -6,7 +6,7 @@ from discord import Embed, AllowedMentions
 
 
 class Game(commands.Cog):
-    """Game関連コマンド"""
+    """トレーニングといったお遊び系のコマンドがあるカテゴリーです"""
     def __init__(self, bot):
         self.bot = bot
 

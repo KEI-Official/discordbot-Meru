@@ -9,7 +9,7 @@ import json
 
 
 class Utils(commands.Cog):
-    """Utils関連コマンド"""
+    """ユーザー向けのさまざまなコマンドがあるカテゴリーです"""
     def __init__(self, bot):
         self.bot = bot
         self.stage_info = None

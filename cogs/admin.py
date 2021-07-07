@@ -6,7 +6,7 @@ from discord.ext import commands
 
 
 class Admin(commands.Cog):
-    """Admin関連コマンド"""
+    """特定の権限が必要なコマンドがあるカテゴリーです"""
     def __init__(self, bot):
         self.bot = bot
         self.get_user = None

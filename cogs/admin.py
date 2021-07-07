@@ -118,7 +118,8 @@ class Admin(commands.Cog):
 
     @commands.command(description='指定されたチャンネルを複製します',
                       usage='[チャンネル ID/名前/メンション] <c=複製回数(数値) | n=複製先の名前>',
-                      brief='・そのまま複製\n{cmd}clone 740381404952000000\n'
+                      brief='【実行例】\n'
+                            '・そのまま複製\n{cmd}clone 740381404952000000\n'
                             '・5回複製\n{cmd}clone 740381404952000000 c=5\n'
                             '・testで複製\n{cmd}clone 740381404952000000 n=test')
     @commands.has_permissions(manage_channels=True)

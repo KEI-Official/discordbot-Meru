@@ -139,7 +139,10 @@ class Utils(commands.Cog):
 
     @commands.command(description='送られた文字を指定された言語に翻訳します',
                       usage='[翻訳先言語 | <-list>] [翻訳する文章]',
-                      aliases=['trans'])
+                      aliases=['trans'],
+                      brief='【実行例】\n'
+                            '・言語リスト: {cmd}translate -list\n'
+                            '・翻訳: {cmd}translate ja Hello!')
     @commands.cooldown(rate=1, per=10.0, type=commands.BucketType.user)
     async def translate(self, ctx, tolang=None, *translate_text) -> None:
 
@@ -229,7 +232,7 @@ class Utils(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(description='指定された画像の文字をおこして、送信します',
-                      usage='[画像URL | 画像を添付する] ',
+                      usage='[画像URL] ',
                       aliases=['iw', 'imageword'])
     @commands.cooldown(rate=1, per=120.0, type=commands.BucketType.user)
     async def image_word(self, ctx, url=None):
@@ -324,7 +327,9 @@ class Utils(commands.Cog):
 
     @commands.command(description='指定されたキーワードの画像をPixaBay上から検索します',
                       usage='[キーワード]',
-                      aliases=['simage', 'pixabay', 's_image'])
+                      aliases=['simage', 'pixabay', 's_image'],
+                      brief='【実行例】\n'
+                            '{cmd}search_image 東京\n')
     async def search_image(self, ctx, *keyword: str) -> None:
         pixabay_key = os.getenv('PIXABAY_KEY')
         if not keyword:

@@ -26,7 +26,7 @@ class Owner(commands.Cog):
     @commands.command(pass_context=True, hidden=True, name='eval')
     @commands.is_owner()
     async def _eval(self, ctx, *, body: str):
-        """Evaluates a code"""
+        """開発者用コマンド。任意のコードを実行する"""
 
         env = {
             'bot': self.bot,
@@ -160,7 +160,7 @@ class Owner(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(pass_context=True, hidden=True,
-                      description='サーバーをAPI上から検索します')
+                      description='指定したサーバーからBOTを退出させます')
     @commands.is_owner()
     async def leave(self, ctx, args=None):
         if args is None:

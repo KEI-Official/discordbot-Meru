@@ -10,7 +10,7 @@ discord_message_url = (
 
 
 class MUrl(commands.Cog):
-    """メッセージURL展開"""
+    """メッセージURL展開に関するコマンドが載っています"""
 
     def __init__(self, bot):
         self.bot = bot
@@ -25,7 +25,8 @@ class MUrl(commands.Cog):
 
     @commands.command(name='url-on',
                       description='メッセージURL展開の機能をオンにします',
-                      aliases=['expand-on'])
+                      aliases=['expand-on'],
+                      brief='このコマンドの実行には、権限:メッセージの管理が必要です')
     @commands.has_permissions(manage_messages=True)
     async def _expand_on(self, ctx):
         if ctx.guild:
@@ -41,7 +42,8 @@ class MUrl(commands.Cog):
 
     @commands.command(name='url-off',
                       description='メッセージURL展開の機能をオフにします',
-                      aliases=['expand-off'])
+                      aliases=['expand-off'],
+                      brief='このコマンドの実行には、権限:メッセージの管理が必要です')
     @commands.has_permissions(manage_messages=True)
     async def _expand_off(self, ctx):
         if ctx.guild:

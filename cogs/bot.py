@@ -81,7 +81,7 @@ class Bot(commands.Cog):
             command_embed.add_field(name='使い方', value=f'`{command_prefix}{command.name} {command_usage}`', inline=False)
             if command.brief:
                 command_brief = command.brief.replace('{cmd}', command_prefix, -1)
-                command_embed.add_field(name='例', value=f'```\n{command_brief}\n```',
+                command_embed.add_field(name='説明', value=f'```\n{command_brief}\n```',
                                         inline=False)
             return command_embed
 

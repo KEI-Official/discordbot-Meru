@@ -12,7 +12,8 @@ class Info(commands.Cog):
         self.role_info = None
         self.user_info = None
 
-    @commands.command(description='サーバーの情報を表示します', aliases=['si', 'server_info'])
+    @commands.command(description='サーバーの情報を表示します',
+                      aliases=['si', 'server_info'])
     async def serverinfo(self, ctx):
         guild = ctx.guild
         server_name = guild.name
@@ -68,7 +69,11 @@ class Info(commands.Cog):
 
     @commands.command(description='指定された役職の情報を表示します',
                       usage='[ID/メンション/名前]',
-                      aliases=['ri', 'role_info'])
+                      aliases=['ri', 'role_info'],
+                      brief='【実行例】\n'
+                            '・ID: {cmd}roleinfo 123456789012345678\n'
+                            '・メンション: {cmd}roleinfo <@&123456789012345678>'
+                            '・名前: {cmd}roleinfo Bot')
     async def roleinfo(self, ctx, role=None):
         if role is None:
             no_role_msg = discord.Embed(description='役職を以下の形で指定してください\n```\n・ID\n・名前\n・メンション\n```')
@@ -198,7 +203,11 @@ class Info(commands.Cog):
 
     @commands.command(description='ユーザーの情報を表示します',
                       usage='<ID/メンション/名前>',
-                      aliases=['ui', 'user_info'])
+                      aliases=['ui', 'user_info'],
+                      brief='【実行例】\n'
+                            '・ID: {cmd}userinfo 123456789012345678\n'
+                            '・メンション: {cmd}userinfo <@123456789012345678>'
+                            '・名前: {cmd}userinfo ユーザー')
     async def userinfo(self, ctx, user=None):
         if user is None:
             self.user_info = ctx.author

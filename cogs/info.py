@@ -72,7 +72,7 @@ class Info(commands.Cog):
                       aliases=['ri', 'role_info'],
                       brief=['【実行例】\n'
                              '・ID: {cmd}roleinfo 123456789012345678\n'
-                             '・メンション: {cmd}roleinfo <@&123456789012345678>'
+                             '・メンション: {cmd}roleinfo <@&123456789012345678>\n'
                              '・名前: {cmd}roleinfo Bot'])
     async def roleinfo(self, ctx, role=None):
         if role is None:
@@ -206,7 +206,7 @@ class Info(commands.Cog):
                       aliases=['ui', 'user_info'],
                       brief=['【実行例】\n'
                              '・ID: {cmd}userinfo 123456789012345678\n'
-                             '・メンション: {cmd}userinfo <@123456789012345678>'
+                             '・メンション: {cmd}userinfo <@123456789012345678>\n'
                              '・名前: {cmd}userinfo ユーザー'])
     async def userinfo(self, ctx, user=None):
         if user is None:

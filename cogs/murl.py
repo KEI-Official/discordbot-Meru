@@ -57,9 +57,6 @@ class Murl(commands.Cog):
     async def on_message(self, message):
         guild = message.guild
         if guild.id in self.expander:
-            regex_res = re.findall(discord_message_url, message.content)
-            if regex_res and regex_res[0] == '<' and regex_res[-1] == '>':
-                return
             if message.author.bot:
                 return
             messages = []

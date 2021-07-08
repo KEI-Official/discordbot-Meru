@@ -62,7 +62,6 @@ class RTFM(commands.Cog):
         # next line is "# Project: <name>"
         # then after that is "# Version: <version>"
         projname = stream.readline().rstrip()[11:]
-        version = stream.readline().rstrip()[11:]
 
         # next line says if it's a zlib header
         line = stream.readline()
@@ -106,7 +105,6 @@ class RTFM(commands.Cog):
     async def build_rtfm_lookup_table(self, page_types):
         cache = {}
         for key, page in page_types.items():
-            sub = cache[key] = {}
             async with self.bot.session.get(page + '/objects.inv') as resp:
                 if resp.status != 200:
                     raise RuntimeError('Cannot build rtfm lookup table, try again later.')
@@ -146,9 +144,6 @@ class RTFM(commands.Cog):
                     break
 
         cache = list(self._rtfm_cache[key].items())
-
-        def transform(tup):
-            return tup[0]
 
         matches = fuzzy.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
 

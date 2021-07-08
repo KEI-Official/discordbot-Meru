@@ -1,3 +1,5 @@
+import asyncio
+import json
 import math
 import sys
 import discord
@@ -92,17 +94,17 @@ class Bot(commands.Cog):
 
         if command_names is None:
             embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {command_prefix} `')
-            embed.set_footer(text=f'コマンドの詳しい説明: {command_prefix} <コマンド名>')
+            embed.set_footer(text=f'コマンドの詳しい説明: {command_prefix} <コマンド名> | 1ページ目/2ページ')
             commands_list = list(self.bot.commands)
             if ctx.author.id == 534994298827964416:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
-                                 'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド', 'Member_Log': '😀 メンバー参加通知機能',
-                                 'Murl': '🔗 メッセージURL展開機能', 'Admin': '🛠 サーバー管理者用コマンド', 'Owner': '⛏ BOT開発者用コマンド'
+                                 'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド',
+                                 'Admin': '🛠 サーバー管理者用コマンド', 'Owner': '⛏ BOT開発者用コマンド'
                                  }
             else:
                 command_group = {'Bot': '🤖 Botコマンド', 'Utils': '🔧 ユーティリティーコマンド', 'Info': '💻 情報コマンド',
-                                 'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド', 'Member_Log': '😀 メンバー参加通知機能',
-                                 'Murl': '🔗 メッセージURL展開機能', 'Admin': '🛠 サーバー管理者用コマンド'
+                                 'Game': '🎮 ゲームコマンド', 'Image': '🖼 フォトコマンド',
+                                 'Admin': '🛠 サーバー管理者用コマンド'
                                  }
             help_cmg_list = []
             for cg in command_group:
@@ -115,7 +117,32 @@ class Bot(commands.Cog):
                     help_cmg_list.sort()
                 embed.add_field(name=command_group.get(cg), value=f'> {", ".join(help_cmg_list)}', inline=False)
                 help_cmg_list = []
-            await ctx.send(embed=embed)
+            help_embed_msg = await ctx.send(embed=embed)
+            await help_embed_msg.add_reaction('▶')
+
+            def check(reaction, user):
+                return user == ctx.author and str(reaction.emoji) == '▶'
+
+            try:
+                await self.bot.wait_for('reaction_add', timeout=20, check=check)
+            except asyncio.TimeoutError:
+                await help_embed_msg.clear_reactions()
+            else:
+                await help_embed_msg.clear_reactions()
+
+                with open('./data/function_info.json', 'r', encoding='UTF-8') as config:
+                    data = json.load(config)
+                chenged_msg = discord.Embed(title='📃 Help - コマンド以外の機能',
+                                            description=f'他についている機能についての説明が載っています\nCommand Prefix:` {command_prefix} `')
+                chenged_msg.set_footer(text='2ページ目/2ページ | 他の機能のHelp')
+                for cl in data:
+                    cog_meta = self.bot.get_cog(data[cl]['cog_name'])
+                    cmd_list = [cmd.name for cmd in cog_meta.get_commands()]
+                    print(cmd_list)
+                    chenged_msg.add_field(name=cl, value=f'```\n{data[cl]["text"]}\n```', inline=False)
+                    chenged_msg.add_field(name='コマンドリスト', value=f'`{", ".join(cmd_list)}`')
+
+                await help_embed_msg.edit(embed=chenged_msg)
         else:
             cmd_get_name = self.bot.get_command(command_names)
             cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.commands))

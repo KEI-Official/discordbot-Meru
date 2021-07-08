@@ -63,6 +63,7 @@ async def get_ban_users():
 if __name__ == '__main__':
     bot.config = config
     other_extension = ['jishaku']
+    blacklist = ['refe']
     for o_extension in other_extension:
         try:
             bot.load_extension(o_extension)
@@ -70,8 +71,14 @@ if __name__ == '__main__':
             bot.reload_extension(o_extension)
     for extension in extensions_list:
         try:
-            bot.load_extension(f'cogs.{extension}')
+            if extension in blacklist:
+                pass
+            else:
+                bot.load_extension(f'cogs.{extension}')
         except commands.ExtensionAlreadyLoaded:
-            bot.reload_extension(f'cogs.{extension}')
+            if extension in blacklist:
+                pass
+            else:
+                bot.reload_extension(f'cogs.{extension}')
 
     bot.run(os.getenv("DISCORD_BOT_TOKEN"))

@@ -1,12 +1,10 @@
-from discord.ext import commands
-import discord
 import re
 import zlib
 import io
 import os
-import aiohttp
-import asyncio
 from libs import fuzzy
+import discord
+from discord.ext import commands
 
 
 class SphinxObjectFileReader:
@@ -49,14 +47,6 @@ class RTFM(commands.Cog):
         self.bot = bot
         self.issue = re.compile(r'##(?P<number>[0-9]+)')
         self._recently_blocked = set()
-        self.session = aiohttp.ClientSession(loop=asyncio.get_event_loop())
-        self._rtfm_cache = None
-
-    def replied_reference(self, ctx):
-        ref = ctx.message.reference
-        if ref and isinstance(ref.resolved, discord.Message):
-            return ref.resolved.to_reference()
-        return None
 
     def parse_object_inv(self, stream, url):
         # key: URL
@@ -72,11 +62,12 @@ class RTFM(commands.Cog):
         # next line is "# Project: <name>"
         # then after that is "# Version: <version>"
         projname = stream.readline().rstrip()[11:]
+        version = stream.readline().rstrip()[11:]
 
         # next line says if it's a zlib header
         line = stream.readline()
         if 'zlib' not in line:
-            raise RuntimeError('Invalid objects.inv file, not z-libs compatible.')
+            raise RuntimeError('Invalid objects.inv file, not z-lib compatible.')
 
         # This code mostly comes from the Sphinx repository.
         entry_regex = re.compile(r'(?x)(.+?)\s+(\S*:\S*)\s+(-?\d+)\s+(\S+)\s+(.*)')
@@ -115,8 +106,8 @@ class RTFM(commands.Cog):
     async def build_rtfm_lookup_table(self, page_types):
         cache = {}
         for key, page in page_types.items():
-            cache[key] = {}
-            async with self.session.get(page + '/objects.inv') as resp:
+            sub = cache[key] = {}
+            async with self.bot.session.get(page + '/objects.inv') as resp:
                 if resp.status != 200:
                     raise RuntimeError('Cannot build rtfm lookup table, try again later.')
 
@@ -156,6 +147,9 @@ class RTFM(commands.Cog):
 
         cache = list(self._rtfm_cache[key].items())
 
+        def transform(tup):
+            return tup[0]
+
         matches = fuzzy.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
 
         e = discord.Embed(colour=discord.Colour.blurple())
@@ -163,11 +157,10 @@ class RTFM(commands.Cog):
             return await ctx.send('Could not find anything. Sorry.')
 
         e.description = '\n'.join(f'[`{key}`]({url})' for key, url in matches)
-        await ctx.send(embed=e, reference=self.replied_reference(ctx))
+        await ctx.send(embed=e, reference=ctx.replied_reference)
 
     def transform_rtfm_language_key(self, ctx, prefix):
         if ctx.guild is not None:
-            #                    Test Server   Discord Bot Portal JP
             if ctx.guild.id in (651778808508317707, 494911447420108820):
                 return prefix + '-jp'
         return prefix
@@ -175,7 +168,6 @@ class RTFM(commands.Cog):
     @commands.group(aliases=['rtfd'], invoke_without_command=True)
     async def rtfm(self, ctx, *, obj: str = None):
         """Gives you a documentation link for a discord.py entity.
-
         Events, objects, and functions are all supported through a
         a cruddy fuzzy algorithm.
         """

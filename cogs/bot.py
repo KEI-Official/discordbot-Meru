@@ -138,7 +138,6 @@ class Bot(commands.Cog):
                 for cl in data:
                     cog_meta = self.bot.get_cog(data[cl]['cog_name'])
                     cmd_list = [cmd.name for cmd in cog_meta.get_commands()]
-                    print(cmd_list)
                     chenged_msg.add_field(name=cl, value=f'```\n{data[cl]["text"]}\n```', inline=False)
                     chenged_msg.add_field(name='コマンドリスト', value=f'`{", ".join(cmd_list)}`')
 

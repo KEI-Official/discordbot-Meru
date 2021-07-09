@@ -215,6 +215,42 @@ class Admin(commands.Cog):
                                              '```\n・名前: n=名前\n・回数: c=回数(数値)\n```')
                 return await ctx.reply(embed=no_embed, allowed_mentions=AllowedMentions.none())
 
+    @commands.command(description='チャンネルのトピックを変更します',
+                      usage='[トピック名] <ChannelID>',
+                      brief=['チャンネルを指定すると、そのチャンネルのトピックを変更します'
+                             '【実行例】\n'
+                             '・{cmd}topic トピック変更\n'
+                             '・{cmd}topic トピック変更 123456789012345678\n',
+                             'manage_channels']
+                      )
+    @commands.has_permissions(manage_channels=True)
+    async def topic(self, ctx, text=None, ch_id=None):
+        if text is None:
+            no_text = Embed(description='トピック名を指定してください')
+            await ctx.reply(embed=no_text, allowed_mentions=AllowedMentions.none())
+        elif len(text) > 1024:
+            long_text = Embed(description='トピック名は1024文字以内で指定してください')
+            await ctx.reply(embed=long_text, allowed_mentions=AllowedMentions.none())
+        else:
+            if ch_id is None:
+                await ctx.channel.edit(topic=text)
+                ch_su_embed = Embed(description=f'{ctx.channel.mention} のトピックを\n```{text}```\nに変更しました')
+                return await ctx.reply(embed=ch_su_embed, allowed_mentions=AllowedMentions.none())
+            else:
+                ch_regex = re.match('([0-9]{18})', ch_id)
+                if ch_regex is not None:
+                    ch = ctx.guild.get_channel(int(ch_regex[0]))
+                    if ch:
+                        await ch.edit(topic=text)
+                        su_embed = Embed(description=f'{ch.mention} のトピックを\n```{text}```\nに変更しました')
+                        return await ctx.reply(embed=su_embed, allowed_mentions=AllowedMentions.none())
+                    else:
+                        fa_embed = Embed(description='チャンネルが見つかりませんでした')
+                        return await ctx.reply(embed=fa_embed, allowed_mentions=AllowedMentions.none())
+                else:
+                    no_id_embed = Embed(description='チャンネルIDを指定してください')
+                    return await ctx.reply(embed=no_id_embed, allowed_mentions=AllowedMentions.none())
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))

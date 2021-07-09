@@ -178,7 +178,7 @@ class Owner(commands.Cog):
     @commands.is_owner()
     async def reload(self, ctx, args=None):
         extensions = [filename[:-3] for filename in os.listdir("./cogs") if filename.endswith(".py")]
-        cog_blacklist = ['__init__', 'owner']
+        cog_blacklist = ['owner']
         if args is None:
             cog_error = Embed(description='再読み込みするCog名を指定してください')
             return await ctx.reply(embed=cog_error, allowed_mentions=AllowedMentions.none())
@@ -186,7 +186,10 @@ class Owner(commands.Cog):
             for name in extensions:
                 if name in cog_blacklist:
                     continue
-                self.bot.reload_extension(f'cogs.{name}')
+                try:
+                    self.bot.reload_extension(f'cogs.{name}')
+                except commands.errors.ExtensionNotLoaded:
+                    pass
             cog_all_done = Embed(description='Cogを全て再読み込みしました')
             return await ctx.reply(embed=cog_all_done, allowed_mentions=AllowedMentions.none())
 

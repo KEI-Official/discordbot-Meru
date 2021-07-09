@@ -13,10 +13,13 @@ class BotLog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.log_channel_id = int(self.bot.config['log_channel_id'])
+        self.err_channel_id = int(self.bot.config['err_channel_id'])
+        self.cmd_log_channel_id = int(self.bot.config['cmd_log_channel_id'])
+        self.jl_log_channel_id = int(self.bot.config['jl_log_channel_id'])
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        log_channel = await self.bot.fetch_channel(self.log_channel_id)
+        log_channel = await self.bot.fetch_channel(self.cmd_log_channel_id)
         if log_channel:
             msg_content = str(ctx.message.content).replace('`', r'\`', -1)
             log_embed = Embed(title='コマンド実行ログ', color=2474073)
@@ -34,7 +37,7 @@ class BotLog(commands.Cog):
     async def on_error(self, event, args):
         if sys.exc_info()[0].__name__ == 'MuteUserCommand':
             msg = sys.exc_info()[1].args[0]
-            log_channel = await self.bot.fetch_channel(self.log_channel_id)
+            log_channel = await self.bot.fetch_channel(self.cmd_log_channel_id)
             if msg.content.startswith(self.bot.command_prefix):
                 if log_channel:
                     msg_content = str(msg.content).replace('`', r'\`', -1)
@@ -107,7 +110,7 @@ class BotLog(commands.Cog):
                 raise error
 
         except Exception:
-            err_ch = await self.bot.fetch_channel(self.log_channel_id)
+            err_ch = await self.bot.fetch_channel(self.err_channel_id)
             err_msg = Embed(title='⚠エラーが発生しました',
                             description='**内容**\n予期しないエラーが発生しました。\n'
                                         'コマンドを正しく入力してもエラーが発生する場合は、お手数ですが\n'
@@ -125,7 +128,7 @@ class BotLog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        channel = await self.bot.fetch_channel(self.log_channel_id)
+        channel = await self.bot.fetch_channel(self.jl_log_channel_id)
 
         if channel:
             datetime_now = datetime.now().astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")
@@ -139,7 +142,7 @@ class BotLog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        channel = await self.bot.fetch_channel(self.log_channel_id)
+        channel = await self.bot.fetch_channel(self.jl_log_channel_id)
 
         if channel:
             datetime_now = datetime.now().astimezone(timezone("Asia/Tokyo")).strftime("%Y/%m/%d %H:%M:%S")

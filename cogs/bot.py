@@ -2,7 +2,9 @@ import asyncio
 import json
 import math
 import sys
+
 import discord
+import psutil
 from discord.ext import commands
 
 
@@ -57,7 +59,51 @@ class Bot(commands.Cog):
 
     @commands.command(description='Botの負荷状況を表示します')
     async def status(self, ctx):
-        await ctx.send('負荷情報を送信します')
+
+        def get_dashes(perc):
+            dashes = "█" * int((float(perc) / 10 * 3))
+            empty_dashes = " " * (30 - len(dashes))
+            return dashes, empty_dashes
+
+        def format_memory(mem):
+            return round(mem / 1024 / 1024 / 1024, 2)
+
+        def get_color(n):
+            n = int(n)
+            if n < 30:
+                return 55039
+            elif n < 70:
+                return 15827480
+            elif n <= 100:
+                return 16715008
+
+        cpu_emoji = self.bot.get_emoji(862959901227221022)
+        memory_emoji = self.bot.get_emoji(862959530399629332)
+        wifi_emoji = self.bot.get_emoji(862960959916343336)
+        cpu_percent = psutil.cpu_percent()
+        embed_color = get_color(cpu_percent)
+
+        status_embed = discord.Embed(title=f'{self.bot.user} - Status', color=embed_color)
+
+        dashes, empty_dashes = get_dashes(cpu_percent)
+        status_embed.add_field(name=f'> {cpu_emoji} **CPU**',
+                               value=f'```ini\n[ {dashes}{empty_dashes} ] [ {cpu_percent}% ]\n```',
+                               inline=False)
+
+        mem = psutil.virtual_memory()
+        mem_percent = mem.percent
+        dashes, empty_dashes = get_dashes(mem_percent)
+        status_embed.add_field(name=f'> {memory_emoji} **Memory**',
+                               value=f'```ini\n[ {format_memory(mem.used)} / {format_memory(mem.total)} GiB]\n'
+                                     f'[ {dashes}{empty_dashes} ] [ {mem_percent}% ]\n```',
+                               inline=False)
+
+        web_ping = round(self.bot.latency * 1000, 1)
+        status_embed.add_field(name=f'> {wifi_emoji} **Latency**',
+                               value=f'```ini\n[ WebSocket ]\n{web_ping}ms\n```',
+                               inline=False)
+
+        await ctx.send(embed=status_embed)
 
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
@@ -138,8 +184,8 @@ class Bot(commands.Cog):
                 for cl in data:
                     cog_meta = self.bot.get_cog(data[cl]['cog_name'])
                     cmd_list = [cmd.name for cmd in cog_meta.get_commands()]
-                    chenged_msg.add_field(name=cl, value=f'```\n{data[cl]["text"]}\n```', inline=False)
-                    chenged_msg.add_field(name='コマンドリスト', value=f'`{", ".join(cmd_list)}`')
+                    chenged_msg.add_field(name=f'🔹 {cl}', value=f'```\n{data[cl]["text"]}\n```', inline=False)
+                    chenged_msg.add_field(name='> コマンドリスト', value=f'`{", ".join(cmd_list)}`')
 
                 await help_embed_msg.edit(embed=chenged_msg)
         else:

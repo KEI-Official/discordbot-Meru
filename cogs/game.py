@@ -17,7 +17,8 @@ class Game(commands.Cog):
         q = data[random.randint(1, 128)]
 
         question_embed = Embed(title=f'{ctx.author} さんの問題',
-                               description=f'【 {q[0]} 】の読み方をひらがなで答えよ！')
+                               description=f'【 {q[0]} 】の読み方をひらがなで答えよ！',
+                               color=2263275)
         q_msg = await ctx.send(embed=question_embed)
 
         def check(msg):
@@ -29,9 +30,11 @@ class Game(commands.Cog):
             return await q_msg.edit(embed=Embed(description='残念！時間切れです...'))
         else:
             if message.content == q[1]:
-                return await q_msg.edit(embed=Embed(description='おめでとう！正解です！'))
+                return await q_msg.edit(embed=Embed(description='おめでとう！正解です！', color=261888))
             else:
-                return await q_msg.edit(embed=Embed(description=f'**残念..不正解です..**\n答えは【 {q[1]} 】みたいでした'))
+                fal_embed = Embed(description=f'**残念..不正解です..**\n答えは【 {q[1]} 】みたいでした',
+                                  color=15409787)
+                return await q_msg.edit(embed=fal_embed)
 
     @commands.group(description='難易度別のマルバツクイズが出来ます',
                     usage='[e(簡単) | n(普通) | h(難しい)]',
@@ -68,32 +71,37 @@ class Game(commands.Cog):
         else:
             if check_q(q[1], str(reaction)):
                 a_msg = Embed(title='正解！',
-                              description=f'ちなみに...\n```\n{q[2]}\n```')
+                              description=f'ちなみに...\n```\n{q[2]}\n```',
+                              color=261888)
                 return await q_msg.edit(embed=a_msg)
             else:
                 w_msg = Embed(title='残念！不正解',
-                              description=f'答え：{q[1]}\n\nちなみに...\n```\n{q[2]}\n```')
+                              description=f'答え：{q[1]}\n\nちなみに...\n```\n{q[2]}\n```',
+                              color=15409787)
                 return await q_msg.edit(embed=w_msg)
 
     @marubatu.command(name='e')
     async def sub_e(self, ctx):
         q = self.get_question('easy')
         q_embed = Embed(title=f'{ctx.author} さんの問題',
-                        description=f'難易度 - 簡単```\n{q[0]}\n```\n⭕ か ❌ か。')
+                        description=f'難易度 - 簡単```\n{q[0]}\n```\n⭕ か ❌ か。',
+                        color=2263275)  # カラー:水色
         await self.send_question(ctx, q_embed, q)
 
     @marubatu.command(name='n')
     async def sub_n(self, ctx):
         q = self.get_question('normal')
         q_embed = Embed(title=f'{ctx.author} さんの問題',
-                        description=f'難易度 - 普通\n```\n{q[0]}\n```\n⭕ か ❌ か。')
+                        description=f'難易度 - 普通\n```\n{q[0]}\n```\n⭕ か ❌ か。',
+                        color=15449378)  # カラー:暗め黄色
         await self.send_question(ctx, q_embed, q)
 
     @marubatu.command(name='h')
     async def sub_h(self, ctx):
         q = self.get_question('hard')
         q_embed = Embed(title=f'{ctx.author} さんの問題',
-                        description=f'難易度 - 難しい\n```\n{q[0]}\n```\n⭕ か ❌ か。')
+                        description=f'難易度 - 難しい\n```\n{q[0]}\n```\n⭕ か ❌ か。',
+                        color=15409787)
         await self.send_question(ctx, q_embed, q)
 
 

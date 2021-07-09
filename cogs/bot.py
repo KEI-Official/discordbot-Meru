@@ -120,7 +120,8 @@ class Bot(commands.Cog):
             how_use_text = f'`{command_prefix}{command.name} {command.usage if command.usage else ""}`'
 
             command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
-                                          description=f'{command.description}')
+                                          description=f'{command.description}',
+                                          color=261888)  # カラー:ライトグリーン
             command_embed.add_field(name='エイリアス', value=f'> {",".join(command_aliases)}')
             command_embed.add_field(name='コマンドの権限',
                                     value=f'> {command.brief[1]}'
@@ -139,7 +140,9 @@ class Bot(commands.Cog):
             return command_embed
 
         if command_names is None:
-            embed = discord.Embed(title='📃 Help', description=f'Command Prefix: ` {command_prefix} `')
+            embed = discord.Embed(title='📃 Help',
+                                  description=f'Command Prefix: ` {command_prefix} `',
+                                  color=261888)  # カラー:ライトグリーン
             embed.set_footer(text=f'コマンドの詳しい説明: {command_prefix} <コマンド名> | 1ページ目/2ページ')
             commands_list = list(self.bot.commands)
             if ctx.author.id == 534994298827964416:
@@ -179,7 +182,8 @@ class Bot(commands.Cog):
                 with open('./data/function_info.json', 'r', encoding='UTF-8') as config:
                     data = json.load(config)
                 chenged_msg = discord.Embed(title='📃 Help - コマンド以外の機能',
-                                            description=f'他についている機能についての説明が載っています\nCommand Prefix:` {command_prefix} `')
+                                            description=f'他についている機能についての説明が載っています\nCommand Prefix:` {command_prefix} `',
+                                            color=261888)  # カラー:ライトグリーン
                 chenged_msg.set_footer(text='2ページ目/2ページ | 他の機能のHelp')
                 for cl in data:
                     cog_meta = self.bot.get_cog(data[cl]['cog_name'])
@@ -192,7 +196,8 @@ class Bot(commands.Cog):
             cmd_get_name = self.bot.get_command(command_names)
             cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.commands))
             no_cmd_error = discord.Embed(title='📃 CommandHelp Error',
-                                         description='指定されたコマンドが見つかりませんでした')
+                                         description='指定されたコマンドが見つかりませんでした',
+                                         color=16715008)  # カラー:赤色
             if cmd_get_name is None:
                 if cmd_find_name is not None:
                     no_cmd_error.add_field(name='もしかして...', value=f'`{cmd_find_name}`')
@@ -201,7 +206,8 @@ class Bot(commands.Cog):
             elif cmd_get_name.hidden:
                 if ctx.author.id != 534994298827964416:
                     beta_command = discord.Embed(title=f'📃 CommandHelp - `{cmd_get_name.name}`',
-                                                 description='非公開コマンドです')
+                                                 description='非公開コマンドです',
+                                                 color=16770304)  # カラー:黄色
                     return await ctx.send(embed=beta_command)
                 else:
                     help_command = send_embed(cmd_get_name)

@@ -74,7 +74,9 @@ class Utils(commands.Cog):
 
             de_msg = f'**ルール**\n```\n{rule_name}```\n**ステージ**\n```\n{stage}\n```\n' \
                      f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | レギュラーマッチ', description=de_msg)
+            embed = Embed(title='Splatoon2 ステージ情報 | レギュラーマッチ',
+                          description=de_msg,
+                          color=261888)  # カラー:ライトグリーン)
             embed.set_image(url=image_url)
             await ctx.send(embed=embed)
 
@@ -93,7 +95,9 @@ class Utils(commands.Cog):
 
             de_msg = f'**ルール**\n```\n{rule_name}\n```\n**ステージ**\n```\n{stage}\n```\n' \
                      f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | ガチマッチ', description=de_msg)
+            embed = Embed(title='Splatoon2 ステージ情報 | ガチマッチ',
+                          description=de_msg,
+                          color=14840346)  # カラー:オレンジ
             embed.set_image(url=image_url)
             await ctx.send(embed=embed)
 
@@ -112,7 +116,9 @@ class Utils(commands.Cog):
 
             de_msg = f'**ルール**\n```\n{rule_name}\n```\n**ステージ**\n```\n{stage}\n```\n' \
                      f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | リーグマッチ', description=de_msg)
+            embed = Embed(title='Splatoon2 ステージ情報 | リーグマッチ',
+                          description=de_msg,
+                          color=15409787)  # カラー:ピンク
             embed.set_image(url=image_url)
             await ctx.send(embed=embed)
 
@@ -133,7 +139,9 @@ class Utils(commands.Cog):
 
             de_msg = f'**ステージ**\n```\n{stage}\n```\n**支給ブキ**\n```\n{weapons}```\n' \
                      f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | サーモンラン', description=de_msg)
+            embed = Embed(title='Splatoon2 ステージ情報 | サーモンラン',
+                          description=de_msg,
+                          color=15442812)  # カラー:薄橙
             embed.set_image(url=image_url)
             await ctx.send(embed=embed)
 

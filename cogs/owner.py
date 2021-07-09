@@ -189,7 +189,7 @@ class Owner(commands.Cog):
                 try:
                     self.bot.reload_extension(f'cogs.{name}')
                 except commands.errors.ExtensionNotLoaded:
-                    pass
+                    continue
             cog_all_done = Embed(description='Cogを全て再読み込みしました')
             return await ctx.reply(embed=cog_all_done, allowed_mentions=AllowedMentions.none())
 

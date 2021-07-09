@@ -388,7 +388,8 @@ class Utils(commands.Cog):
                     res_image.add_field(name='関連画像', value=related_image_text, inline=False)
                     res_image.set_image(url=image["webformatURL"])
                     res_image.set_author(name='PixaBay', url=image["pageURL"])
-                    res_image.set_footer(text=f'❤: {image["favorites"]} | 👍: {image["likes"]} | 💬: {image["comments"]}')
+                    res_image.set_footer(text=f'👍: {image.get("likes") if image.get("likes") else "0"} | '
+                                              f'💬: {image.get("comments") if image.get("comments") else "0"}')
                     return await ctx.reply(embed=res_image, allowed_mentions=AllowedMentions.none())
 
 

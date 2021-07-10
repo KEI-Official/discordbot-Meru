@@ -19,7 +19,7 @@ class Bot(commands.Cog):
 
     @commands.command(description='BOTの招待リンクを出します')
     async def invite(self, ctx):
-        return await ctx.send(f'招待リンクです\n{self.bot.oauth_url}')
+        return await ctx.send(f'招待リンクです\n{self.bot.config["oauth_url"]}')
 
     @commands.command(description='BOTの情報を表示します')
     async def about(self, ctx):

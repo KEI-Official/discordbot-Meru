@@ -14,7 +14,7 @@ config = {
     'jl_log_channel_id': os.getenv('JOIN_LEFT_LOG_CHANNEL_ID'),
     'prefix': os.getenv('PREFIX'),
     'owner_id': os.getenv('OWNER_ID'),
-    'oauth_url': discord.utils.oauth_url(os.getenv('BOT_ID'), permissions=discord.Permissions(1342565462), scopes='bot')
+    'oauth_url': discord.utils.oauth_url(os.getenv('BOT_ID'), permissions=discord.Permissions(1345711223))
 }
 
 extensions_list = [f[:-3] for f in os.listdir("./cogs") if f.endswith(".py")]

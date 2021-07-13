@@ -80,20 +80,16 @@ class BotLog(commands.Cog):
 
             # BotMissingPermissions
             elif isinstance(error, commands.BotMissingPermissions):
-                permission = {'read_messages': "メッセージを読む", 'send_messages': "メッセージを送信",
-                              'read_message_history': "メッセージ履歴を読む", 'manage_messages': "メッセージの管理",
-                              'embed_links': "埋め込みリンク", 'add_reactions': "リアクションの追加",
-                              'manage_channels': "チャンネルの管理"}
-                text = ""
-                for all_error_permission in error.missing_perms:
-                    text += f"❌:{permission[all_error_permission]}\n"
-                    del permission[all_error_permission]
-                for all_arrow_permission in list(permission.values()):
-                    text += f"✅:{all_arrow_permission}\n"
+                with open("./data/permission_list.json", "r", encoding='UTF-8') as perm_list:
+                    data = json.load(perm_list)
+                text = []
+                for error_permission in error.missing_perms:
+                    if error_permission in data:
+                        text.append(f'`{data[error_permission]}`')
 
-                owner = await self.bot.fetch_user(int(self.bot.config['owner_id']))
+                owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
                 no_msg = Embed(title='Missing Permission',
-                               description=f'『{ctx.guild.name}』での{self.bot.user}の必要な権限\n```\n{text}\n```')
+                               description=f'『{ctx.guild.name}』での{self.bot.user}の必要な権限\n```\n{",".join(text)}\n```')
                 await owner.send(embed=no_msg)
                 await ctx.reply(embed=no_msg, allowed_mentions=AllowedMentions.none())
 

@@ -48,7 +48,7 @@ class Bot(commands.Cog):
                         value='・コマンド名「rtfm」: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny)',
                         inline=False)
         embed.add_field(name='各種リンク',
-                        value=f'[BOTの招待リンク]({self.bot.oauth_url}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
+                        value=f'[BOTの招待リンク]({self.bot.config["oauth_url"]}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
                               ' | [ブログサイト](https://syutarou.xyz)',
                         inline=False)
         await ctx.send(embed=embed)

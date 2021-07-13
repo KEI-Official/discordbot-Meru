@@ -101,8 +101,8 @@ class BotLog(commands.Cog):
                 r_after = error.retry_after
 
                 cooldown_msg = Embed(title='クールダウン中',
-                                     escription=f'このコマンドは `{error.cooldown.per}` 秒/回 のクールダウンがあります。\n'
-                                                f'あと {round(r_after)} 秒後に、このコマンドは利用可能です。')
+                                     description=f'このコマンドは `{error.cooldown.per}` 秒/回 のクールダウンがあります。\n'
+                                                 f'あと {round(r_after)} 秒後に、このコマンドは利用可能です。')
                 err_msg = await ctx.reply(embed=cooldown_msg, allowed_mentions=AllowedMentions.none())
                 await err_msg.delete(delay=3)
 

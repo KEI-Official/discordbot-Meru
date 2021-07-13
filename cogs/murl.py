@@ -60,6 +60,7 @@ class Murl(commands.Cog):
             if message.author.bot:
                 return
             messages = []
+            msg_embed = None
 
             for con in re.finditer(discord_message_url, message.content):
                 guild = self.bot.get_guild(int(con['guild']))
@@ -78,8 +79,11 @@ class Murl(commands.Cog):
                 embed.set_footer(text=f'{msg.channel}', icon_url=msg.guild.icon_url)
                 if msg.attachments:
                     embed.set_image(url=msg.attachments[0].proxy_url)
+                elif len(msg.embeds) > 0:
+                    msg_embed = msg.embeds[0]
 
                 await message.channel.send(embed=embed)
+                await message.channel.send(embed=msg_embed if msg_embed is not None else Embed.Empty)
 
 
 def setup(bot):

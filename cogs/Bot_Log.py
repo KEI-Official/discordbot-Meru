@@ -122,7 +122,7 @@ class BotLog(commands.Cog):
             error_log_msg = Embed(description=f'```py\n{error_msg}\n```')
             error_log_msg.set_footer(text=f'サーバー: {ctx.guild.name} | 送信者: {ctx.author}')
 
-            owner = await self.bot.fetch_user(int(self.bot.config['owner_id']))
+            owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
             await owner.send(embed=error_log_msg)
             await err_ch.send(embed=error_log_msg)
 

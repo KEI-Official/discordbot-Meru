@@ -17,6 +17,8 @@ class Database:
         self.cursor.execute('CREATE TABLE IF NOT EXISTS msg_expand(guild_id integer primary key)')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS '
                             'member_log(guild_id integer primary key, join_msg, left_msg, join_id, left_id)')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS '
+                            'tao_help(guild_id integer primary key, func, log_id, role_t, role_g, role_r, premium)')
 
     # コマンド制限
     def mute_user_set(self, user_id):
@@ -84,5 +86,46 @@ class Database:
     def member_log_get(self, guild_id):
         self.setup()
         res = self.cursor.execute('SELECT * FROM member_log WHERE guild_id = ?', (guild_id,))
+        data = res.fetchall()
+        return data
+
+    # TAOお助け機能
+    def tao_help_set(self, guild_id, func, log_id, role_t):
+        self.setup()
+        self.cursor.execute('INSERT INTO tao_help VALUES (?,?,?,?)',
+                            (guild_id, func, log_id, role_t))
+        return True
+
+    def tao_help_guild_get(self, guild_id):
+        self.setup()
+        res = self.cursor.execute('SELECT * FROM tao_help WHERE guild_id = ?', (guild_id,))
+        data = res.fetchall()
+        return data
+
+    def tao_help_premium_set(self, guild_id, func, log_id, role_t, role_g, role_r, premium):
+        self.setup()
+        self.cursor.execute('INSERT INTO tao_help VALUES (?,?,?,?,?,?,?',
+                            (guild_id, func, log_id, role_t, role_g, role_r, premium))
+        return True
+
+    def tao_help_del(self, guild_id):
+        self.setup()
+        self.cursor.execute('DELETE FROM tao_help WHERE guild_id = ?', (guild_id,))
+        return True
+
+    def tao_help_change(self, guild_id, func):
+        self.setup()
+        self.cursor.execute('UPDATE tao_help SET func = ? WHERE guild_id = ? ', (func, guild_id))
+        return True
+
+    def tao_help_get(self):
+        self.setup()
+        res = self.cursor.execute('SELECT guild_id FROM tao_help WHERE func = "on"')
+        data = res.fetchall()
+        return data
+
+    def tao_help_premium_get(self):
+        self.setup()
+        res = self.cursor.execute('SELECT guild_id FROM tao_help WHERE premium = "on"')
         data = res.fetchall()
         return data

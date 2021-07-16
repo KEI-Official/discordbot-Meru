@@ -2,6 +2,7 @@ import asyncio
 import json
 import math
 import sys
+from datetime import datetime
 
 import discord
 import psutil
@@ -99,8 +100,9 @@ class Bot(commands.Cog):
                                inline=False)
 
         web_ping = round(self.bot.latency * 1000, 1)
+        message_ping = round((datetime.utcnow().timestamp() - ctx.message.created_at.timestamp()) * 1000, 1)
         status_embed.add_field(name=f'> {wifi_emoji} **Latency**',
-                               value=f'```ini\n[ WebSocket ]\n{web_ping}ms\n```',
+                               value=f'```ini\n[ WebSocket ]\n{web_ping}ms\n[ Message ]\n{message_ping}ms\n```',
                                inline=False)
 
         await ctx.send(embed=status_embed)

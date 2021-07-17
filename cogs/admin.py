@@ -299,7 +299,6 @@ class Admin(commands.Cog):
             await high_msg.delete(delay=3)
         elif isinstance(res, Dict):
             m_limit = res['limit']
-            print(res['limit'])
             u_check = res['check']
             if u_check is not None:
                 def is_user(m):

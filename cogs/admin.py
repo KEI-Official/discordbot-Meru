@@ -1,6 +1,6 @@
 import asyncio
 import re
-from typing import Optional
+from typing import Optional, Dict
 from discord import Embed, AllowedMentions, ChannelType, utils
 from discord.ext import commands
 
@@ -203,7 +203,7 @@ class Admin(commands.Cog):
                             for num in range(int(repeat_count)):
                                 await get_channel.clone()
                                 embed = Embed(description=f'{load_emoji} チャンネルを{repeat_count}回複製中...\n'
-                                                          f'{num+1}/{repeat_count} 回完了')
+                                                          f'{num + 1}/{repeat_count} 回完了')
                                 await pre_ch_msg.edit(embed=embed)
                             return await pre_ch_msg.edit(embed=Embed(description=f'✅ チャンネル: {get_channel.mention}'
                                                                                  ' の複製が完了しました'))
@@ -250,6 +250,68 @@ class Admin(commands.Cog):
                 else:
                     no_id_embed = Embed(description='チャンネルIDを指定してください')
                     return await ctx.reply(embed=no_id_embed, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(description='チャンネルのメッセージを消去します',
+                      usage='[メッセージ数] <u=ユーザーID>',
+                      aliases=['clean'],
+                      brief=['【実行例】\n'
+                             '・50メッセージ\n{cmd}purge 50\n',
+                             '・ユーザーを指定\n{cmd}purge 50 534994298827964416\n',
+                             'manage_messages']
+                      )
+    @commands.has_permissions(manage_messages=True)
+    async def purge(self, ctx, count=None, option=None):
+        channel = ctx.channel
+
+        async def create_embed(deleted_msg):
+            su_embed = Embed(description=f'メッセージを {len(deleted_msg)} 件削除しました')
+            msgs = await channel.send(embed=su_embed, allowed_mentions=AllowedMentions.none())
+            await msgs.delete(delay=5)
+
+        def purge_def():
+            if count is None:
+                return 'Not Int'
+            elif int(count) > 500:
+                return 'High Int'
+            else:
+                if option is None:
+                    return {'limit': int(count), 'check': None}
+                elif option.startswith('u='):
+                    option_user = option.replace('u=', '')
+                    get_user = ctx.guild.get_member(int(option_user))
+                    if get_user:
+                        return {'limit': int(count), 'check': get_user}
+                    else:
+                        return 'Not Found'
+
+        res = purge_def()
+        if res == 'Not Int':
+            no_int_embed = Embed(description='メッセージ数は数字で指定してください')
+            msg = await ctx.reply(embed=no_int_embed, allowed_mentions=AllowedMentions.none())
+            await msg.delete(delay=3)
+        elif res == 'Not Found':
+            no_user_embed = Embed(description='ユーザーが見つかりませんでした')
+            no_user_msg = await ctx.reply(embed=no_user_embed, allowed_mentions=AllowedMentions.none())
+            await no_user_msg.delete(delay=3)
+        elif res == 'High Int':
+            high_msg_embed = Embed(description='メッセージ数は500以下で指定してください')
+            high_msg = await ctx.reply(embed=high_msg_embed, allowed_mentions=AllowedMentions.none())
+            await high_msg.delete(delay=3)
+        elif isinstance(res, Dict):
+            m_limit = res['limit']
+            print(res['limit'])
+            u_check = res['check']
+            if u_check is not None:
+                def is_user(m):
+                    return m.author == u_check
+
+                async with channel.typing():
+                    deleted = await channel.purge(limit=m_limit, check=is_user, bulk=True)
+                await create_embed(deleted)
+            else:
+                async with channel.typing():
+                    deleted_no_user = await channel.purge(limit=m_limit, bulk=True)
+                await create_embed(deleted_no_user)
 
 
 def setup(bot):

@@ -48,7 +48,7 @@ bot.db = Database()
 async def on_ready():
     print(f"{bot.user.name} でログインしました")
     ch = bot.get_channel(int(config['log_channel_id']))
-    await bot.change_presence(activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)}Servers',
+    await bot.change_presence(activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers',
                                                     type=1))
     log_msg = discord.Embed(description=f'BOTが起動しました\n```\nユーザー数: {len(bot.users)}\n'
                                         f'サーバー数: {len(bot.guilds)}\n```')

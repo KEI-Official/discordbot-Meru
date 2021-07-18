@@ -255,7 +255,7 @@ class Admin(commands.Cog):
                       usage='[メッセージ数] <u=ユーザーID>',
                       aliases=['clean'],
                       brief=['【実行例】\n'
-                             '・50メッセージ\n{cmd}purge 50\n',
+                             '・50メッセージ\n{cmd}purge 50\n'
                              '・ユーザーを指定\n{cmd}purge 50 534994298827964416\n',
                              'manage_messages']
                       )

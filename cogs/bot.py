@@ -178,6 +178,8 @@ class Bot(commands.Cog):
                 await self.bot.wait_for('reaction_add', timeout=20, check=check)
             except asyncio.TimeoutError:
                 await help_embed_msg.clear_reactions()
+            except discord.NotFound:
+                pass
             else:
                 await help_embed_msg.clear_reactions()
 

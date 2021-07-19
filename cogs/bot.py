@@ -177,25 +177,29 @@ class Bot(commands.Cog):
             try:
                 await self.bot.wait_for('reaction_add', timeout=20, check=check)
             except asyncio.TimeoutError:
-                await help_embed_msg.clear_reactions()
-            except discord.NotFound:
-                pass
+                try:
+                    await help_embed_msg.clear_reactions()
+                except discord.errors.NotFound:
+                    return
             else:
-                await help_embed_msg.clear_reactions()
+                try:
+                    await help_embed_msg.clear_reactions()
 
-                with open('./data/function_info.json', 'r', encoding='UTF-8') as config:
-                    data = json.load(config)
-                chenged_msg = discord.Embed(title='📃 Help - コマンド以外の機能',
-                                            description=f'他についている機能についての説明が載っています\nCommand Prefix:` {command_prefix} `',
-                                            color=261888)  # カラー:ライトグリーン
-                chenged_msg.set_footer(text='2ページ目/2ページ | 他の機能のHelp')
-                for cl in data:
-                    cog_meta = self.bot.get_cog(data[cl]['cog_name'])
-                    cmd_list = [cmd.name for cmd in cog_meta.get_commands()]
-                    chenged_msg.add_field(name=f'🔹 {cl}', value=f'```\n{data[cl]["text"]}\n```', inline=False)
-                    chenged_msg.add_field(name='> コマンドリスト', value=f'`{", ".join(cmd_list)}`')
+                    with open('./data/function_info.json', 'r', encoding='UTF-8') as config:
+                        data = json.load(config)
+                    chenged_msg = discord.Embed(title='📃 Help - コマンド以外の機能',
+                                                description=f'他についている機能についての説明が載っています\nCommand Prefix:` {command_prefix} `',
+                                                color=261888)  # カラー:ライトグリーン
+                    chenged_msg.set_footer(text='2ページ目/2ページ | 他の機能のHelp')
+                    for cl in data:
+                        cog_meta = self.bot.get_cog(data[cl]['cog_name'])
+                        cmd_list = [cmd.name for cmd in cog_meta.get_commands()]
+                        chenged_msg.add_field(name=f'🔹 {cl}', value=f'```\n{data[cl]["text"]}\n```', inline=False)
+                        chenged_msg.add_field(name='> コマンドリスト', value=f'`{", ".join(cmd_list)}`')
 
-                await help_embed_msg.edit(embed=chenged_msg)
+                    await help_embed_msg.edit(embed=chenged_msg)
+                except discord.errors.NotFound:
+                    return
         else:
             cmd_get_name = self.bot.get_command(command_names)
             cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.commands))

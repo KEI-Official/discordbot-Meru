@@ -45,7 +45,8 @@ class Game(commands.Cog):
             return await ctx.reply(embed=no_sub_msg, allowed_mentions=AllowedMentions.none())
 
     # TODO: 問題を1日5個増やす
-    def get_question(self, level):
+    @staticmethod
+    def get_question(level):
         with open(f'./data/{level}_marubatu.json', 'r', encoding='UTF-8') as e_data:
             data = json.load(e_data)
         return data[random.randint(0, len(data)-1)]
@@ -103,6 +104,37 @@ class Game(commands.Cog):
                         description=f'難易度 - 難しい\n```\n{q[0]}\n```\n⭕ か ❌ か。',
                         color=15409787)
         await self.send_question(ctx, q_embed, q)
+
+    @commands.command(description='サイコロを振ります')
+    async def dice(self, ctx):
+        image = {
+            'dice_1': 'https://cdn.discordapp.com/attachments/867004595079479296/867004682983047169/dice_1.jpg',
+            'dice_2': 'https://cdn.discordapp.com/attachments/867004595079479296/867004694625648650/dice_2.jpg',
+            'dice_3': 'https://cdn.discordapp.com/attachments/867004595079479296/867004690960482314/dice_3.jpg',
+            'dice_4': 'https://cdn.discordapp.com/attachments/867004595079479296/867004690175492096/dice_4.jpg',
+            'dice_5': 'https://cdn.discordapp.com/attachments/867004595079479296/867004688132997130/dice_5.jpg',
+            'dice_6': 'https://cdn.discordapp.com/attachments/867004595079479296/867004685352042516/dice_6.jpg'
+        }
+
+        des_text = ['コロコロコロ...\n> **[dice]**', 'コロコロコロ...\n転がってゆく\n> **[dice]**',
+                    'コロ..コロ..コロ..\nまだ転がる\n> **[dice]**']
+        dice_embed = Embed(title='サイコロ')
+        dice_embed.set_thumbnail(url=image['dice_1'])
+        dice_msg = await ctx.reply(embed=dice_embed, allowed_mentions=AllowedMentions.none())
+        await asyncio.sleep(2)
+        for t in des_text:
+            random_int = random.randint(1, 6)
+            edit_embed = Embed(title='サイコロ',
+                               description=t.replace('[dice]', f'{random_int}'))
+            edit_embed.set_thumbnail(url=image[f'dice_{random_int}'])
+            await dice_msg.edit(embed=edit_embed)
+            await asyncio.sleep(1.5)
+
+        random_int = random.randint(1, 6)
+        edit_embed = Embed(title='サイコロ',
+                           description=f'結果！！ \n> **{random_int}** が出ました！')
+        edit_embed.set_thumbnail(url=image[f'dice_{random_int}'])
+        await dice_msg.edit(embed=edit_embed)
 
 
 def setup(bot):

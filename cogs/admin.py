@@ -1,12 +1,14 @@
 import asyncio
 import re
 from typing import Optional, Dict
-from discord import Embed, AllowedMentions, ChannelType, utils
+import discord
+from discord import Embed, AllowedMentions, ChannelType, utils, Role
 from discord.ext import commands
 
 
 class Admin(commands.Cog):
     """特定の権限が必要なコマンドがあるカテゴリーです"""
+
     def __init__(self, bot):
         self.bot = bot
         self.get_user = None
@@ -311,6 +313,124 @@ class Admin(commands.Cog):
                 async with channel.typing():
                     deleted_no_user = await channel.purge(limit=m_limit, bulk=True)
                 await create_embed(deleted_no_user)
+
+    @commands.group(description='指定した役職を全ユーザーに付与/剥奪します',
+                    usage='add/remove [役職]',
+                    aliases=['role-user', 'roleuser'],
+                    brief=['【実行例】\n'
+                           '・{cmd}role_user add 123456789012345678\n'
+                           '・{cmd}role_user remove 役職名'
+                           '・{cmd}role_user add 役職メンション\n',
+                           'administrator']
+                    )
+    @commands.has_permissions(administrator=True)
+    async def role_user(self, ctx):
+        if ctx.invoked_subcommand is None:
+            return
+
+    @role_user.command()
+    @commands.has_permissions(administrator=True)
+    async def add(self, ctx, role: Role):
+        confirm_msg = Embed(title='役職全員操作コマンド - 確認画面',
+                            description=f'`{role}` をサーバーの全メンバーに付与します。\n'
+                                        '実行する場合は ⭕ キャンセルする場合は ❌ を押してください')
+        c_msg = await ctx.reply(embed=confirm_msg, allowed_mentions=AllowedMentions.none())
+        await c_msg.add_reaction('⭕')
+        await c_msg.add_reaction('❌')
+
+        def check(reaction, user):
+            return user == ctx.author and (str(reaction.emoji) == '⭕' or str(reaction.emoji) == '❌') \
+                   and reaction.message.channel == ctx.channel
+
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=20, check=check)
+        except asyncio.TimeoutError:
+            return await c_msg.edit(embed=Embed(description='時間切れです'))
+        else:
+            if str(reaction.emoji) == '⭕':
+                load_emoji = self.bot.get_emoji(852849151628935198)
+
+                all_member = ctx.guild.members
+                su_member = []
+                try:
+                    for m in all_member:
+                        if role in m.roles:
+                            continue
+                        await m.add_roles(role)
+                        su_member.append(m)
+                        await c_msg.edit(
+                            embed=Embed(
+                                title=f'{load_emoji} 実行中...',
+                                description=f'{len(su_member)} / {len(all_member) }が完了'))
+                except discord.HTTPException:
+                    return await c_msg.edit(
+                        embed=Embed(
+                            description=f'{self.bot.user}の権限が付ける役職よりも上にあることを確認してください')
+                    )
+                else:
+                    await c_msg.clear_reactions()
+                    return await c_msg.edit(
+                        embed=Embed(
+                            title='Success',
+                            description=f'{len(su_member)} 人のメンバーに {role} を付与しました')
+                    )
+            elif str(reaction.emoji) == '❌':
+                await c_msg.clear_reactions()
+                return await c_msg.edit(
+                    embed=Embed(
+                        description='操作をキャンセルしました')
+                )
+
+    @role_user.command()
+    @commands.has_permissions(administrator=True)
+    async def remove(self, ctx, role: Role):
+        confirm_msg = Embed(title='役職剥奪コマンド - 確認画面',
+                            description=f'`{role}` をサーバーの全メンバーから剥奪します。\n'
+                                        '実行する場合は ⭕ キャンセルする場合は ❌ を押してください')
+        c_msg = await ctx.reply(embed=confirm_msg, allowed_mentions=AllowedMentions.none())
+        await c_msg.add_reaction('⭕')
+        await c_msg.add_reaction('❌')
+
+        def check(reaction, user):
+            return user == ctx.author and (str(reaction.emoji) == '⭕' or str(reaction.emoji) == '❌') \
+                   and reaction.message.channel == ctx.channel
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=20, check=check)
+        except asyncio.TimeoutError:
+            return await c_msg.edit(embed=Embed(description='時間切れです'))
+        else:
+            if str(reaction.emoji) == '⭕':
+                load_emoji = self.bot.get_emoji(852849151628935198)
+                all_member = ctx.guild.members
+                su_member = []
+                try:
+                    for m in all_member:
+                        if role in m.roles:
+                            await m.remove_roles(role)
+                            su_member.append(m)
+                            await c_msg.edit(
+                                embed=Embed(
+                                    title=f'{load_emoji} 実行中...',
+                                    description=f'{len(su_member)} / {len(all_member)}が完了')
+                            )
+                except discord.HTTPException:
+                    return await c_msg.edit(
+                        embed=Embed(
+                            description=f'{self.bot.user}の権限が剥奪する役職よりも上にあることを確認してください')
+                    )
+                else:
+                    await c_msg.clear_reactions()
+                    return await c_msg.edit(
+                        embed=Embed(
+                            title='Success',
+                            description=f'{len(su_member)} 人のメンバーから {role} を剥奪しました')
+                    )
+            elif str(reaction.emoji) == '❌':
+                await c_msg.clear_reactions()
+                return await c_msg.edit(
+                    embed=Embed(
+                        description='操作をキャンセルしました')
+                )
 
 
 def setup(bot):

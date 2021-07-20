@@ -2,7 +2,7 @@ import asyncio
 import random
 import json
 from discord.ext import commands
-from discord import Embed, AllowedMentions, File
+from discord import Embed, AllowedMentions
 
 
 class Game(commands.Cog):
@@ -45,7 +45,8 @@ class Game(commands.Cog):
             return await ctx.reply(embed=no_sub_msg, allowed_mentions=AllowedMentions.none())
 
     # TODO: 問題を1日5個増やす
-    def get_question(self, level):
+    @staticmethod
+    def get_question(level):
         with open(f'./data/{level}_marubatu.json', 'r', encoding='UTF-8') as e_data:
             data = json.load(e_data)
         return data[random.randint(0, len(data)-1)]

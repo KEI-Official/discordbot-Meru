@@ -102,6 +102,14 @@ class BotLog(commands.Cog):
                 err_msg = await ctx.reply(embed=cooldown_msg, allowed_mentions=AllowedMentions.none())
                 await err_msg.delete(delay=3)
 
+            elif isinstance(error, commands.RoleNotFound):
+                return await ctx.reply(
+                    embed=Embed(
+                        description='役職が見つかりませんでした'
+                    ),
+                    allowed_mentions=AllowedMentions.none()
+                )
+
             else:
                 raise error
 

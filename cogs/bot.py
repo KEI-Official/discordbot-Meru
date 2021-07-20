@@ -117,14 +117,14 @@ class Bot(commands.Cog):
                 command_aliases.append('なし')
             else:
                 for ca in command.aliases:
-                    command_aliases.append(f'{ca}')
+                    command_aliases.append(f'`{ca}`')
 
             how_use_text = f'`{command_prefix}{command.name} {command.usage if command.usage else ""}`'
 
             command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
                                           description=f'{command.description}',
                                           color=261888)  # カラー:ライトグリーン
-            command_embed.add_field(name='エイリアス', value=f'> {",".join(command_aliases)}')
+            command_embed.add_field(name='エイリアス', value=f'> {", ".join(command_aliases)}')
             command_embed.add_field(name='コマンドの権限',
                                     value=f'> {command.brief[1]}'
                                     if command.brief is not None and len(command.brief) == 2 else '> 誰でも利用可能')

@@ -319,7 +319,7 @@ class Admin(commands.Cog):
                     aliases=['role-user', 'roleuser'],
                     brief=['【実行例】\n'
                            '・{cmd}role_user add 123456789012345678\n'
-                           '・{cmd}role_user remove 役職名'
+                           '・{cmd}role_user remove 役職名\n'
                            '・{cmd}role_user add 役職メンション\n',
                            'administrator']
                     )

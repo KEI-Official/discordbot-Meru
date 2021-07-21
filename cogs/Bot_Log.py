@@ -105,7 +105,32 @@ class BotLog(commands.Cog):
             elif isinstance(error, commands.RoleNotFound):
                 return await ctx.reply(
                     embed=Embed(
-                        description='役職が見つかりませんでした'
+                        description='役職が見つかりませんでした\n**考えられる原因**```'
+                                    '\nIDや名前は間違っていませんか？\n```'
+                    ),
+                    allowed_mentions=AllowedMentions.none()
+                )
+            elif isinstance(error, commands.MemberNotFound):
+                return await ctx.reply(
+                    embed=Embed(
+                        description='ユーザーが見つかりませんでした\n**考えられる原因**```'
+                                    '\n・IDや名前は間違っていませんか？\n・ユーザーはサーバーにいますか？\n```'
+                    ),
+                    allowed_mentions=AllowedMentions.none()
+                )
+            elif isinstance(error, commands.ChannelNotFound):
+                return await ctx.reply(
+                    embed=Embed(
+                        description='チャンネルが見つかりませんでした\n**考えられる原因**```'
+                                    '\n・IDや名前は間違っていませんか？\n```'
+                    ),
+                    allowed_mentions=AllowedMentions.none()
+                )
+            elif isinstance(error, commands.EmojiNotFound):
+                return await ctx.reply(
+                    embed=Embed(
+                        description='絵文字が見つかりませんでした\n**考えられる原因**```'
+                                    '\n・IDや名前は間違っていませんか？\n```'
                     ),
                     allowed_mentions=AllowedMentions.none()
                 )

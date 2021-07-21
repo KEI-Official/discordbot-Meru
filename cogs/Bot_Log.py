@@ -169,9 +169,9 @@ class BotLog(commands.Cog):
             bot_role = member.guild.get_role(601284694205792276)
             if member_role:
                 if member.bot:
-                    await member.add_roles(member_role)
-                else:
                     await member.add_roles(bot_role)
+                else:
+                    await member.add_roles(member_role)
 
 
 def setup(bot):

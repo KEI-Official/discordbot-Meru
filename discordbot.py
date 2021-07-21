@@ -42,14 +42,13 @@ bot = MyBot(
 )
 
 bot.db = Database()
-bot.count = 0
 
 
 @tasks.loop(minutes=10)
 async def pre_loop():
     await bot.wait_until_ready()
     await bot.change_presence(
-        activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers | {bot.count}')
+        activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers')
     )
 
 

@@ -326,9 +326,12 @@ class Utils(commands.Cog):
             re_data = response.json()
 
             if status != 200:
-                api_err_msg = Embed(title=f'APIエラー - {status}',
-                                    description=f'エラーメッセージ\n```\n{re_data.get("errors")[0]["message"]}\n```')
-                await ctx.reply(embed=api_err_msg, allowed_mentions=AllowedMentions.none())
+                try:
+                    api_err_msg = Embed(title=f'APIエラー - {status}',
+                                        description=f'エラーメッセージ\n```\n{re_data.get("errors")[0]["message"]}\n```')
+                    await ctx.reply(embed=api_err_msg, allowed_mentions=AllowedMentions.none())
+                except Exception:
+                    return
             else:
                 await ctx.reply('短縮URLを作成しました', allowed_mentions=AllowedMentions.none())
                 await ctx.send(f'`{re_data["link"]}`')

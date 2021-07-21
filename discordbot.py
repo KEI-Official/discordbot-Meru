@@ -92,4 +92,4 @@ if __name__ == '__main__':
             else:
                 bot.reload_extension(f'cogs.{extension}')
 
-    bot.run(os.getenv('DISCORD_BOT_TOKEN_BETA'))
+    bot.run(os.getenv('DISCORD_BOT_TOKEN'))

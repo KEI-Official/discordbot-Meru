@@ -1,6 +1,6 @@
 import os
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime
 from dotenv import load_dotenv
 from libs.Database import Database
@@ -42,19 +42,28 @@ bot = MyBot(
 )
 
 bot.db = Database()
+bot.count = 0
+
+
+@tasks.loop(minutes=10)
+async def pre_loop():
+    await bot.wait_until_ready()
+    await bot.change_presence(
+        activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers | {bot.count}')
+    )
 
 
 @bot.event
 async def on_ready():
-    print(f"{bot.user.name} でログインしました")
+    print(f'{bot.user.name} でログインしました')
     ch = bot.get_channel(int(config['log_channel_id']))
-    await bot.change_presence(activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers',
-                                                    type=1))
     log_msg = discord.Embed(description=f'BOTが起動しました\n```\nユーザー数: {len(bot.users)}\n'
                                         f'サーバー数: {len(bot.guilds)}\n```')
     log_msg.set_author(name=f'{bot.user} 起動ログ', url=bot.user.avatar_url)
     log_msg.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
     await ch.send(embed=log_msg)
+    if not pre_loop.is_running():
+        pre_loop.start()
 
 
 @bot.listen('on_ready')
@@ -83,4 +92,4 @@ if __name__ == '__main__':
             else:
                 bot.reload_extension(f'cogs.{extension}')
 
-    bot.run(os.getenv("DISCORD_BOT_TOKEN"))
+    bot.run(os.getenv('DISCORD_BOT_TOKEN_BETA'))

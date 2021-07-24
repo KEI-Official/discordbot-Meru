@@ -89,7 +89,7 @@ class Image(commands.Cog):
                                       description=f'総Hit数: {re_data["pagination"]["total_count"]}'
                                                   '\nダウンロードする際はライセンスをよくお読みください')
                     res_image.set_author(name='GIPHY - ImageLink', url=image["url"])
-                    res_image.add_field(name='タイトル', value=image["title"])
+                    res_image.add_field(name='タイトル', value=f'{image["title"] if "" else "No title"}')
                     res_image.set_image(url=image["images"]["original"]["url"])
                     try:
                         res_image.add_field(name='アップロードユーザー',

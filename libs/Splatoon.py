@@ -72,12 +72,7 @@ class Splatoon:
                 if i == id_name:
                     sorted_list.append(w_name)
                     we_count += 1
-            if not sorted_list:
-                we_msg.add_field(name=f'{weapon_list[id_name]}',
-                                 value='```\nなし\n```',
-                                 inline=False
-                                 )
-            else:
+            if sorted_list:
                 we_msg.add_field(name=f'{weapon_list[id_name]}',
                                  value='```\n{}\n```'.format('\n'.join(sorted_list)),
                                  inline=False

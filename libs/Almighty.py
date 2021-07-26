@@ -1,4 +1,4 @@
-from typing import AnyStr, List
+from typing import List
 
 
 class Almighty:

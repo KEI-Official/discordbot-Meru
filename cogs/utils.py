@@ -1,7 +1,6 @@
 from discord import Embed, AllowedMentions, utils, File
 from discord.ext import commands
 import requests
-import random
 import re
 import os
 import uuid
@@ -21,129 +20,6 @@ class Utils(commands.Cog):
         self.azure_translate_key = os.getenv('AZURE_TRANS_KEY')
         self.azure_translate_endpoint = os.getenv('AZURE_TRANS_ENDPOINT')
         self.bitly_key = os.getenv('BITLY_KEY')
-
-    @commands.command(description='ユーザーのアイコンを表示します',
-                      usage='[対戦ルールタイプ] <-n(次の時間帯)>')
-    async def spla2(self, ctx, s_type=None, s_next=None):
-        def get_stage(game, time_next: bool):
-            if game == 'regular':
-                if time_next:
-                    res = requests.get('https://spla2.yuu26.com/regular/next')
-                    return res.json()['result'][0]
-                else:
-                    res = requests.get('https://spla2.yuu26.com/regular/now')
-                    return res.json()['result'][0]
-            elif game == 'gachi':
-                if time_next:
-                    res = requests.get('https://spla2.yuu26.com/gachi/next')
-                    return res.json()['result'][0]
-                else:
-                    res = requests.get('https://spla2.yuu26.com/gachi/now')
-                    return res.json()['result'][0]
-            elif game == 'league':
-                if time_next:
-                    res = requests.get('https://spla2.yuu26.com/league/next')
-                    return res.json()['result'][0]
-                else:
-                    res = requests.get('https://spla2.yuu26.com/league/now')
-                    return res.json()['result'][0]
-            elif game == 'coop':
-                if time_next:
-                    res = requests.get('https://spla2.yuu26.com/coop/schedule')
-                    return res.json()['result'][1]
-                else:
-                    res = requests.get('https://spla2.yuu26.com/coop/schedule')
-                    return res.json()['result'][0]
-
-        if s_type is None:
-            no_type_msg = Embed(description='ステージ情報のタイプ(r, g, l, s)を指定してください\n'
-                                            '```r: レギュラーマッチ\ng: ガチマッチ\nl: リーグマッチ\ns: サーモンラン```')
-            await ctx.reply(embed=no_type_msg, allowed_mentions=AllowedMentions.none())
-        elif s_type == 'r':
-            if s_next is None:
-                self.stage_info = get_stage('regular', False)
-            elif s_next == '-n':
-                self.stage_info = get_stage('regular', True)
-
-            stage_info = self.stage_info
-            rule_name = stage_info["rule"]
-            stage = f'・{stage_info["maps"][0]}\n・{stage_info["maps"][1]}'
-            s_t = str(stage_info['start']).replace('-', '/', 2).replace('T', ' | ')
-            e_t = str(stage_info['end']).replace('-', '/', 2).replace('T', ' | ')
-            image_url = random.choice([stage_info['maps_ex'][0]['image'], stage_info['maps_ex'][1]['image']])
-
-            de_msg = f'**ルール**\n```\n{rule_name}```\n**ステージ**\n```\n{stage}\n```\n' \
-                     f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | レギュラーマッチ',
-                          description=de_msg,
-                          color=261888)  # カラー:ライトグリーン)
-            embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
-
-        elif s_type == 'g':
-            if s_next is None:
-                self.stage_info = get_stage('gachi', False)
-            elif s_next == '-n':
-                self.stage_info = get_stage('gachi', True)
-
-            stage_info = self.stage_info
-            rule_name = stage_info["rule"]
-            stage = f'・{stage_info["maps"][0]}\n・{stage_info["maps"][1]}'
-            s_t = str(stage_info['start']).replace('-', '/', 2).replace('T', ' | ')
-            e_t = str(stage_info['end']).replace('-', '/', 2).replace('T', ' | ')
-            image_url = random.choice([stage_info['maps_ex'][0]['image'], stage_info['maps_ex'][1]['image']])
-
-            de_msg = f'**ルール**\n```\n{rule_name}\n```\n**ステージ**\n```\n{stage}\n```\n' \
-                     f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | ガチマッチ',
-                          description=de_msg,
-                          color=14840346)  # カラー:オレンジ
-            embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
-
-        elif s_type == 'l':
-            if s_next is None:
-                self.stage_info = get_stage('league', False)
-            elif s_next == '-n':
-                self.stage_info = get_stage('league', True)
-
-            stage_info = self.stage_info
-            rule_name = stage_info["rule"]
-            stage = f'・{stage_info["maps"][0]}\n・{stage_info["maps"][1]}'
-            s_t = str(stage_info['start']).replace('-', '/', 2).replace('T', ' | ')
-            e_t = str(stage_info['end']).replace('-', '/', 2).replace('T', ' | ')
-            image_url = random.choice([stage_info['maps_ex'][0]['image'], stage_info['maps_ex'][1]['image']])
-
-            de_msg = f'**ルール**\n```\n{rule_name}\n```\n**ステージ**\n```\n{stage}\n```\n' \
-                     f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | リーグマッチ',
-                          description=de_msg,
-                          color=15409787)  # カラー:ピンク
-            embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
-
-        elif s_type == 's':
-            if s_next is None:
-                self.stage_info = get_stage('coop', False)
-            elif s_next == '-n':
-                self.stage_info = get_stage('coop', True)
-
-            stage_info = self.stage_info
-            stage = stage_info["stage"]["name"]
-            image_url = stage_info['stage']['image']
-            s_t = str(stage_info['start']).replace('-', '/', 2).replace('T', ' | ')
-            e_t = str(stage_info['end']).replace('-', '/', 2).replace('T', ' | ')
-            weapons = ''
-            for we in stage_info['weapons']:
-                weapons += f'・{we["name"]}\n'
-
-            de_msg = f'**ステージ**\n```\n{stage}\n```\n**支給ブキ**\n```\n{weapons}```\n' \
-                     f'**時間帯**\n```\nSTART: {s_t}\nEND: {e_t}\n```'
-            embed = Embed(title='Splatoon2 ステージ情報 | サーモンラン',
-                          description=de_msg,
-                          color=15442812)  # カラー:薄橙
-            embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
 
     @commands.command(description='送られた文字を指定された言語に翻訳します',
                       usage='[翻訳先言語 | <-list>] [翻訳する文章]',

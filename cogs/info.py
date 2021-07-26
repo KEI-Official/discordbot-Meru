@@ -123,60 +123,12 @@ class Info(commands.Cog):
                 await embed_msg.clear_reactions()
             else:
                 await embed_msg.clear_reactions()
-                server_permission = {
-                    'administrator': '管理者', 'read_messages': 'チャンネルを見る', 'manage_channels': 'チャンネルの管理',
-                    'manage_roles': 'ロールの管理', 'manage_emojis': '絵文字の管理',
-                    'view_audit_log': '監査ログの表示', 'view_guild_insights': 'サーバーインサイトを見る',
-                    'manage_webhooks': 'ウェブフックの管理', 'manage_guild': 'サーバー管理'
-                }
-                member_permission = {
-                    'create_instant_invite': '招待を作成', 'change_nickname': 'ニックネームの変更',
-                    'manage_nicknames': 'ニックネームの管理', 'kick_members': 'メンバーをキック',
-                    'ban_members': 'メンバーをBAN'
-                }
-                ch_permission = {
-                    'send_messages': 'メッセージを送信', 'embed_links': '埋め込みリンク', 'attach_files': 'ファイルを添付',
-                    'add_reactions': 'リアクションの追加', 'external_emojis': '外部の絵文字の利用',
-                    'mention_everyone': '@everyone、@here、全てのロールにメンション', 'manage_messages': 'メッセージの管理',
-                    'read_message_history': 'メッセージ履歴を読む', 'send_tts_messages': 'テキスト読み上げメッセージを送信する',
-                    'use_slash_commands': 'スラッシュコマンドを使用'
-                }
-                voice_permission = {
-                    'connect': '接続', 'speak': '発言', 'stream': '動画',
-                    'use_voice_activation': '音声検出を使用', 'priority_speaker': '優先スピーカー',
-                    'mute_members': 'メンバーをミュート', 'deafen_members': 'メンバーのスピーカーをミュート',
-                    'move_members': 'メンバーを移動', 'request_to_speak': 'スピーカー参加をリクエスト'
-                }
-
-                s_perm_text = ''
-                m_perm_text = ''
-                c_perm_text = ''
-                v_perm_text = ''
-                role_permission_list = []
+                role_per_list = []
                 for rp in list(role_permission):
                     if rp[1]:
-                        role_permission_list.append(rp[0])
+                        role_per_list.append(rp[0])
 
-                for sp in server_permission:
-                    if sp in role_permission_list:
-                        s_perm_text += f"✅:{server_permission[sp]}\n"
-                    else:
-                        s_perm_text += f"❌:{server_permission[sp]}\n"
-                for sp in member_permission:
-                    if sp in role_permission_list:
-                        m_perm_text += f"✅:{member_permission[sp]}\n"
-                    else:
-                        m_perm_text += f"❌:{member_permission[sp]}\n"
-                for sp in ch_permission:
-                    if sp in role_permission_list:
-                        c_perm_text += f"✅:{ch_permission[sp]}\n"
-                    else:
-                        c_perm_text += f"❌:{ch_permission[sp]}\n"
-                for sp in voice_permission:
-                    if sp in role_permission_list:
-                        v_perm_text += f"✅:{voice_permission[sp]}\n"
-                    else:
-                        v_perm_text += f"❌:{voice_permission[sp]}\n"
+                s_perm_text, m_perm_text, c_perm_text, v_perm_text = self.bot.almighty.sort_permissions(role_per_list)
 
                 permission_embed = discord.Embed(title=f'権限リスト: {role_name}')
                 permission_embed.add_field(name='サーバー全般の権限', value=f'```\n{s_perm_text}\n```')

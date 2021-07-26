@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands, tasks
 from datetime import datetime
 from dotenv import load_dotenv
-from libs.Database import Database
+from libs import Database, Splatoon, Almighty
 from libs.Error import MuteUserCommand
 load_dotenv()
 
@@ -41,7 +41,9 @@ bot = MyBot(
     help_command=None
 )
 
-bot.db = Database()
+bot.db = Database.Database()
+bot.splatoon = Splatoon.Splatoon()
+bot.almighty = Almighty.Almighty()
 
 
 @tasks.loop(minutes=10)

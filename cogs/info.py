@@ -1,4 +1,7 @@
 import asyncio
+import datetime
+from typing import Union
+
 import discord
 from discord.ext import commands
 from pytz import timezone
@@ -9,6 +12,7 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.user_info = None
+        self.channel_info = None
 
     @commands.command(description='サーバーの情報を表示します',
                       aliases=['si', 'server_info'])
@@ -232,6 +236,86 @@ class Info(commands.Cog):
             embed.add_field(name='招待リンク', value=f'[0権限]({oauth_0_url}) | [全権限]({oauth_all_url})', inline=False)
 
         await ctx.send(embed=embed)
+
+    @commands.command(description='チャンネルの情報を表示します',
+                      usage='<ID/メンション/名前>',
+                      aliases=['ci', 'channel_info', 'chinfo'],
+                      brief=['【実行例】\n'
+                             '・ID: {cmd}channelinfo 123456789012345678\n'
+                             '・メンション: {cmd}channelinfo <#123456789012345678>\n'
+                             '・名前: {cmd}channelinfo チャンネル名'])
+    async def channelinfo(self, ctx, *, channel: Union[discord.TextChannel, discord.VoiceChannel, discord.CategoryChannel] = None):
+        if channel is None:
+            self.channel_info = ctx.channel
+        else:
+            self.channel_info = channel
+        ch_data = self.channel_info
+        ch_id = ch_data.id
+        ch_created = ch_data.created_at + datetime.timedelta(hours=2)
+        ch_type = str(ch_data.type).title()
+        ch_category = ch_data.category
+        ch_perm = ch_data.permissions_for(ctx.author)
+
+        embed = discord.Embed(title=f'{ch_data}', description=f'**ID**: `{ch_id}`')
+        embed.add_field(name='種類', value=f'> {ch_type}Channel')
+        embed.add_field(name='チャンネル作成日時',
+                        value=f'> <t:{int(ch_created.timestamp())}:F>')
+        embed.add_field(name='親カテゴリ',
+                        value=f'> {ch_category.name if ch_category is not None else "なし"}',
+                        inline=False)
+        if isinstance(ch_data, discord.TextChannel):
+            ch_topic = ch_data.topic
+            ch_slow_delay = ch_data.slowmode_delay
+            ch_nsfw = ch_data.nsfw
+            embed.add_field(name='トピック',
+                            value=f'> {ch_topic if ch_topic else "なし" }',
+                            inline=False)
+            embed.add_field(name='低速モード',
+                            value=f'> {ch_slow_delay+"秒" if ch_slow_delay != 0 else "オフ"}'
+                            )
+            embed.add_field(name='NSFW',
+                            value=f'> {"オン" if ch_nsfw else "オフ"}'
+                            )
+
+        if isinstance(ch_data, discord.VoiceChannel):
+            ch_bitrate = ch_data.bitrate
+            ch_limit = ch_data.user_limit
+            embed.add_field(name='ビットレート', value=f'> {ch_bitrate / 1000} Kbps')
+            embed.add_field(name='制限人数', value=f'> {"なし" if len(ch_limit) == 0 else ch_limit+"人"}')
+
+        if isinstance(ch_data, discord.CategoryChannel):
+            c_ch = [ches for ches in ctx.guild.channels if ches.category is not None and ches.category == ch_data]
+            embed.add_field(name='カテゴリー内のチャンネル数',
+                            value=f'> {len(c_ch)} チャンネル'
+                            )
+
+        embed.add_field(name='権限の値', value=f'> {ch_perm.value}')
+
+        embed_msg = await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
+        await embed_msg.add_reaction('▶')
+
+        def check(reaction, user):
+            return user == ctx.author and str(reaction.emoji) == '▶'
+
+        try:
+            await self.bot.wait_for('reaction_add', timeout=20, check=check)
+        except asyncio.TimeoutError:
+            await embed_msg.clear_reactions()
+        else:
+            await embed_msg.clear_reactions()
+            per_allow_list = []
+            for per, i in dict(ch_perm).items():
+                if i:
+                    per_allow_list.append(per)
+
+            s_perm, m_perm, c_perm, v_perm = self.bot.almighty.sort_permissions(per_allow_list)
+
+            perm_embed = discord.Embed(title=f'権限リスト: {ch_data}')
+            perm_embed.add_field(name='サーバー全般の権限', value=f'```\n{s_perm}\n```')
+            perm_embed.add_field(name='メンバーシップ権限', value=f'```\n{m_perm}\n```')
+            perm_embed.add_field(name='テキストチャンネル権限', value=f'```\n{c_perm}\n```', inline=False)
+            perm_embed.add_field(name='ボイスチャンネル権限', value=f'```\n{v_perm}\n```')
+            await embed_msg.edit(embed=perm_embed)
 
 
 def setup(bot):

@@ -24,7 +24,7 @@ class Member_Log(commands.Cog):
                       description='メンバー参加通知の機能をオンにします',
                       brief=['この機能の説明は、メンバーのアカウント作成日が3日以内の際に、'
                              'サーバーの管理者にDMを送信する機能です。\n'
-                             'このコマンドの実行には、権限:管理者が必要です', 'administrator'])
+                             'このコマンドの実行には、権限:管理者が必要です', 'administrator', 'notice-function'])
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def _notice_on(self, ctx):
@@ -42,7 +42,7 @@ class Member_Log(commands.Cog):
                       description='メンバー参加通知の機能をオフにします',
                       brief=['この機能の説明は、メンバーのアカウント作成日が3日以内の際に、'
                              'サーバーの管理者にDMを送信する機能です。\n'
-                             'このコマンドの実行には、権限:管理者が必要です', 'administrator'])
+                             'このコマンドの実行には、権限:管理者が必要です', 'administrator', 'notice-function'])
     @commands.has_permissions(administrator=True)
     @commands.guild_only()
     async def _notice_off(self, ctx):

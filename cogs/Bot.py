@@ -130,7 +130,7 @@ class Bot(commands.Cog):
             command_embed.add_field(name='エイリアス', value=f'> {", ".join(command_aliases)}')
             command_embed.add_field(name='コマンドの権限',
                                     value=f'> {command.brief[1]}'
-                                    if command.brief is not None and len(command.brief) == 2 else '> 誰でも利用可能')
+                                    if command.brief is not None and len(command.brief) > 1 else '> 誰でも利用可能')
             command_embed.add_field(name='使い方', value=f'> {how_use_text}', inline=False)
             command_embed.add_field(name='カテゴリー',
                                     value=f'> 【 {command.cog_name} 】'

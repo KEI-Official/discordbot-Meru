@@ -51,7 +51,8 @@ class Bot(commands.Cog):
                         value='・コマンド名「rtfm」: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny)',
                         inline=False)
         embed.add_field(name='各種リンク',
-                        value=f'[BOTの招待リンク]({self.bot.config["oauth_url"]}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
+                        value=f'[BOTの招待リンク]({self.bot.config["oauth_url"]}) | '
+                              '[公式サーバー](https://discord.com/invite/pvyMQhf)'
                               ' | [ブログサイト](https://syutarou.xyz)',
                         inline=False)
         await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
@@ -191,7 +192,8 @@ class Bot(commands.Cog):
                     with open('./data/function_info.json', 'r', encoding='UTF-8') as config:
                         data = json.load(config)
                     chenged_msg = discord.Embed(title='📃 Help - コマンド以外の機能',
-                                                description=f'他についている機能についての説明が載っています\nCommand Prefix:` {command_prefix} `',
+                                                description='他についている機能についての説明が載っています\n'
+                                                            f'Command Prefix:` {command_prefix} `',
                                                 color=261888)  # カラー:ライトグリーン
                     chenged_msg.set_footer(text='2ページ目/2ページ | 他の機能のHelp')
                     for cl in data:

@@ -406,6 +406,28 @@ class Admin(commands.Cog):
                         description='操作をキャンセルしました')
                 )
 
+    @commands.command(description='サーバーのアイコンを変更します',
+                      usage='[画像: 添付ファイル]',
+                      aliases=['set-icon', 'seticon'],
+                      brief=['この機能を使うには、権限:サーバーの管理が必要です',
+                             'manage_guild']
+                      )
+    @commands.has_permissions(manage_guild=True)
+    async def set_icon(self, ctx):
+        if not ctx.message.attachments:
+            no_attach = Embed(description='画像をコマンドと一緒に添付してください')
+            await ctx.reply(embed=no_attach, allowed_mentions=AllowedMentions.none())
+        else:
+            if ctx.message.attachments[0].content_type in ['image/png', 'image/jpeg', 'image/gif']:
+                after_image = await ctx.message.attachments[0].read()
+                await ctx.guild.edit(icon=after_image)
+                su_embed = Embed(description='サーバーのアイコンを変更しました')
+                su_embed.set_thumbnail(url=ctx.guild.icon_url)
+                await ctx.reply(embed=su_embed, allowed_mentions=AllowedMentions.none())
+            else:
+                no_attach = Embed(description='画像の拡張子が PNG, JPEG, GIF のものを指定してください')
+                await ctx.reply(embed=no_attach, allowed_mentions=AllowedMentions.none())
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))

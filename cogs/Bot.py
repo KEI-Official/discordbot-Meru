@@ -126,6 +126,7 @@ class Bot(commands.Cog):
             command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
                                           description=f'{command.description}',
                                           color=261888)  # カラー:ライトグリーン
+            command_embed.set_footer(text='[]: 必要引数 | <>: オプション引数')
             command_embed.add_field(name='エイリアス', value=f'> {", ".join(command_aliases)}')
             command_embed.add_field(name='コマンドの権限',
                                     value=f'> {command.brief[1]}'

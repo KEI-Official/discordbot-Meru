@@ -1,8 +1,8 @@
 import asyncio
 import re
-from typing import Optional, Dict
+from typing import Optional, Dict, Union
 import discord
-from discord import Embed, AllowedMentions, ChannelType, utils, Role
+from discord import Embed, AllowedMentions, ChannelType, TextChannel, Role
 from discord.ext import commands
 
 
@@ -135,28 +135,12 @@ class Admin(commands.Cog):
                              'manage_channels']
                       )
     @commands.has_permissions(manage_channels=True)
-    async def clone(self, ctx, ch=None, name_int=None):
+    async def clone(self, ctx, ch: Union[discord.TextChannel, discord.VoiceChannel] = None, name_int=None):
         if ch is None:
             no_ch_msg = Embed(description='チャンネルを以下の形で指定してください\n```\n・ID\n・名前\n・メンション\n```')
             return await ctx.reply(embed=no_ch_msg, allowed_mentions=AllowedMentions.none())
-
-        elif ctx.message.channel_mentions:
-            self.get_channel = ctx.message.channel_mentions[0]
-
-        elif re.search(r'[0-9]{18}', str(ch)) is not None:
-            pre_ch = ctx.guild.get_channel(int(ch))
-            if pre_ch:
-                self.get_channel = pre_ch
-            else:
-                no_ch_msg = Embed(description='チャンネルが見つかりませんでした\nチャンネルIDは間違っていませんか？')
-                return await ctx.reply(embed=no_ch_msg, allowed_mentions=AllowedMentions.none())
         else:
-            pre_ch = utils.get(ctx.guild.channels, name=ch)
-            if pre_ch:
-                self.get_channel = pre_ch
-            else:
-                no_ch_msg = Embed(description='チャンネルが見つかりませんでした\nチャンネルの名前は間違っていませんか？')
-                return await ctx.reply(embed=no_ch_msg, allowed_mentions=AllowedMentions.none())
+            self.get_channel = ch
 
         if self.get_channel is not None:
             get_channel = self.get_channel
@@ -218,7 +202,7 @@ class Admin(commands.Cog):
                 return await ctx.reply(embed=no_embed, allowed_mentions=AllowedMentions.none())
 
     @commands.command(description='チャンネルのトピックを変更します',
-                      usage='[トピック名] <ChannelID>',
+                      usage='<Channel ID/名前/メンション> [トピック名]',
                       brief=['チャンネルを指定すると、そのチャンネルのトピックを変更します'
                              '【実行例】\n'
                              '・{cmd}topic トピック変更\n'
@@ -226,7 +210,7 @@ class Admin(commands.Cog):
                              'manage_channels']
                       )
     @commands.has_permissions(manage_channels=True)
-    async def topic(self, ctx, text=None, ch_id=None):
+    async def topic(self, ctx, ch: Optional[TextChannel], *, text=None):
         if text is None:
             no_text = Embed(description='トピック名を指定してください')
             await ctx.reply(embed=no_text, allowed_mentions=AllowedMentions.none())
@@ -234,24 +218,14 @@ class Admin(commands.Cog):
             long_text = Embed(description='トピック名は1024文字以内で指定してください')
             await ctx.reply(embed=long_text, allowed_mentions=AllowedMentions.none())
         else:
-            if ch_id is None:
+            if ch is None:
                 await ctx.channel.edit(topic=text)
                 ch_su_embed = Embed(description=f'{ctx.channel.mention} のトピックを\n```{text}```\nに変更しました')
                 return await ctx.reply(embed=ch_su_embed, allowed_mentions=AllowedMentions.none())
             else:
-                ch_regex = re.match('([0-9]{18})', ch_id)
-                if ch_regex is not None:
-                    ch = ctx.guild.get_channel(int(ch_regex[0]))
-                    if ch:
-                        await ch.edit(topic=text)
-                        su_embed = Embed(description=f'{ch.mention} のトピックを\n```{text}```\nに変更しました')
-                        return await ctx.reply(embed=su_embed, allowed_mentions=AllowedMentions.none())
-                    else:
-                        fa_embed = Embed(description='チャンネルが見つかりませんでした')
-                        return await ctx.reply(embed=fa_embed, allowed_mentions=AllowedMentions.none())
-                else:
-                    no_id_embed = Embed(description='チャンネルIDを指定してください')
-                    return await ctx.reply(embed=no_id_embed, allowed_mentions=AllowedMentions.none())
+                await ch.edit(topic=text)
+                su_embed = Embed(description=f'{ch.mention} のトピックを\n```{text}```\nに変更しました')
+                return await ctx.reply(embed=su_embed, allowed_mentions=AllowedMentions.none())
 
     @commands.command(description='チャンネルのメッセージを消去します',
                       usage='[メッセージ数] <u=ユーザーID>',

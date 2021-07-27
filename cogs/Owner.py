@@ -157,7 +157,7 @@ class Owner(commands.Cog):
                               f'\n+ アニメーション: {server_ani_e_count}/{server_e_limit}\n```',
                         inline=False)
         embed.set_thumbnail(url=server_icon)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
     @commands.command(pass_context=True, hidden=True,
                       description='指定したサーバーからBOTを退出させます')
@@ -190,13 +190,11 @@ class Owner(commands.Cog):
                     self.bot.reload_extension(f'cogs.{name}')
                 except commands.errors.ExtensionNotLoaded:
                     continue
-            cog_all_done = Embed(description='Cogを全て再読み込みしました')
-            return await ctx.reply(embed=cog_all_done, allowed_mentions=AllowedMentions.none())
+            await ctx.message.add_reaction('✅')
 
         elif args in extensions:
             self.bot.reload_extension(f'cogs.{args}')
-            cog_done = Embed(description='Cogを再読み込みしました')
-            return await ctx.reply(embed=cog_done, allowed_mentions=AllowedMentions.none())
+            await ctx.message.add_reaction('✅')
 
         else:
             cog_error = Embed(description=f'`{args}`が見つかりませんでした')

@@ -67,7 +67,7 @@ class Info(commands.Cog):
         embed.add_field(name=f'役職 - {server_role_count}',
                         value=server_role + '..以下略',
                         inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='指定された役職の情報を表示します',
                       usage='[ID/メンション/名前]',
@@ -111,7 +111,7 @@ class Info(commands.Cog):
             embed.add_field(name='権限', value=f'{role_permission.value}')
             embed.add_field(name=f'持っている人 - {len(role_members)}人',
                             value=f'{role_member}', inline=False)
-            embed_msg = await ctx.send(embed=embed)
+            embed_msg = await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
             await embed_msg.add_reaction('▶')
 
             def check(reaction, user):
@@ -135,7 +135,7 @@ class Info(commands.Cog):
                 permission_embed.add_field(name='メンバーシップ権限', value=f'```\n{m_perm_text}\n```')
                 permission_embed.add_field(name='テキストチャンネル権限', value=f'```\n{c_perm_text}\n```', inline=False)
                 permission_embed.add_field(name='ボイスチャンネル権限', value=f'```\n{v_perm_text}\n```')
-                await embed_msg.edit(embed=permission_embed)
+                await embed_msg.edit(embed=permission_embed, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='ユーザーの情報を表示します',
                       usage='<ID/メンション/名前>',
@@ -187,7 +187,7 @@ class Info(commands.Cog):
         if user_data.bot:
             embed.add_field(name='招待リンク', value=f'[0権限]({oauth_0_url}) | [全権限]({oauth_all_url})', inline=False)
 
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='チャンネルの情報を表示します',
                       usage='<ID/メンション/名前>',
@@ -267,7 +267,7 @@ class Info(commands.Cog):
             perm_embed.add_field(name='メンバーシップ権限', value=f'```\n{m_perm}\n```')
             perm_embed.add_field(name='テキストチャンネル権限', value=f'```\n{c_perm}\n```', inline=False)
             perm_embed.add_field(name='ボイスチャンネル権限', value=f'```\n{v_perm}\n```')
-            await embed_msg.edit(embed=perm_embed)
+            await embed_msg.edit(embed=perm_embed, allowed_mentions=discord.AllowedMentions.none())
 
 
 def setup(bot):

@@ -46,7 +46,7 @@ class Admin(commands.Cog):
             else:
                 veri_msg.add_field(name='理由', value='なし', inline=False)
 
-            veri_embed = await ctx.send(embed=veri_msg)
+            veri_embed = await ctx.reply(embed=veri_msg, allowed_mentions=discord.AllowedMentions.none())
 
             def check(c_msg):
                 return c_msg.author == ctx.author and c_msg.channel == ctx.channel

@@ -16,11 +16,13 @@ class Bot(commands.Cog):
 
     @commands.command(description='Botの応答速度を測ります')
     async def ping(self, ctx):
-        await ctx.send(f'🏓 Pong! - {math.floor(self.bot.latency * 1000)} ms')
+        await ctx.reply(f'🏓 Pong! - {math.floor(self.bot.latency * 1000)} ms',
+                        allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='BOTの招待リンクを出します')
     async def invite(self, ctx):
-        return await ctx.send(f'招待リンクです\n{self.bot.config["oauth_url"]}')
+        return await ctx.reply('招待リンクです\n{self.bot.config["oauth_url"]}',
+                               allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='BOTの情報を表示します')
     async def about(self, ctx):
@@ -52,7 +54,7 @@ class Bot(commands.Cog):
                         value=f'[BOTの招待リンク]({self.bot.config["oauth_url"]}) | [公式サーバー](https://discord.com/invite/pvyMQhf)'
                               ' | [ブログサイト](https://syutarou.xyz)',
                         inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='BOTの利用規約を表示します')
     async def terms(self, ctx):
@@ -105,7 +107,7 @@ class Bot(commands.Cog):
                                value=f'```ini\n[ WebSocket ]\n{web_ping}ms\n[ Message ]\n{message_ping}ms\n```',
                                inline=False)
 
-        await ctx.send(embed=status_embed)
+        await ctx.reply(embed=status_embed, allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
@@ -168,7 +170,7 @@ class Bot(commands.Cog):
                     help_cmg_list.sort()
                 embed.add_field(name=command_group.get(cg), value=f'> {", ".join(help_cmg_list)}', inline=False)
                 help_cmg_list = []
-            help_embed_msg = await ctx.send(embed=embed)
+            help_embed_msg = await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
             await help_embed_msg.add_reaction('▶')
 
             def check(reaction, user):
@@ -216,13 +218,13 @@ class Bot(commands.Cog):
                     beta_command = discord.Embed(title=f'📃 CommandHelp - `{cmd_get_name.name}`',
                                                  description='非公開コマンドです',
                                                  color=16770304)  # カラー:黄色
-                    return await ctx.send(embed=beta_command)
+                    return await ctx.reply(embed=beta_command, allowed_mentions=discord.AllowedMentions.none())
                 else:
                     help_command = send_embed(cmd_get_name)
-                    return await ctx.send(embed=help_command)
+                    return await ctx.reply(embed=help_command, allowed_mentions=discord.AllowedMentions.none())
             else:
                 help_command = send_embed(cmd_get_name)
-                return await ctx.send(embed=help_command)
+                return await ctx.reply(embed=help_command, allowed_mentions=discord.AllowedMentions.none())
 
 
 def setup(bot):

@@ -72,7 +72,7 @@ class Game(commands.Cog):
                           description=de_msg,
                           color=261888)  # カラー:ライトグリーン)
             embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
+            await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
         elif s_type == 'g':
             if s_next is None:
@@ -93,7 +93,7 @@ class Game(commands.Cog):
                           description=de_msg,
                           color=14840346)  # カラー:オレンジ
             embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
+            await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
         elif s_type == 'l':
             if s_next is None:
@@ -114,7 +114,7 @@ class Game(commands.Cog):
                           description=de_msg,
                           color=15409787)  # カラー:ピンク
             embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
+            await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
         elif s_type == 's':
             if s_next is None:
@@ -137,7 +137,7 @@ class Game(commands.Cog):
                           description=de_msg,
                           color=15442812)  # カラー:薄橙
             embed.set_image(url=image_url)
-            await ctx.send(embed=embed)
+            await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
     @commands.group(description='Splatoon2のいろんな情報を取得します',
                     usage='[取得キー] <find/f> <su=名前/sp=名前>',
@@ -254,7 +254,7 @@ class Game(commands.Cog):
         question_embed = Embed(title=f'{ctx.author} さんの問題',
                                description=f'【 {q[0]} 】の読み方をひらがなで答えよ！',
                                color=2263275)
-        q_msg = await ctx.send(embed=question_embed)
+        q_msg = await ctx.reply(embed=question_embed, allowed_mentions=AllowedMentions.none())
 
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel

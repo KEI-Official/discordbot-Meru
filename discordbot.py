@@ -47,7 +47,7 @@ bot.splatoon = Splatoon.Splatoon()
 bot.almighty = Almighty.Almighty()
 
 
-@tasks.loop(minutes=1)
+@tasks.loop(minutes=10)
 async def pre_loop():
     await bot.wait_until_ready()
     await bot.change_presence(

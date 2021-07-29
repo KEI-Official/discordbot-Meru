@@ -1,3 +1,4 @@
+import json
 import os
 import discord
 from discord.ext import commands, tasks
@@ -46,12 +47,21 @@ bot.splatoon = Splatoon.Splatoon()
 bot.almighty = Almighty.Almighty()
 
 
-@tasks.loop(minutes=10)
+@tasks.loop(minutes=1)
 async def pre_loop():
     await bot.wait_until_ready()
     await bot.change_presence(
         activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers')
     )
+    data = {
+        "bot_guilds": len(bot.guilds),
+        "bot_users": len(bot.users),
+        "bot_commands": len(bot.commands),
+        "bot_ping": round(bot.latency * 1000, 1)
+    }
+    file = open('./data/bot_data.json', 'w')
+    json.dump(data, file, indent=4)
+    print('success')
 
 
 @bot.event

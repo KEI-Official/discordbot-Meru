@@ -134,7 +134,8 @@ class BotLog(commands.Cog):
                     ),
                     allowed_mentions=AllowedMentions.none()
                 )
-
+            elif isinstance(error, commands.BadUnionArgument):
+                return
             else:
                 raise error
 

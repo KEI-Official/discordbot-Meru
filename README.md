@@ -1,10 +1,10 @@
-# KEI Official | DiscordBot KEI 
+# メル Official | DiscordBot KEI 
 
-This repository is Source Code of A Discord Bot KEI.
+This repository is Source Code of A Discord Bot メル.
 
-Now Projects => [Here](https://github.com/KEI-Official/keibot-python/projects/1)
+Now Projects => [Here](https://github.com/KEI-Official/discordbot-Meru/projects/1)
 
-### KEI Management Team
+### メル Management Team
 
 - Owner
   - yutarou1241477#7855
@@ -14,6 +14,6 @@ Now Projects => [Here](https://github.com/KEI-Official/keibot-python/projects/1)
   - yutarou1241477#7855
   - daima3629#1235
 
-### KEI Official Discord Server
+### メル Official Discord Server
 
 https://discord.gg/pvyMQhf

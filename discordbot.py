@@ -61,7 +61,6 @@ async def pre_loop():
     }
     file = open('./data/bot_data.json', 'w')
     json.dump(data, file, indent=4)
-    print('success')
 
 
 @bot.event

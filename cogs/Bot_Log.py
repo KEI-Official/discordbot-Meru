@@ -47,7 +47,7 @@ class BotLog(commands.Cog):
                     log_embed.add_field(name='発言場所',
                                         value=f'```\n・サーバー名 : {msg.guild.name}\n・サーバーID : {msg.guild.id}\n```',
                                         inline=False)
-                    log_embed.add_field(name='実行コマンド', value=f'```\n{msg_content}\n```', inline=False)
+                    log_embed.add_field(name='実行コマンド', value=f'```\n{msg_content[:1000]}\n```', inline=False)
                     log_embed.set_thumbnail(url=msg.author.avatar_url)
                     log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
                     await log_channel.send(embed=log_embed)

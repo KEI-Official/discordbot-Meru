@@ -269,6 +269,35 @@ class Info(commands.Cog):
             perm_embed.add_field(name='ボイスチャンネル権限', value=f'```\n{v_perm}\n```')
             await embed_msg.edit(embed=perm_embed, allowed_mentions=discord.AllowedMentions.none())
 
+    @commands.command(description='指定された絵文字の情報を表示します',
+                      usage='[ID/名前]',
+                      aliases=['ei', 'emoji_info'],
+                      brief=['【実行例】\n'
+                             '・ID: {cmd}emojiinfo 123456789012345678\n'
+                             '・名前: {cmd}emojiinfo :emoji:(emoji)'])
+    async def emojiinfo(self, ctx, emoji: discord.Emoji = None):
+        if emoji is None:
+            no_emoji_msg = discord.Embed(description='絵文字を指定してください')
+            return await ctx.reply(embed=no_emoji_msg, allowed_mentions=discord.AllowedMentions.none())
+        else:
+            emoji_id = emoji.id
+            emoji_name = emoji.name
+            emoji_created = emoji.created_at
+            emoji_animated = emoji.animated
+            emoji_url = emoji.url
+            emoji_guild = emoji.guild
+
+            embed = discord.Embed(title=f'Emoji - {emoji}')
+            embed.add_field(name='絵文字の名前', value=f'> `{emoji_name}`')
+            embed.add_field(name='ID', value=f'> `{emoji_id}`')
+            embed.add_field(name='URL', value=f'[Here]({emoji_url})', inline=False)
+            embed.add_field(name='作成日時',
+                            value=f'{emoji_created.strftime("%Y/%m/%d %H:%M:%S")}')
+            embed.add_field(name='アニメ絵文字', value=f'{"はい" if emoji_animated else "いいえ"}')
+            embed.add_field(name='追加されたサーバー', value=f'{emoji_guild if emoji_guild is not None else "なし"}')
+            embed.set_thumbnail(url=emoji_url)
+            return await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Info(bot))

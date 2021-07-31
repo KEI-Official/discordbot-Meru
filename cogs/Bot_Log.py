@@ -130,7 +130,8 @@ class BotLog(commands.Cog):
                 return await ctx.reply(
                     embed=Embed(
                         description='絵文字が見つかりませんでした\n**考えられる原因**```'
-                                    '\n・IDや名前は間違っていませんか？\n```'
+                                    '\n・IDや名前は間違っていませんか？'
+                                    '\n・カスタム絵文字ではない\n```'
                     ),
                     allowed_mentions=AllowedMentions.none()
                 )

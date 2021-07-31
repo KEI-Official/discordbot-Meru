@@ -1,14 +1,19 @@
-from discord import Embed, AllowedMentions, utils, File
+import asyncio
+import datetime
+import io
+import json
+import os
+import re
+import uuid
+
+from discord import Embed, AllowedMentions, utils, File, TextChannel, VoiceChannel
 from discord.ext import commands
 import requests
-import re
-import os
-import uuid
-import json
 
 
 class Utils(commands.Cog):
     """ユーザー向けのさまざまなコマンドがあるカテゴリーです"""
+
     def __init__(self, bot):
         self.bot = bot
         self.stage_info = None
@@ -270,6 +275,67 @@ class Utils(commands.Cog):
                     res_image.set_footer(text=f'👍: {image.get("likes") if image.get("likes") else "0"} | '
                                               f'💬: {image.get("comments") if image.get("comments") else "0"}')
                     return await ctx.reply(embed=res_image, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(description='見ることが出来るチャンネルの一覧を表示します',
+                      aliases=['chlist', 'ch_tree', 'chtree']
+                      )
+    async def ch_list(self, ctx):
+        ches = ctx.guild.channels
+
+        user_deny_ch = []
+        for channel in ches:
+            ch_perm = channel.permissions_for(ctx.author)
+            deny_perm = [str(perm) for perm, b in dict(ch_perm).items() if not b]
+            if 'read_messages' in deny_perm:
+                user_deny_ch.append(channel)
+
+        all_list = ctx.guild.by_category()
+        if not user_deny_ch:
+            pass
+        else:
+            for ch in user_deny_ch:
+                for a, b in all_list:
+                    if ch in b:
+                        b.remove(ch)
+        allow_ch_list = []
+
+        for category, ch_list in all_list:
+            if category:
+                allow_ch_list.append(f'C# {category.name}')
+            for ch in ch_list:
+                if isinstance(ch, TextChannel):
+                    allow_ch_list.append(f'　T# {ch.name}')
+                elif isinstance(ch, VoiceChannel):
+                    allow_ch_list.append(f'　V# {ch.name}')
+
+        text = '\n'.join(allow_ch_list)
+
+        if len(text) > 1000:
+            send_msg = await ctx.reply(
+                '閲覧できるチャンネルリスト',
+                file=File(
+                    io.StringIO(text),
+                    f'ChannelTree-{datetime.datetime.utcnow().timestamp()}.txt',
+                ),
+                allowed_mentions=AllowedMentions.none()
+            )
+        else:
+            send_embed = Embed(title='閲覧できるチャンネルリスト',
+                               description=f'```\n{text}\n```')
+            send_msg = await ctx.reply(embed=send_embed, allowed_mentions=AllowedMentions.none())
+
+        await send_msg.add_reaction('🗑')
+
+        def check(reaction, user):
+            return user == ctx.author and (str(reaction.emoji) == '🗑') and reaction.message.channel == ctx.channel
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=15, check=check)
+        except asyncio.TimeoutError:
+            await send_msg.clear_reactions()
+        else:
+            if str(reaction.emoji) == '🗑':
+                await send_msg.clear_reactions()
+                await send_msg.delete()
 
 
 def setup(bot):

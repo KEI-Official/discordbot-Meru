@@ -78,6 +78,11 @@ class Database:
                             (guild_id, join_msg, left_msg, join_id, left_id))
         return True
 
+    def member_log_update(self, guild_id, args, content):
+        self.setup()
+        self.cursor.execute(f'UPDATE member_log SET {args}={content} WHERE guild_id = ?', (guild_id,))
+        return True
+
     def member_log_unset(self, guild_id):
         self.setup()
         self.cursor.execute('DELETE FROM member_log WHERE guild_id = ?', (guild_id,))

@@ -1,4 +1,4 @@
-# メル Official | DiscordBot KEI 
+# メル Official | DiscordBot メル
 
 This repository is Source Code of A Discord Bot メル.
 

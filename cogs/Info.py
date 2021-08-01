@@ -304,7 +304,10 @@ class Info(commands.Cog):
                       brief=['【実行例】\n'
                              '・コード: {cmd}inviteinfo pvyMQhf\n'
                              '・リンク: {cmd}inviteinfo https://discord.gg/pvyMQhf'])
-    async def inviteinfo(self, ctx, invite_data: discord.Invite):
+    async def inviteinfo(self, ctx, invite_data: discord.Invite = None):
+        if not invite_data:
+            no_invite_msg = discord.Embed(description='招待リンクを指定してください')
+            return await ctx.reply(embed=no_invite_msg, allowed_mentions=discord.AllowedMentions.none())
 
         def get_d_h_m_s_us(sec):
             td = datetime.timedelta(seconds=sec)

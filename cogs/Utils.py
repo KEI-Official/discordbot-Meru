@@ -3,10 +3,9 @@ import datetime
 import io
 import json
 import os
-import re
 import uuid
 
-from discord import Embed, AllowedMentions, utils, File, TextChannel, VoiceChannel
+from discord import Embed, AllowedMentions, File, TextChannel, VoiceChannel, Member
 from discord.ext import commands
 import requests
 
@@ -85,31 +84,13 @@ class Utils(commands.Cog):
 
     @commands.command(description='ユーザーのアイコンを表示します',
                       usage='<User ID/名前/メンション>')
-    async def avatar(self, ctx, user=None):
+    async def avatar(self, ctx, user: Member = None):
         if user is None:
             self.avatar_url = f'{ctx.author.avatar_url}'.replace('1024', '128')
             self.user_info = ctx.author
-        elif ctx.message.mentions:
-            self.user_info = ctx.message.mentions[0]
-            self.avatar_url = f'{self.user_info.avatar_url}'.replace('1024', '128')
-        elif re.search(r'[0-9]{18}', str(user)) is not None:
-            pre_user = ctx.guild.get_member(int(user))
-            if pre_user:
-                self.user_info = pre_user
-                self.avatar_url = f'{self.user_info.avatar_url}'.replace('1024', '128')
-            else:
-                no_user_msg = Embed(description='ユーザーが見つかりませんでした\n**考えられる原因**```'
-                                                '\n・IDは間違っていませんか？\n・ユーザーはサーバーにいますか？\n```')
-                return await ctx.reply(embed=no_user_msg, allowed_mentions=AllowedMentions.none())
         else:
-            pre_user = utils.get(ctx.guild.members, name=user)
-            if pre_user:
-                self.user_info = pre_user
-                self.avatar_url = f'{self.user_info.avatar_url}'.replace('1024', '128')
-            else:
-                no_user_msg = Embed(description='ユーザーが見つかりませんでした\n**考えられる原因**```'
-                                                '\n・名前は間違っていませんか？\n・ユーザーはサーバーにいますか？\n```')
-                return await ctx.reply(embed=no_user_msg, allowed_mentions=AllowedMentions.none())
+            self.avatar_url = f'{user.avatar_url}'.replace('1024', '128')
+            self.user_info = user
 
         avatar_png_url = self.avatar_url.replace('webp', 'png')
         avatar_jpg_url = self.avatar_url.replace('webp', 'jpg')
@@ -118,7 +99,7 @@ class Utils(commands.Cog):
                                   f'[jpg]({avatar_jpg_url}) | [jpeg]({avatar_jpeg_url})')
         embed.set_author(name=f'{self.user_info}')
         embed.set_image(url=self.avatar_url)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
     @commands.command(description='指定された画像の文字をおこして、送信します',
                       usage='[画像URL] ',
@@ -215,7 +196,7 @@ class Utils(commands.Cog):
                     return
             else:
                 await ctx.reply('短縮URLを作成しました', allowed_mentions=AllowedMentions.none())
-                await ctx.send(f'`{re_data["link"]}`')
+                await ctx.reply(f'`{re_data["link"]}`', allowed_mentions=AllowedMentions.none())
 
     @commands.command(description='指定されたキーワードの画像をPixaBay上から検索します',
                       usage='[キーワード]',

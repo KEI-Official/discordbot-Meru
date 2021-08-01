@@ -84,7 +84,7 @@ class Utils(commands.Cog):
 
     @commands.command(description='ユーザーのアイコンを表示します',
                       usage='<User ID/名前/メンション>',
-                      aliases=['icon'],)
+                      aliases=['icon'])
     async def avatar(self, ctx, user: Member = None):
         if user is None:
             self.avatar_url = f'{ctx.author.avatar_url}'.replace('1024', '128')

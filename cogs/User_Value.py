@@ -15,7 +15,7 @@ class User_Value(commands.Cog):
             return
 
     @commands.is_owner()
-    @score.coomand()
+    @score.command()
     async def update(self, ctx, user: discord.User = None, value=None, reason=''):
         if not user:
             return await ctx.reply('ユーザーを指定してください', allowed_mentions=discord.AllowedMentions.none())
@@ -38,7 +38,7 @@ class User_Value(commands.Cog):
                     return await ctx.reply('設定が完了しました', allowed_mentions=discord.AllowedMentions.none())
 
     @commands.is_owner()
-    @score.commands()
+    @score.command()
     async def remove(self, ctx, user: discord.User = None):
         if not user:
             return await ctx.reply('ユーザーを指定してください', allowed_mentions=discord.AllowedMentions.none())

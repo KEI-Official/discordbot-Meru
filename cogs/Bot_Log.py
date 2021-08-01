@@ -135,6 +135,13 @@ class BotLog(commands.Cog):
                     ),
                     allowed_mentions=AllowedMentions.none()
                 )
+            elif isinstance(error, commands.BadInviteArgument):
+                return await ctx.reply(
+                    embed=Embed(
+                        description='招待リンクが無効か、有効期限が切れています。'
+                    ),
+                    allowed_mentions=AllowedMentions.none()
+                )
             elif isinstance(error, commands.BadUnionArgument):
                 return
             else:

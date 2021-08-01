@@ -296,7 +296,51 @@ class Info(commands.Cog):
             embed.add_field(name='アニメ絵文字', value=f'{"はい" if emoji_animated else "いいえ"}')
             embed.add_field(name='追加されたサーバー', value=f'{emoji_guild if emoji_guild is not None else "なし"}')
             embed.set_thumbnail(url=emoji_url)
-            return await ctx.send(embed=embed)
+            return await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
+
+    @commands.command(description='指定された招待リンクの情報を表示します',
+                      usage='[リンク/コード]',
+                      aliases=['ii', 'invite_info'],
+                      brief=['【実行例】\n'
+                             '・コード: {cmd}inviteinfo pvyMQhf\n'
+                             '・リンク: {cmd}inviteinfo https://discord.gg/pvyMQhf'])
+    async def inviteinfo(self, ctx, invite_data: discord.Invite):
+
+        def get_d_h_m_s_us(sec):
+            td = datetime.timedelta(seconds=sec)
+            m, s = divmod(td.seconds, 60)
+            h, m = divmod(m, 60)
+            return td.days, h, m, s, td.microseconds
+
+        guild_invite = await ctx.guild.invites()
+        invite = None
+
+        for g_i in guild_invite:
+            if g_i == invite_data:
+                invite = g_i
+
+        in_age = get_d_h_m_s_us(invite.max_age)
+        time_list = ['日', '時間', '分', '秒', 'ミリ秒']
+        time_text = []
+        for num in range(5):
+            if in_age[num] != 0:
+                time_text.append(f'{in_age[num]}{time_list[num]}')
+
+        in_max = invite.max_uses
+        in_temp = invite.temporary
+        in_created = invite.created_at.astimezone()
+
+        embed = discord.Embed(title=f'Invite - {invite.code}')
+        embed.add_field(name='招待コード', value=f'> `{invite.code}`')
+        embed.add_field(name='作成者', value=f'> {invite.inviter}')
+        embed.add_field(name='作成日時',
+                        value=f'{"取得不可" if in_created is None else f"<t:{int(in_created.timestamp())}:f>"}')
+        embed.add_field(name='有効期限', value=f'> {"なし" if not time_text else " ".join(time_text)}')
+        embed.add_field(name='利用回数', value=f'> {invite.uses} / {in_max if in_max != 0 else "∞"}')
+        embed.add_field(name='一時的な招待', value=f'> {"はい" if in_temp else "いいえ"}')
+        embed.add_field(name='招待リンク', value=f'[{invite.url}]({invite.url})')
+
+        await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
 
 def setup(bot):

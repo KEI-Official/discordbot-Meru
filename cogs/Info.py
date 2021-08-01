@@ -156,7 +156,7 @@ class Info(commands.Cog):
         user_name = user_data.display_name
         user_created = user_data.created_at
         user_joined = user_data.joined_at
-        status_l = {'online': '🟢 `オンライン`', 'dnd': '🔴 `取り込み中`', 'idle': '🟡 `退席中`', 'offline': '⚪ オフライン'}
+        status_l = {'online': '🟢 オンライン', 'dnd': '🔴 取り込み中', 'idle': '🟡 退席中', 'offline': '⚪ オフライン'}
         user_status = status_l[f'{user_data.status}']
         user_bot = 'Bot' if user_data.bot else 'User'
 
@@ -179,19 +179,29 @@ class Info(commands.Cog):
         embed = discord.Embed(title=f'{user_data}', description=f'**ID**: `{user_id}`', color=user_color)
         embed.set_thumbnail(url=user_icon)
         embed.add_field(name='名前',
-                        value=f'> {user_name}',
-                        inline=False)
+                        value=f'> {user_name}'
+                        )
+        embed.add_field(name='ステータス',
+                        value=f'> {user_status}'
+                        )
+        embed.add_field(name='Bot/User',
+                        value=f'> {user_bot}'
+                        )
+
         embed.add_field(name='アカウント作成日時',
-                        value=f'> <t:{user_created.astimezone().timestamp()}:f>')
+                        value=f'> <t:{int(user_created.astimezone().timestamp())}:f>')
         embed.add_field(name='サーバー入室日時',
                         value=f'> <t:{int(user_joined.astimezone().timestamp())}:f>')
-        embed.add_field(name='ステータス', value=f'> {user_status}')
-        embed.add_field(name='BotかUser', value=f'> {user_bot}')
+
         embed.add_field(name='グローバルスコア',
-                        value=f'> {"10.0" if not user_evaluation else user_evaluation[1]}')
+                        value=f'> {"10.0" if not user_evaluation else user_evaluation[1]}',
+                        inline=False
+                        )
+
         embed.add_field(name=f'役職 - {len(user_data.roles)}',
                         value=user_role,
                         inline=False)
+
         if user_data.bot:
             embed.add_field(name='招待リンク', value=f'[0権限]({oauth_0_url}) | [全権限]({oauth_all_url})', inline=False)
 

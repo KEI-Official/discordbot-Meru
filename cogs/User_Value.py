@@ -26,8 +26,8 @@ class User_Value(commands.Cog):
         if ctx.guild:
             res = self.db.user_evaluation_get(user.id)
             if res:
-                ban_count = res[2]
-                reason_list = str(res[3]).split(',')
+                ban_count = res[0][2]
+                reason_list = str(res[0][3]).split(',')
                 new_list = reason_list.append(str(reason))
                 check = self.db.user_evaluation_update(user.id, str(value), str(ban_count), ','.join(str(new_list)))
                 if check:

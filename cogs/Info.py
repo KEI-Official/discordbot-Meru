@@ -194,7 +194,7 @@ class Info(commands.Cog):
                         value=f'> <t:{int(user_joined.astimezone().timestamp())}:f>')
 
         embed.add_field(name='グローバルスコア',
-                        value=f'> {"10.0" if not user_evaluation else user_evaluation[1]}',
+                        value=f'> {"10.0" if not user_evaluation else user_evaluation[0][1]}',
                         inline=False
                         )
 

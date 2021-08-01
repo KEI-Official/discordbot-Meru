@@ -28,8 +28,10 @@ class User_Value(commands.Cog):
             if res:
                 ban_count = res[0][2]
                 reason_list = str(res[0][3]).split(',')
-                new_list = reason_list.append(str(reason))
-                check = self.db.user_evaluation_update(user.id, str(value), str(ban_count), ','.join(str(new_list)))
+                print(reason_list)
+                reason_list.append(str(reason))
+                print(','.join(reason_list))
+                check = self.db.user_evaluation_update(user.id, str(value), str(ban_count), ','.join(reason_list))
                 if check:
                     return await ctx.reply('設定が完了しました', allowed_mentions=discord.AllowedMentions.none())
             else:

@@ -149,6 +149,10 @@ class Info(commands.Cog):
             self.user_info = ctx.author
         else:
             self.user_info = member
+        online = self.bot.get_emoji(871520342672285748)
+        dnd = self.bot.get_emoji(871520343100108830)
+        offline = self.bot.get_emoji(871520342919753749)
+        idle = self.bot.get_emoji(871520343095926804)
         user_data = self.user_info
         user_id = user_data.id
         user_color = user_data.roles[len(user_data.roles)-1].color
@@ -156,7 +160,7 @@ class Info(commands.Cog):
         user_name = user_data.display_name
         user_created = user_data.created_at
         user_joined = user_data.joined_at
-        status_l = {'online': '🟢 オンライン', 'dnd': '🔴 取り込み中', 'idle': '🟡 退席中', 'offline': '⚪ オフライン'}
+        status_l = {'online': f'{online} オンライン', 'dnd': f'{dnd} 取り込み中', 'idle': f'{idle} 退席中', 'offline': f'{offline} オフライン'}
         user_status = status_l[f'{user_data.status}']
         user_bot = 'Bot' if user_data.bot else 'User'
 
@@ -300,7 +304,7 @@ class Info(commands.Cog):
         else:
             emoji_id = emoji.id
             emoji_name = emoji.name
-            emoji_created = emoji.created_at
+            emoji_created = emoji.created_at.astimezone()
             emoji_animated = emoji.animated
             emoji_url = emoji.url
             emoji_guild = emoji.guild
@@ -310,9 +314,9 @@ class Info(commands.Cog):
             embed.add_field(name='ID', value=f'> `{emoji_id}`')
             embed.add_field(name='URL', value=f'[Here]({emoji_url})', inline=False)
             embed.add_field(name='作成日時',
-                            value=f'{emoji_created.strftime("%Y/%m/%d %H:%M:%S")}')
-            embed.add_field(name='アニメ絵文字', value=f'{"はい" if emoji_animated else "いいえ"}')
-            embed.add_field(name='追加されたサーバー', value=f'{emoji_guild if emoji_guild is not None else "なし"}')
+                            value=f'<t:{int(emoji_created.timestamp())}:f>')
+            embed.add_field(name='アニメ絵文字', value=f'> {"はい" if emoji_animated else "いいえ"}')
+            embed.add_field(name='追加されたサーバー', value=f'> {emoji_guild if emoji_guild is not None else "なし"}')
             embed.set_thumbnail(url=emoji_url)
             return await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 

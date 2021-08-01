@@ -19,6 +19,8 @@ class Database:
                             'member_log(guild_id integer primary key, join_msg, left_msg, join_id, left_id)')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS '
                             'tao_help(guild_id integer primary key, func, log_id, role_t, role_g, role_r, premium)')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS '
+                            'user_evaluation(user_id integer primary key, value_count, ban_count, reason)')
 
     # コマンド制限
     def mute_user_set(self, user_id):
@@ -109,7 +111,7 @@ class Database:
 
     def tao_help_premium_set(self, guild_id, func, log_id, role_t, role_g, role_r, premium):
         self.setup()
-        self.cursor.execute('INSERT INTO tao_help VALUES (?,?,?,?,?,?,?',
+        self.cursor.execute('INSERT INTO tao_help VALUES (?,?,?,?,?,?,?)',
                             (guild_id, func, log_id, role_t, role_g, role_r, premium))
         return True
 
@@ -132,5 +134,29 @@ class Database:
     def tao_help_premium_get(self):
         self.setup()
         res = self.cursor.execute('SELECT guild_id FROM tao_help WHERE premium = "on"')
+        data = res.fetchall()
+        return data
+
+    # ユーザー評価値 機能
+    def user_evaluation_set(self, user_id, value, ban_count, reason):
+        self.setup()
+        self.cursor.execute('INSERT INTO user_evaluation VALUES (?,?,?,?)',
+                            (user_id, value, ban_count, reason))
+        return True
+
+    def user_evaluation_del(self, user_id):
+        self.setup()
+        self.cursor.execute('DELETE FROM user_evaluation WHERE user_id = ?', (user_id,))
+        return True
+
+    def user_evaluation_update(self, user_id, value, ban_count, reason):
+        self.setup()
+        self.cursor.execute('UPDATE user_evaluation SET value_count = ?, ban_count = ?, reason = ? '
+                            'WHERE user_id = ?', (value, ban_count, reason, user_id))
+        return True
+
+    def user_evaluation_get(self, user_id):
+        self.setup()
+        res = self.cursor.execute('SELECT * FROM user_evaluation WHERE user_id = ?', (user_id,))
         data = res.fetchall()
         return data

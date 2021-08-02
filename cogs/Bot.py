@@ -21,7 +21,7 @@ class Bot(commands.Cog):
 
     @commands.command(description='BOTの招待リンクを出します')
     async def invite(self, ctx):
-        return await ctx.reply('招待リンクです\n{self.bot.config["oauth_url"]}',
+        return await ctx.reply(f'招待リンクです\n{self.bot.config["oauth_url"]}',
                                allowed_mentions=discord.AllowedMentions.none())
 
     @commands.command(description='BOTの情報を表示します')

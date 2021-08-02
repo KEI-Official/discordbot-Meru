@@ -327,22 +327,22 @@ class Utils(commands.Cog):
     @tag.command()
     async def add(self, ctx, tag_name=None, *, context=None):
         if not tag_name or not context:
-            no_tag = Embed(description='追加するタグの名前又は内容を記入してください')
-            return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
-
-        res = self.bot.db.user_tag_set(ctx.author.id, tag_name, context)
-        if res:
-            return await ctx.reply('✅ 追加しました', allowed_mentions=AllowedMentions.none())
+            return await ctx.reply('追加するタグの名前又は内容を記入してください', allowed_mentions=AllowedMentions.none())
+        elif tag_name in ['add', 'remove', 'list']:
+            return await ctx.reply('タグの名前にサブコマンド名は利用できません', allowed_mentions=AllowedMentions.none())
+        else:
+            res = self.bot.db.user_tag_set(ctx.author.id, tag_name, context)
+            if res:
+                return await ctx.reply('追加しました', allowed_mentions=AllowedMentions.none())
 
     @tag.command()
     async def remove(self, ctx, tag_name=None):
         if not tag_name:
-            no_tag = Embed(description='削除するタグの名前を記入してください')
-            return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
+            return await ctx.reply('削除するタグの名前を記入してください', allowed_mentions=AllowedMentions.none())
 
         res = self.bot.db.user_tag_del(ctx.author.id, tag_name)
         if res:
-            return await ctx.reply('❎ 削除しました', allowed_mentions=AllowedMentions.none())
+            return await ctx.reply('削除しました', allowed_mentions=AllowedMentions.none())
 
     @tag.command()
     async def list(self, ctx):

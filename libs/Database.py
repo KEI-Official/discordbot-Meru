@@ -21,7 +21,7 @@ class Database:
                             'tao_help(guild_id integer primary key, func, log_id, role_t, role_g, role_r, premium)')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS '
                             'user_evaluation(user_id integer primary key, value_count, ban_count, reason)')
-        self.cursor.execute('CREATE TABLE IF NOT EXISTS user_tag(user_id integer, tag_name, context, hidden)')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS user_tag(user_id integer, tag_name, context)')
 
     # コマンド制限
     def mute_user_set(self, user_id):
@@ -163,10 +163,10 @@ class Database:
         return data
 
     # タグコマンド
-    def user_tag_set(self, user_id, tag_name, context, hidden):
+    def user_tag_set(self, user_id, tag_name, context):
         self.setup()
-        self.cursor.execute('INSERT INTO user_tag VALUES (?,?,?,?)',
-                            (user_id, tag_name, context, hidden))
+        self.cursor.execute('INSERT INTO user_tag VALUES (?,?,?)',
+                            (user_id, tag_name, context))
         return True
 
     def user_tag_del(self, user_id, tag_name):

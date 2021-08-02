@@ -352,14 +352,13 @@ class Utils(commands.Cog):
             no_tag.set_footer(text=f'{ctx.author}')
             return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
         else:
-            user_data = res[0]
             user_data_list = []
             count = 1
-            for data in user_data:
-                user_data_list.append(f'{count}. {data[0]}: {data[1]}')
+            for data in res:
+                user_data_list.append(f'{count}. {data[1]}: {data[2]}')
                 count += 1
             tag_list = Embed(title='Tag List',
-                             description='\n'.join(user_data_list))
+                             description='```\n{}\n```'.format('\n'.join(user_data_list)))
             tag_list.set_footer(text=f'{ctx.author}')
             return await ctx.reply(embed=tag_list, allowed_mentions=AllowedMentions.none())
 

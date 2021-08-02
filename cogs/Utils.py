@@ -319,6 +319,50 @@ class Utils(commands.Cog):
                 await send_msg.clear_reactions()
                 await send_msg.delete()
 
+    @commands.group()
+    async def tag(self, ctx):
+        if ctx.invoked_subcommand is None:
+            return
+
+    @tag.command()
+    async def add(self, ctx, tag_name=None, *, context=None):
+        if not tag_name or not context:
+            no_tag = Embed(description='追加するタグの名前又は内容を記入してください')
+            return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
+
+        res = self.bot.db.user_tag_set(ctx.author.id, tag_name, context)
+        if res:
+            return await ctx.reply('✅ 追加しました', allowed_mentions=AllowedMentions.none())
+
+    @tag.command()
+    async def remove(self, ctx, tag_name=None):
+        if not tag_name:
+            no_tag = Embed(description='削除するタグの名前を記入してください')
+            return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
+
+        res = self.bot.db.user_tag_del(ctx.author.id, tag_name)
+        if res:
+            return await ctx.reply('❎ 削除しました', allowed_mentions=AllowedMentions.none())
+
+    @tag.command()
+    async def list(self, ctx):
+        res = self.bot.db.user_tag_all_get(ctx.author.id)
+        if not res:
+            no_tag = Embed(title='Tag List', description='何も追加されていません')
+            no_tag.set_footer(text=f'{ctx.author}')
+            return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
+        else:
+            user_data = res[0]
+            user_data_list = []
+            count = 1
+            for data in user_data:
+                user_data_list.append(f'{count}. {data[0]}: {data[1]}')
+                count += 1
+            tag_list = Embed(title='Tag List',
+                             description='\n'.join(user_data_list))
+            tag_list.set_footer(text=f'{ctx.author}')
+            return await ctx.reply(embed=tag_list, allowed_mentions=AllowedMentions.none())
+
 
 def setup(bot):
     bot.add_cog(Utils(bot))

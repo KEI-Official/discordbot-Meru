@@ -322,7 +322,11 @@ class Utils(commands.Cog):
     @commands.group()
     async def tag(self, ctx):
         if ctx.invoked_subcommand is None:
-            return
+            res = self.bot.db.user_tag_get(ctx.author.id, ctx.subcommand_passed)
+            if res:
+                return await ctx.reply(res[0][0], allowed_mentions=AllowedMentions.none())
+            else:
+                return await ctx.reply('見つかりませんでした', allowed_mentions=AllowedMentions.none())
 
     @tag.command()
     async def add(self, ctx, tag_name=None, *, context=None):

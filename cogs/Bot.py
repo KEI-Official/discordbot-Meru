@@ -52,8 +52,9 @@ class Bot(commands.Cog):
                         inline=False)
         embed.add_field(name='各種リンク',
                         value=f'[BOTの招待リンク]({self.bot.config["oauth_url"]}) | '
-                              '[公式サーバー](https://discord.com/invite/pvyMQhf)'
-                              ' | [ブログサイト](https://syutarou.xyz)',
+                              '[公式サーバー](https://discord.com/invite/pvyMQhf) | '
+                              '[公式サイト](https://meru.com) | '
+                              '[開発者のサイト](https://syutarou.xyz)',
                         inline=False)
         await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 

@@ -70,10 +70,10 @@ class User_Value(commands.Cog):
                 owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
                 return await owner.send(f'{user} が {guild} にてBanされたため、スコアが {new_score}　になりました')
         else:
-            check = self.db.user_evaluation_set(user.id, '9.0', '1', '[メル]Banによる減少')
+            check = self.db.user_evaluation_set(user.id, '9.5', '1', '[メル]Banによる減少')
             if check:
                 owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
-                return await owner.send(f'{user} が {guild} にてBanされたため、スコアが 9.0　になりました')
+                return await owner.send(f'{user} が {guild} にてBanされたため、スコアが 9.5 になりました')
 
 
 def setup(bot):

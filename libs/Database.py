@@ -21,6 +21,7 @@ class Database:
                             'tao_help(guild_id integer primary key, func, log_id, role_t, role_g, role_r, premium)')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS '
                             'user_evaluation(user_id integer primary key, value_count, ban_count, reason)')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS user_tag(user_id integer, tag_name, context)')
 
     # コマンド制限
     def mute_user_set(self, user_id):
@@ -158,5 +159,32 @@ class Database:
     def user_evaluation_get(self, user_id):
         self.setup()
         res = self.cursor.execute('SELECT * FROM user_evaluation WHERE user_id = ?', (user_id,))
+        data = res.fetchall()
+        return data
+
+    # タグコマンド
+    def user_tag_set(self, user_id, tag_name, context):
+        self.setup()
+        self.cursor.execute('INSERT INTO user_tag VALUES (?,?,?)',
+                            (user_id, tag_name, context))
+        return True
+
+    def user_tag_del(self, user_id, tag_name):
+        self.setup()
+        self.cursor.execute('DELETE FROM user_tag WHERE user_id = ? and tag_name = ?',
+                            (user_id, tag_name))
+        return True
+
+    def user_tag_get(self, user_id, tag_name):
+        self.setup()
+        res = self.cursor.execute('SELECT context FROM user_tag WHERE user_id = ? and tag_name = ?',
+                                  (user_id, tag_name))
+        data = res.fetchall()
+        return data
+
+    def user_tag_all_get(self, user_id):
+        self.setup()
+        res = self.cursor.execute('SELECT * FROM user_tag WHERE user_id = ?',
+                                  (user_id,))
         data = res.fetchall()
         return data

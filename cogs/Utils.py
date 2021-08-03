@@ -319,6 +319,58 @@ class Utils(commands.Cog):
                 await send_msg.clear_reactions()
                 await send_msg.delete()
 
+    @commands.group(description='テキストにタグを付けることができます',
+                    usage='[タグ名] / [add/remove] [タグ名] / [list]',
+                    brief=['【実行例】\n'
+                           '・検索: {cmd}tag タグ名\n'
+                           '・追加/削除: {cmd}tag add/remove タグ名\n'
+                           '・一覧: {cmd}tag list'])
+    async def tag(self, ctx):
+        if ctx.invoked_subcommand is None:
+            res = self.bot.db.user_tag_get(ctx.author.id, ctx.subcommand_passed)
+            if res:
+                return await ctx.reply(res[0][0], allowed_mentions=AllowedMentions.none())
+            else:
+                return await ctx.reply('見つかりませんでした', allowed_mentions=AllowedMentions.none())
+
+    @tag.command(description='テキストにタグを追加します')
+    async def add(self, ctx, tag_name=None, *, context=None):
+        if not tag_name or not context:
+            return await ctx.reply('追加するタグの名前又は内容を記入してください', allowed_mentions=AllowedMentions.none())
+        elif tag_name in ['add', 'remove', 'list']:
+            return await ctx.reply('タグの名前にサブコマンド名は利用できません', allowed_mentions=AllowedMentions.none())
+        else:
+            res = self.bot.db.user_tag_set(ctx.author.id, tag_name, context)
+            if res:
+                return await ctx.reply('追加しました', allowed_mentions=AllowedMentions.none())
+
+    @tag.command(description='テキストについているタグを削除します')
+    async def remove(self, ctx, tag_name=None):
+        if not tag_name:
+            return await ctx.reply('削除するタグの名前を記入してください', allowed_mentions=AllowedMentions.none())
+
+        res = self.bot.db.user_tag_del(ctx.author.id, tag_name)
+        if res:
+            return await ctx.reply('削除しました', allowed_mentions=AllowedMentions.none())
+
+    @tag.command(description='追加したタグの一覧を表示します')
+    async def list(self, ctx):
+        res = self.bot.db.user_tag_all_get(ctx.author.id)
+        if not res:
+            no_tag = Embed(title='Tag List', description='何も追加されていません')
+            no_tag.set_footer(text=f'{ctx.author}')
+            return await ctx.reply(embed=no_tag, allowed_mentions=AllowedMentions.none())
+        else:
+            user_data_list = []
+            count = 1
+            for data in res:
+                user_data_list.append(f'{count}. {data[1]}: {data[2]}')
+                count += 1
+            tag_list = Embed(title='Tag List',
+                             description='```\n{}\n```'.format('\n'.join(user_data_list)))
+            tag_list.set_footer(text=f'{ctx.author}')
+            return await ctx.reply(embed=tag_list, allowed_mentions=AllowedMentions.none())
+
 
 def setup(bot):
     bot.add_cog(Utils(bot))

@@ -319,7 +319,12 @@ class Utils(commands.Cog):
                 await send_msg.clear_reactions()
                 await send_msg.delete()
 
-    @commands.group()
+    @commands.group(description='テキストにタグを付けることができます',
+                    usage='[タグ名] / [add/remove] [タグ名] / [list]',
+                    brief=['【実行例】\n'
+                           '・検索: {cmd}tag タグ名\n'
+                           '・追加/削除: {cmd}tag add/remove タグ名\n'
+                           '・一覧: {cmd}tag list'])
     async def tag(self, ctx):
         if ctx.invoked_subcommand is None:
             res = self.bot.db.user_tag_get(ctx.author.id, ctx.subcommand_passed)
@@ -328,7 +333,7 @@ class Utils(commands.Cog):
             else:
                 return await ctx.reply('見つかりませんでした', allowed_mentions=AllowedMentions.none())
 
-    @tag.command()
+    @tag.command(description='テキストにタグを追加します')
     async def add(self, ctx, tag_name=None, *, context=None):
         if not tag_name or not context:
             return await ctx.reply('追加するタグの名前又は内容を記入してください', allowed_mentions=AllowedMentions.none())
@@ -339,7 +344,7 @@ class Utils(commands.Cog):
             if res:
                 return await ctx.reply('追加しました', allowed_mentions=AllowedMentions.none())
 
-    @tag.command()
+    @tag.command(description='テキストについているタグを削除します')
     async def remove(self, ctx, tag_name=None):
         if not tag_name:
             return await ctx.reply('削除するタグの名前を記入してください', allowed_mentions=AllowedMentions.none())
@@ -348,7 +353,7 @@ class Utils(commands.Cog):
         if res:
             return await ctx.reply('削除しました', allowed_mentions=AllowedMentions.none())
 
-    @tag.command()
+    @tag.command(description='追加したタグの一覧を表示します')
     async def list(self, ctx):
         res = self.bot.db.user_tag_all_get(ctx.author.id)
         if not res:

@@ -22,6 +22,8 @@ class Database:
         self.cursor.execute('CREATE TABLE IF NOT EXISTS '
                             'user_evaluation(user_id integer primary key, value_count, ban_count, reason)')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS user_tag(user_id integer, tag_name, context)')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS '
+                            'bot_commands(cog_name, cmd_name, description, brief, cmd_usage, alias)')
 
     # コマンド制限
     def mute_user_set(self, user_id):
@@ -188,3 +190,35 @@ class Database:
                                   (user_id,))
         data = res.fetchall()
         return data
+
+    # ダッシュボード用 コマンド
+    def command_set(self, command) -> bool:
+        self.setup()
+        cmd_des = command.description
+        cmd_usage = command.usage
+        cmd_cog = command.cog_name
+        cmd_name = command.name
+        cmd_brief = None if not command.brief else command.brief[0]
+        cmd_aliases = None if not command.aliases else ', '.join(command.aliases)
+        print(type(cmd_name), type(cmd_usage), type(cmd_cog), type(cmd_des), type(cmd_brief), type(cmd_aliases))
+        self.cursor.execute('INSERT INTO bot_commands VALUES (?,?,?,?,?,?)',
+                            (cmd_cog, cmd_name, cmd_des, cmd_brief, cmd_usage, cmd_aliases))
+        return True
+
+    def command_get(self, cog_name):
+        self.setup()
+        res = self.cursor.execute('SELECT * FROM bot_commands WHERE cog_name = ?',
+                                  (cog_name,))
+        data = res.fetchall()
+        return data
+
+    def command_all_get(self) -> tuple:
+        self.setup()
+        res = self.cursor.execute('SELECT * FROM bot_commands')
+        data = res.fetchall()
+        command_list = [d[1] for d in data]
+        return len(data), command_list
+    
+    def command_del(self) -> bool:
+        self.cursor.execute('DROP TABLE bot_commands')
+        return True

@@ -80,6 +80,18 @@ async def on_ready():
 async def get_ban_users():
     bot.ban_users = bot.db.mute_user_get()
 
+    commands_list = list(bot.commands)
+    print(f'ロードしているコマンド数: {len(commands_list)}')
+    db_command = bot.db.command_all_get()
+    if commands_list:
+        if db_command[0] < len(commands_list):
+            for cmd in commands_list:
+                if cmd.name in db_command[1]:
+                    commands_list.remove(cmd)
+            for cmd in commands_list:
+                bot.db.command_set(cmd)
+            print(f'success - {bot.db.command_all_get()[0]}')
+
 
 if __name__ == '__main__':
     bot.config = config

@@ -217,7 +217,7 @@ class Database:
         data = res.fetchall()
         command_list = [d[1] for d in data]
         return len(data), command_list
-    
+
     def command_del(self) -> bool:
         self.cursor.execute('DROP TABLE bot_commands')
         return True

@@ -207,8 +207,7 @@ class Database:
 
     def command_get(self, cog_name):
         self.setup()
-        res = self.cursor.execute('SELECT * FROM bot_commands WHERE cog_name = ?',
-                                  (cog_name,))
+        res = self.cursor.execute('SELECT * FROM bot_commands WHERE cog_name = ?', (cog_name,))
         data = res.fetchall()
         return data
 

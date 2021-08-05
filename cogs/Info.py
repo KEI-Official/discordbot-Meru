@@ -37,7 +37,7 @@ class Info(commands.Cog):
         server_all_member_count = len(guild.members)
         server_m_count = len([m for m in guild.members if not m.bot])
         server_b_count = len([b for b in guild.members if b.bot])
-        server_ban_m_count = len(await guild.bans()) if dict(guild.get_member(bot_id).guild_permissions).get('ban_members') else '権限不足'
+        server_ban_m_count = '権限不足' if not dict(guild.get_member(bot_id).guild_permissions).get('ban_members') else len(await guild.bans())
         server_e_count = len([e for e in guild.emojis if not e.animated])
         server_e_limit = guild.emoji_limit
         server_ani_e_count = len([ae for ae in guild.emojis if ae.animated])

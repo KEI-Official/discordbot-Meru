@@ -1,13 +1,14 @@
 import asyncio
+import base64
 import datetime
 import io
 import json
 import os
 import uuid
+import requests
 
 from discord import Embed, AllowedMentions, File, TextChannel, VoiceChannel, Member
 from discord.ext import commands
-import requests
 
 
 class Utils(commands.Cog):
@@ -370,6 +371,79 @@ class Utils(commands.Cog):
                              description='```\n{}\n```'.format('\n'.join(user_data_list)))
             tag_list.set_footer(text=f'{ctx.author}')
             return await ctx.reply(embed=tag_list, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(description='サイトの表示速度をPageSpeed Insightsで測ります',
+                      usage='[サイトURL] <mobile>',
+                      brief=['【実行例】\n'
+                             '・デスクトップのスコア: {cmd}pagespeed https://merubot.com/\n'
+                             '・モバイルのスコア: {cmd}pagespeed https://merubot.com/ mobile'],
+                      aliases=['ps'])
+    async def pagespeed(self, ctx, url=None, strategy='desktop'):
+        if not url:
+            return await ctx.reply('PageSpeedを測るサイトのURLを記入してください', allowed_mentions=AllowedMentions.none())
+        elif not (url.startswith('https://') or url.startswith('http://')):
+            return await ctx.reply('PageSpeedを測るサイトのURLを記入してください', allowed_mentions=AllowedMentions.none())
+        else:
+            load_emoji = self.bot.get_emoji(852849151628935198)
+            nowing_msg = Embed(title='PageSpeed Insights', description=f'{load_emoji} 測定中です...')
+            msg = await ctx.reply(embed=nowing_msg, allowed_mentions=AllowedMentions.none())
+            base_url = f'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={url}&strategy={strategy}&locale=ja-JP'
+
+            response = requests.get(base_url)
+            status = response.status_code
+            data = response.json()
+
+            if status == 200:
+                basic = data['lighthouseResult']
+                laboratory = basic['audits']
+                image = laboratory['full-page-screenshot']['details']['screenshot']['data']
+
+                # 画像
+                new_image = image.replace('data:image/jpeg;base64,', '')
+                img = base64.b64decode(new_image.encode())
+                with open('./image/screenshot.jpg', 'bw') as f4:
+                    f4.write(img)
+                file = File('./image/screenshot.jpg', filename='image.jpg')
+
+                first_contentful_paint = laboratory['first-contentful-paint']['numericValue'] / 1000
+                interactive = laboratory['interactive']['numericValue'] / 1000
+                speed_index = laboratory['speed-index']['numericValue'] / 1000
+                total_blocking_time = laboratory['total-blocking-time']['numericValue']
+                largest_contentful_paint = laboratory['largest-contentful-paint']['numericValue'] / 1000
+                cumulative_layout_shift = laboratory['cumulative-layout-shift']['displayValue']
+
+                score = basic['categories']['performance']['score'] * 100
+                form_factor = basic['configSettings']['formFactor']
+                embed = Embed(title='PageSpeed Insights',
+                              description=f'```diff\n+ スコア: {score}\n+ 媒体: {form_factor}\n```',
+                              color=0x00ff00)
+                embed.set_author(name=basic['finalUrl'],
+                                 url=basic['finalUrl'])
+
+                embed.add_field(name='First Contentful Paint',
+                                value=f'{first_contentful_paint} 秒')
+                embed.add_field(name='Time to Interactive',
+                                value=f'{interactive} 秒')
+                embed.add_field(name='Speed Index',
+                                value=f'{speed_index} 秒')
+                embed.add_field(name='Total Blocking Time',
+                                value=f'{total_blocking_time} ミリ秒')
+                embed.add_field(name='Largest Contentful Paint',
+                                value=f'{largest_contentful_paint} 秒')
+                embed.add_field(name='Cumulative Layout Shift',
+                                value=f'{cumulative_layout_shift}')
+
+                self.bot.almighty.create_circle_graph([score, 100-score])
+
+                out_file = File('./image/save_fig.png', filename='save_fig.png')
+                ch = await self.bot.fetch_channel(873024158668316713)
+                out_msg = await ch.send(file=out_file)
+                attach_url = out_msg.attachments[0].proxy_url
+
+                embed.set_thumbnail(url=attach_url)
+                embed.set_image(url='attachment://image.jpg')
+                await msg.delete()
+                await ctx.reply(file=file, embed=embed, allowed_mentions=AllowedMentions.none())
 
 
 def setup(bot):

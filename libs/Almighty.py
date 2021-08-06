@@ -1,4 +1,10 @@
 from typing import List
+import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw, ImageFont
+import math
+
+plt.style.use('ggplot')
+plt.rcParams.update({'font.size': 15})
 
 
 class Almighty:
@@ -57,3 +63,28 @@ class Almighty:
                 v_perm_text += f"❌:{self.voice_permission[sp]}\n"
         res = [s_perm_text, m_perm_text, c_perm_text, v_perm_text]
         return res
+
+    def scale_to_width(self, imgs, width):
+        height = round(imgs.height * width / imgs.width)
+        return imgs.resize((width, height))
+
+    def create_circle_graph(self, value):
+        plt.pie(value, counterclock=False, startangle=90, colors=['limegreen', 'white'])
+        plt.axis('equal')
+        centre_circle = plt.Circle((0, 0), 0.8, color='black', fc='white', linewidth=1)
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+        plt.savefig('./image/save_fig.png',
+                    dpi=500,
+                    facecolor='white',
+                    edgecolor='k')
+
+        font_path = './keifont.ttf'
+        font_size = 34  # フォントサイズ
+        font = ImageFont.truetype(font_path, font_size)
+        img = Image.open('./image/save_fig.png')
+
+        im_resize = self.scale_to_width(img, 128)
+        draw = ImageDraw.Draw(im_resize)
+        draw.text((42, 32), f'{math.floor(value[0])}', font=font, fill=(50, 205, 50))
+        im_resize.save('./image/save_fig.png', quality=95)

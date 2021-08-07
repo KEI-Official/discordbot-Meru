@@ -471,23 +471,29 @@ class Utils(commands.Cog):
             if from_c in currency:
                 response = requests.get(f'https://api.currencyscoop.com/v1/convert?api_key={self.exchange_key}'
                                         f'&from={from_c}&to={to_c}&amount={money}')
-                data = response.json()
-                from_cu = data['response']['from']
-                to_cu = data['response']['to']
-                base_amount = data['response']['amount']
-                value = round(int(data['response']['value']), 3)
 
-                embed = Embed(title='通貨換算ツール')
-                embed.add_field(name=f'換算元: {from_cu}',
-                                value=f'{base_amount} {from_c}',
-                                inline=False
-                                )
-                embed.add_field(name=f'換算先: {to_cu}',
-                                value=f'{value} {to_cu}',
-                                inline=False
-                                )
+                if response.status_code == 200:
+                    data = response.json()
+                    print(data)
+                    from_cu = data['response']['from']
+                    to_cu = data['response']['to']
+                    base_amount = data['response']['amount']
+                    value = round(int(data['response']['value']), 3)
 
-                return await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
+                    embed = Embed(title='通貨換算ツール')
+                    embed.add_field(name=f'換算元: {from_cu}',
+                                    value=f'{base_amount} {from_c}',
+                                    inline=False
+                                    )
+                    embed.add_field(name=f'換算先: {to_cu}',
+                                    value=f'{value} {to_cu}',
+                                    inline=False
+                                    )
+
+                    return await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
+                elif response.status_code == 429:
+                    fail_embed = Embed(title='APIエラー', description='APIの制限に達しましたので、制限リセットまでお待ちください')
+                    return await ctx.reply(embed=fail_embed, allowed_mentions=AllowedMentions.none())
             else:
                 self.bot.get_command('exchange').reset_cooldown(ctx)
                 return await ctx.reply('通貨名を確認してください\n通貨名の一覧 => <https://currencyscoop.com/supported-currencies>',

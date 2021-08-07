@@ -25,6 +25,7 @@ class Utils(commands.Cog):
         self.azure_translate_key = os.getenv('AZURE_TRANS_KEY')
         self.azure_translate_endpoint = os.getenv('AZURE_TRANS_ENDPOINT')
         self.bitly_key = os.getenv('BITLY_KEY')
+        self.exchange_key = os.getenv('currencyscoop_KEY')
 
     @commands.command(description='送られた文字を指定された言語に翻訳します',
                       usage='[翻訳先言語 | <-list>] [翻訳する文章]',
@@ -444,6 +445,53 @@ class Utils(commands.Cog):
                 embed.set_image(url='attachment://image.jpg')
                 await msg.delete()
                 await ctx.reply(file=file, embed=embed, allowed_mentions=AllowedMentions.none())
+
+    def to_upper(argument):
+        if argument:
+            return argument.upper()
+        else:
+            return None
+
+    @commands.cooldown(rate=1, per=30.0, type=commands.BucketType.user)
+    @commands.command(description='為替レートをもとに通貨換算をします',
+                      usage='[換算元の通貨名] <金額 デフォルト: 100> <換算先の通貨名 デフォルト: JPY>',
+                      aliases=['ex'],
+                      brief=['【実行例】\n'
+                             '・ドルから日本円: {cmd}exchange USD'
+                             '・日本円からドル: {cmd}exchange JPY 100 USD'])
+    async def exchange(self, ctx, from_c: to_upper = None, money: int = 1, to_c='JPY'):
+        if not from_c:
+            self.bot.get_command('exchange').reset_cooldown(ctx)
+            return await ctx.reply('通貨名を記入してください\n通貨名の一覧 => <https://currencyscoop.com/supported-currencies>',
+                                   allowed_mentions=AllowedMentions.none())
+        else:
+            with open("./data/currency_list.json", "r", encoding='UTF-8') as config:
+                currency = json.load(config)
+
+            if from_c in currency:
+                response = requests.get(f'https://api.currencyscoop.com/v1/convert?api_key={self.exchange_key}'
+                                        f'&from={from_c}&to={to_c}&amount={money}')
+                data = response.json()
+                from_cu = data['response']['from']
+                to_cu = data['response']['to']
+                base_amount = data['response']['amount']
+                value = round(int(data['response']['value']), 3)
+
+                embed = Embed(title='通貨換算ツール')
+                embed.add_field(name=f'換算元: {from_cu}',
+                                value=f'{base_amount} {from_c}',
+                                inline=False
+                                )
+                embed.add_field(name=f'換算先: {to_cu}',
+                                value=f'{value} {to_cu}',
+                                inline=False
+                                )
+
+                return await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
+            else:
+                self.bot.get_command('exchange').reset_cooldown(ctx)
+                return await ctx.reply('通貨名を確認してください\n通貨名の一覧 => <https://currencyscoop.com/supported-currencies>',
+                                       allowed_mentions=AllowedMentions.none())
 
 
 def setup(bot):

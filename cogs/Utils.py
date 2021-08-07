@@ -454,10 +454,10 @@ class Utils(commands.Cog):
 
     @commands.cooldown(rate=1, per=30.0, type=commands.BucketType.user)
     @commands.command(description='為替レートをもとに通貨換算をします',
-                      usage='[換算元の通貨名] <金額 デフォルト: 100> <換算先の通貨名 デフォルト: JPY>',
+                      usage='[換算元の通貨名] <金額 既定値: 100> <換算先の通貨名 既定値: JPY>',
                       aliases=['ex'],
                       brief=['【実行例】\n'
-                             '・ドルから日本円: {cmd}exchange USD'
+                             '・ドルから日本円: {cmd}exchange USD\n'
                              '・日本円からドル: {cmd}exchange JPY 100 USD'])
     async def exchange(self, ctx, from_c: to_upper = None, money: int = 1, to_c='JPY'):
         if not from_c:

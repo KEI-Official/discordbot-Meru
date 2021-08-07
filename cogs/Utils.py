@@ -471,9 +471,9 @@ class Utils(commands.Cog):
             if from_c in currency:
                 response = requests.get(f'https://api.currencyscoop.com/v1/convert?api_key={self.exchange_key}'
                                         f'&from={from_c}&to={to_c}&amount={money}')
-
-                if response.status_code == 200:
-                    data = response.json()
+                data = response.json()
+                status = response.status_code
+                if status == 200:
                     print(data)
                     from_cu = data['response']['from']
                     to_cu = data['response']['to']
@@ -491,9 +491,14 @@ class Utils(commands.Cog):
                                     )
 
                     return await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
-                elif response.status_code == 429:
+                elif status == 429:
                     fail_embed = Embed(title='APIエラー', description='APIの制限に達しましたので、制限リセットまでお待ちください')
                     return await ctx.reply(embed=fail_embed, allowed_mentions=AllowedMentions.none())
+                else:
+                    owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
+                    ow_embed = Embed(title='APIエラー',
+                                     description=f'ステータスコード: {status}\n```\n{data["meta"]["error_detail"]}\n```')
+                    return await owner.send(embed=ow_embed)
             else:
                 self.bot.get_command('exchange').reset_cooldown(ctx)
                 return await ctx.reply('通貨名を確認してください\n通貨名の一覧 => <https://currencyscoop.com/supported-currencies>',

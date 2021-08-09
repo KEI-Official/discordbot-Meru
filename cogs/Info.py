@@ -256,7 +256,7 @@ class Info(commands.Cog):
             ch_bitrate = ch_data.bitrate
             ch_limit = ch_data.user_limit
             embed.add_field(name='ビットレート', value=f'> {ch_bitrate / 1000} Kbps')
-            embed.add_field(name='制限人数', value=f'> {"なし" if len(ch_limit) == 0 else ch_limit+"人"}')
+            embed.add_field(name='制限人数', value=f'> {"なし" if ch_limit == 0 else ch_limit+"人"}')
 
         if isinstance(ch_data, discord.CategoryChannel):
             c_ch = [ches for ches in ctx.guild.channels if ches.category is not None and ches.category == ch_data]

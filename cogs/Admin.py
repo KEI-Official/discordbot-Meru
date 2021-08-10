@@ -1,5 +1,6 @@
 import asyncio
 import re
+import sqlite3
 from typing import Optional, Dict, Union
 import discord
 from discord import Embed, AllowedMentions, ChannelType, TextChannel, Role
@@ -427,6 +428,30 @@ class Admin(commands.Cog):
             else:
                 no_attach = Embed(description='画像の拡張子が PNG, JPEG, GIF のものを指定してください')
                 await ctx.reply(embed=no_attach, allowed_mentions=AllowedMentions.none())
+
+    @commands.command(description='Prefixを変更します',
+                      usage='<prefix>')
+    @commands.has_permissions(manage_guild=True)
+    async def setprefix(self, ctx, prefix=None):
+        if ctx.guild:
+            if not prefix:
+                res = self.bot.db.custom_prefix_del(ctx.guild.id)
+                if res:
+                    success_embed = Embed(description='Prefixを `ml.` に変更しました')
+                    return await ctx.reply(embed=success_embed, allowed_mentions=AllowedMentions.none())
+            else:
+                try:
+                    res = self.bot.db.custom_prefix_set(ctx.guild.id, prefix)
+                    if res:
+                        success_embed = Embed(description=f'Prefixを `{prefix}` に変更しました')
+                        return await ctx.reply(embed=success_embed, allowed_mentions=AllowedMentions.none())
+                except sqlite3.IntegrityError:
+                    del_re = self.bot.db.custom_prefix_del(ctx.guild.id)
+                    if del_re:
+                        res = self.bot.db.custom_prefix_set(ctx.guild.id, prefix)
+                        if res:
+                            success_embed = Embed(description=f'Prefixを `{prefix}` に変更しました')
+                            return await ctx.reply(embed=success_embed, allowed_mentions=AllowedMentions.none())
 
 
 def setup(bot):

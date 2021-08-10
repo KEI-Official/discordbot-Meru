@@ -26,6 +26,8 @@ class Bot(commands.Cog):
 
     @commands.command(description='BOTの情報を表示します')
     async def about(self, ctx):
+        prefix = self.bot.db.custom_prefix_get(ctx.guild.id)
+
         owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
         info_guilds = len(self.bot.guilds)
         info_user = len(self.bot.users)
@@ -41,8 +43,8 @@ class Bot(commands.Cog):
                         value=f'```yml\nPython:\n{sys.version}\ndiscord.py: {discord.__version__}\n```',
                         inline=False)
         embed.add_field(name='Prefix',
-                        value=f'```yml\n{self.bot.command_prefix}\n'
-                              f'{self.bot.command_prefix}help でコマンドの説明を見ることが出来ます```',
+                        value=f'```yml\n{self.bot.config["prefix"] if not prefix else prefix[0]}\n'
+                              f'{self.bot.config["prefix"] if not prefix else prefix[0]}help でコマンドの説明を見ることが出来ます```',
                         inline=False)
         embed.add_field(name='詳細',
                         value=f'```yml\n[導入サーバー数] {info_guilds}\n[ユーザー数] {info_user}\n[チャンネル数] {info_ch}\n```',
@@ -113,7 +115,8 @@ class Bot(commands.Cog):
 
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
-        command_prefix = self.bot.command_prefix
+        prefix = self.bot.db.custom_prefix_get(ctx.guild.id)
+        command_prefix = self.bot.config["prefix"] if not prefix else prefix[0][0]
 
         def send_embed(command):
             command_aliases = []

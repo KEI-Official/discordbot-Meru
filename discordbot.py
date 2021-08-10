@@ -32,12 +32,20 @@ class MyBot(commands.Bot):
         return await super().get_context(message, *args, **kwargs)
 
 
+async def prefix_from_db(bot, msg):
+    prefix = Database.Database().custom_prefix_get(msg.guild.id)
+    if not prefix:
+        return config['prefix']
+    else:
+        return prefix[0]
+
+
 intents = discord.Intents.all()
 intents.typing = False
 intents.dm_messages = False
 intents.dm_reactions = False
 bot = MyBot(
-    command_prefix=config['prefix'],
+    command_prefix=prefix_from_db,
     intents=intents,
     help_command=None
 )
@@ -51,7 +59,7 @@ bot.almighty = Almighty.Almighty()
 async def pre_loop():
     await bot.wait_until_ready()
     await bot.change_presence(
-        activity=discord.Game(name=f'{bot.command_prefix}help | {len(bot.guilds)} Servers')
+        activity=discord.Game(name=f'{config["prefix"]}help | {len(bot.guilds)} Servers')
     )
     data = {
         "bot_guilds": len(bot.guilds),

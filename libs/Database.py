@@ -24,6 +24,7 @@ class Database:
         self.cursor.execute('CREATE TABLE IF NOT EXISTS user_tag(user_id integer, tag_name, context)')
         self.cursor.execute('CREATE TABLE IF NOT EXISTS '
                             'bot_commands(cog_name, cmd_name, description, brief, cmd_usage, alias)')
+        self.cursor.execute('CREATE TABLE IF NOT EXISTS custom_prefix(guild_id integer primary key, prefix)')
 
     # コマンド制限
     def mute_user_set(self, user_id):
@@ -221,3 +222,20 @@ class Database:
     def command_del(self) -> bool:
         self.cursor.execute('DROP TABLE bot_commands')
         return True
+
+    # カスタムprefix
+    def custom_prefix_set(self, guild_id, prefix):
+        self.setup()
+        self.cursor.execute('INSERT INTO custom_prefix VALUES (?,?)', (guild_id, prefix))
+        return True
+
+    def custom_prefix_del(self, guild_id):
+        self.setup()
+        self.cursor.execute('DELETE FROM custom_prefix WHERE guild_id = ?', (guild_id,))
+        return True
+
+    def custom_prefix_get(self, guild_id):
+        self.setup()
+        res = self.cursor.execute('SELECT prefix FROM custom_prefix WHERE guild_id = ?', (guild_id,))
+        data = res.fetchall()
+        return data

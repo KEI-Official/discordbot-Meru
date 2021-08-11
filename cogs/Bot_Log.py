@@ -7,6 +7,8 @@ from discord.ext import commands
 from datetime import datetime
 from pytz import timezone
 
+from libs import MissingBotPermission
+
 
 class BotLog(commands.Cog):
     """BOTのログ関係"""
@@ -76,22 +78,16 @@ class BotLog(commands.Cog):
 
             # NotOwner
             elif isinstance(error, commands.NotOwner):
-                return await ctx.reply("このコマンドは開発者専用コマンドです")
+                return await ctx.reply("このコマンドは開発者専用コマンドです", allowed_mentions=AllowedMentions.none())
 
             # BotMissingPermissions
             elif isinstance(error, commands.BotMissingPermissions):
-                with open("./data/permission_list.json", "r", encoding='UTF-8') as perm_list:
-                    data = json.load(perm_list)
-                text = []
-                for error_permission in error.missing_perms:
-                    if error_permission in data:
-                        text.append(f'`{data[error_permission]}`')
-
-                owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
-                no_msg = Embed(title='Missing Permission',
-                               description=f'『{ctx.guild.name}』での{self.bot.user}の必要な権限\n```\n{",".join(text)}\n```')
-                await owner.send(embed=no_msg)
-                await ctx.reply(embed=no_msg, allowed_mentions=AllowedMentions.none())
+                return await ctx.reply('BOTの権限を確認して下さい', allowed_mentions=AllowedMentions.none())
+            elif isinstance(error, MissingBotPermission):
+                text = '```{}```'.format("\n".join(error.missing_permissions))
+                missing_msg = Embed(title='権限不足エラー',
+                                    description=f'コマンドを実行するための権限がBOTに不足しています。\n{text}')
+                return await ctx.reply(embed=missing_msg, allowed_mentions=AllowedMentions.none())
 
             elif isinstance(error, commands.CommandOnCooldown):
                 r_after = error.retry_after
@@ -149,20 +145,23 @@ class BotLog(commands.Cog):
 
         except Exception:
             err_ch = await self.bot.fetch_channel(self.err_channel_id)
-            err_msg = Embed(title='⚠エラーが発生しました',
-                            description='**内容**\n予期しないエラーが発生しました。\n'
-                                        'コマンドを正しく入力してもエラーが発生する場合は、お手数ですが\n'
-                                        '[公式サーバー](https://discord.gg/pvyMQhf)までお問い合わせ下さい。\n')
-            await ctx.reply(embed=err_msg, allowed_mentions=AllowedMentions.none())
-
-            orig_error = getattr(error, "original", error)
-            error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-            error_log_msg = Embed(description=f'```py\n{error_msg}\n```')
-            error_log_msg.set_footer(text=f'サーバー: {ctx.guild.name} | 送信者: {ctx.author}')
-
             owner = await self.bot.fetch_user((await self.bot.application_info()).owner.id)
-            await owner.send(embed=error_log_msg)
-            await err_ch.send(embed=error_log_msg)
+            try:
+                orig_error = getattr(error, "original", error)
+                error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+                error_log_msg = Embed(description=f'```py\n{error_msg}\n```')
+                error_log_msg.set_footer(text=f'サーバー: {ctx.guild.name} | 送信者: {ctx.author}')
+                await owner.send(embed=error_log_msg)
+                await err_ch.send(embed=error_log_msg)
+
+                err_msg = Embed(title='⚠エラーが発生しました',
+                                description='**内容**\n予期しないエラーが発生しました。\n'
+                                            'コマンドを正しく入力してもエラーが発生する場合は、お手数ですが\n'
+                                            '[公式サーバー](https://discord.gg/pvyMQhf)までお問い合わせ下さい。\n')
+                await ctx.reply(embed=err_msg, allowed_mentions=AllowedMentions.none())
+
+            except:
+                return
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):

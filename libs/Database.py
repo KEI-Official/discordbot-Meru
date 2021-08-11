@@ -100,47 +100,6 @@ class Database:
         data = res.fetchall()
         return data
 
-    # TAOお助け機能
-    def tao_help_set(self, guild_id, func, log_id, role_t):
-        self.setup()
-        self.cursor.execute('INSERT INTO tao_help VALUES (?,?,?,?)',
-                            (guild_id, func, log_id, role_t))
-        return True
-
-    def tao_help_guild_get(self, guild_id):
-        self.setup()
-        res = self.cursor.execute('SELECT * FROM tao_help WHERE guild_id = ?', (guild_id,))
-        data = res.fetchall()
-        return data
-
-    def tao_help_premium_set(self, guild_id, func, log_id, role_t, role_g, role_r, premium):
-        self.setup()
-        self.cursor.execute('INSERT INTO tao_help VALUES (?,?,?,?,?,?,?)',
-                            (guild_id, func, log_id, role_t, role_g, role_r, premium))
-        return True
-
-    def tao_help_del(self, guild_id):
-        self.setup()
-        self.cursor.execute('DELETE FROM tao_help WHERE guild_id = ?', (guild_id,))
-        return True
-
-    def tao_help_change(self, guild_id, func):
-        self.setup()
-        self.cursor.execute('UPDATE tao_help SET func = ? WHERE guild_id = ? ', (func, guild_id))
-        return True
-
-    def tao_help_get(self):
-        self.setup()
-        res = self.cursor.execute('SELECT guild_id FROM tao_help WHERE func = "on"')
-        data = res.fetchall()
-        return data
-
-    def tao_help_premium_get(self):
-        self.setup()
-        res = self.cursor.execute('SELECT guild_id FROM tao_help WHERE premium = "on"')
-        data = res.fetchall()
-        return data
-
     # ユーザー評価値 機能
     def user_evaluation_set(self, user_id, value, ban_count, reason):
         self.setup()

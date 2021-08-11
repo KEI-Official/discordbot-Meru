@@ -3,6 +3,8 @@ from discord import Embed, AllowedMentions
 import requests
 import os
 
+from libs import check_permission
+
 
 class Image(commands.Cog):
     """主に画像検索のコマンドがあるカテゴリーです"""
@@ -23,17 +25,20 @@ class Image(commands.Cog):
             none_msg = Embed(description='Image is None.')
             return await ctx.reply(embed=none_msg, allowed_mentions=AllowedMentions.none())
 
+    @check_permission([])
     @commands.command(description='nekoの画像をランダムに表示します')
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def neko(self, ctx):
         await self.get_image(ctx, 'neko')
 
+    @check_permission([])
     @commands.command(description='kitsuneの画像をランダムに表示します',
                       aliases=['kitune'])
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def kitsune(self, ctx):
         await self.get_image(ctx, 'kitsune')
 
+    @check_permission([])
     @commands.command(description='イヌの画像をランダムに表示します')
     @commands.cooldown(rate=1, per=5.0, type=commands.BucketType.user)
     async def dog(self, ctx):
@@ -48,6 +53,7 @@ class Image(commands.Cog):
             none_msg = Embed(description='Image is None.')
             return await ctx.reply(embed=none_msg, allowed_mentions=AllowedMentions.none())
 
+    @check_permission([])
     @commands.command(description='指定されたキーワードのGIF画像をGIPHY上から検索します',
                       usage='[キーワード]',
                       aliases=['sgif', 'searchgif', 'find_gif', 'findgif'],

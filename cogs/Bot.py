@@ -7,6 +7,7 @@ from datetime import datetime
 import discord
 import psutil
 from discord.ext import commands
+from libs import check_permission
 
 
 class Bot(commands.Cog):
@@ -24,6 +25,7 @@ class Bot(commands.Cog):
         return await ctx.reply(f'招待リンクです\n{self.bot.config["oauth_url"]}',
                                allowed_mentions=discord.AllowedMentions.none())
 
+    @check_permission([])
     @commands.command(description='BOTの情報を表示します')
     async def about(self, ctx):
         prefix = self.bot.db.custom_prefix_get(ctx.guild.id)
@@ -64,6 +66,7 @@ class Bot(commands.Cog):
     async def terms(self, ctx):
         await ctx.send('terms')
 
+    @check_permission([])
     @commands.command(description='Botの負荷状況を表示します')
     async def status(self, ctx):
 
@@ -113,6 +116,7 @@ class Bot(commands.Cog):
 
         await ctx.reply(embed=status_embed, allowed_mentions=discord.AllowedMentions.none())
 
+    @check_permission([])
     @commands.command(description='Botのヘルプを表示します')
     async def help(self, ctx, command_names=None):
         prefix = self.bot.db.custom_prefix_get(ctx.guild.id)

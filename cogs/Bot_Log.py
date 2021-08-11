@@ -159,8 +159,7 @@ class BotLog(commands.Cog):
                                             'コマンドを正しく入力してもエラーが発生する場合は、お手数ですが\n'
                                             '[公式サーバー](https://discord.gg/pvyMQhf)までお問い合わせ下さい。\n')
                 await ctx.reply(embed=err_msg, allowed_mentions=AllowedMentions.none())
-
-            except:
+            except Exception:
                 return
 
     @commands.Cog.listener()

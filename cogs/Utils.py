@@ -10,8 +10,6 @@ import requests
 from discord import Embed, AllowedMentions, File, TextChannel, VoiceChannel, Member
 from discord.ext import commands
 
-from libs import check_permission
-
 
 class Utils(commands.Cog):
     """ユーザー向けのさまざまなコマンドがあるカテゴリーです"""
@@ -29,7 +27,6 @@ class Utils(commands.Cog):
         self.bitly_key = os.getenv('BITLY_KEY')
         self.exchange_key = os.getenv('currencyscoop_KEY')
 
-    @check_permission(['attach_files'])
     @commands.command(description='送られた文字を指定された言語に翻訳します',
                       usage='[翻訳先言語 | <-list>] [翻訳する文章]',
                       aliases=['trans'],
@@ -87,7 +84,6 @@ class Utils(commands.Cog):
                                               f'言語リストは、`{self.bot.command_prefix}translate --list` で見ることが出来ます')
                 return await ctx.reply(embed=lang_none, allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='ユーザーのアイコンを表示します',
                       usage='<User ID/名前/メンション>',
                       aliases=['icon'])
@@ -108,7 +104,6 @@ class Utils(commands.Cog):
         embed.set_image(url=self.avatar_url)
         await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='指定された画像の文字をおこして、送信します',
                       usage='[画像URL] ',
                       aliases=['iw', 'imageword'])
@@ -170,7 +165,6 @@ class Utils(commands.Cog):
             su_msg = Embed(title='文字認識 - 結果', description=f'```\n{text}\n```')
             return await ctx.reply(embed=su_msg, allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='指定されたURLの短縮リンクを作成します。',
                       usage='[短縮するURL]',
                       aliases=['surl', 'shurl', 'shorturl'])
@@ -207,7 +201,6 @@ class Utils(commands.Cog):
                 await ctx.reply('短縮URLを作成しました', allowed_mentions=AllowedMentions.none())
                 await ctx.reply(f'`{re_data["link"]}`', allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='指定されたキーワードの画像をPixaBay上から検索します',
                       usage='[キーワード]',
                       aliases=['simage', 'pixabay', 's_image'],
@@ -267,7 +260,6 @@ class Utils(commands.Cog):
                                               f'💬: {image.get("comments") if image.get("comments") else "0"}')
                     return await ctx.reply(embed=res_image, allowed_mentions=AllowedMentions.none())
 
-    @check_permission(['attach_files'])
     @commands.command(description='見ることが出来るチャンネルの一覧を表示します',
                       aliases=['chlist', 'ch_tree', 'chtree']
                       )
@@ -329,7 +321,6 @@ class Utils(commands.Cog):
                 await send_msg.clear_reactions()
                 await send_msg.delete()
 
-    @check_permission([])
     @commands.group(description='テキストにタグを付けることができます',
                     usage='[タグ名] / [add/remove] [タグ名] / [list]',
                     brief=['【実行例】\n'
@@ -382,7 +373,6 @@ class Utils(commands.Cog):
             tag_list.set_footer(text=f'{ctx.author}')
             return await ctx.reply(embed=tag_list, allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='サイトの表示速度をPageSpeed Insightsで測ります',
                       usage='[サイトURL] <mobile>',
                       brief=['【実行例】\n'
@@ -462,7 +452,6 @@ class Utils(commands.Cog):
         else:
             return None
 
-    @check_permission([])
     @commands.cooldown(rate=1, per=30.0, type=commands.BucketType.user)
     @commands.command(description='為替レートをもとに通貨換算をします',
                       usage='[換算元の通貨名] <金額 既定値: 100> <換算先の通貨名 既定値: JPY>',

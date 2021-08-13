@@ -6,8 +6,6 @@ import discord
 from discord import Embed, AllowedMentions, ChannelType, TextChannel, Role
 from discord.ext import commands
 
-from libs import check_permission
-
 
 class Admin(commands.Cog):
     """特定の権限が必要なコマンドがあるカテゴリーです"""
@@ -18,7 +16,6 @@ class Admin(commands.Cog):
         self.get_channel = None
 
     # FIXME: 要確認
-    @check_permission(['ban_members'])
     @commands.command(description='指定されたユーザーのBANを行います',
                       usage='[ID/メンション] <理由>',
                       brief=['【実行例】\n'
@@ -74,7 +71,6 @@ class Admin(commands.Cog):
                 if msg.content == 'n':
                     await msg.delete()
 
-    @check_permission(['manage_channels'])
     @commands.command(description='指定されたカテゴリー内にあるチャンネルを全て削除します',
                       usage='[カテゴリーID]',
                       aliases=['delc'],
@@ -131,7 +127,6 @@ class Admin(commands.Cog):
                         await re_msg.clear_reactions()
                         return await re_msg.edit(embed=Embed(description='❎ 操作をキャンセルしました'))
 
-    @check_permission(['manage_channels'])
     @commands.command(description='指定されたチャンネルを複製します',
                       usage='[Channel ID/名前/メンション] <c=回数 | n=複製先の名前>',
                       brief=['【実行例】\n'
@@ -207,7 +202,6 @@ class Admin(commands.Cog):
                                              '```\n・名前: n=名前\n・回数: c=回数(数値)\n```')
                 return await ctx.reply(embed=no_embed, allowed_mentions=AllowedMentions.none())
 
-    @check_permission(['manage_channels'])
     @commands.command(description='チャンネルのトピックを変更します',
                       usage='<Channel ID/名前/メンション> [トピック名]',
                       brief=['チャンネルを指定すると、そのチャンネルのトピックを変更します'
@@ -234,7 +228,6 @@ class Admin(commands.Cog):
                 su_embed = Embed(description=f'{ch.mention} のトピックを\n```{text}```\nに変更しました')
                 return await ctx.reply(embed=su_embed, allowed_mentions=AllowedMentions.none())
 
-    @check_permission(['read_message_history'])
     @commands.command(description='チャンネルのメッセージを消去します',
                       usage='[メッセージ数] <u=ユーザーID>',
                       aliases=['clean'],
@@ -296,7 +289,6 @@ class Admin(commands.Cog):
                     deleted_no_user = await channel.purge(limit=m_limit, bulk=True)
                 await create_embed(deleted_no_user)
 
-    @check_permission(['manage_roles'])
     @commands.group(description='指定した役職を全ユーザーに付与/剥奪します',
                     usage='add/remove [役職]',
                     aliases=['role-user', 'roleuser'],
@@ -311,7 +303,6 @@ class Admin(commands.Cog):
         if ctx.invoked_subcommand is None:
             return
 
-    @check_permission(['manage_roles'])
     @role_user.command()
     @commands.has_permissions(administrator=True)
     async def add(self, ctx, role: Role):
@@ -365,7 +356,6 @@ class Admin(commands.Cog):
                         description='操作をキャンセルしました')
                 )
 
-    @check_permission(['manage_roles'])
     @role_user.command()
     @commands.has_permissions(administrator=True)
     async def remove(self, ctx, role: Role):
@@ -417,7 +407,6 @@ class Admin(commands.Cog):
                         description='操作をキャンセルしました')
                 )
 
-    @check_permission(['manage_guild'])
     @commands.command(description='サーバーのアイコンを変更します',
                       usage='[画像: 添付ファイル]',
                       aliases=['set-icon', 'seticon'],

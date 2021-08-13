@@ -6,8 +6,6 @@ import discord
 from discord.ext import commands
 from pytz import timezone
 
-from libs import check_permission
-
 
 class Info(commands.Cog):
     """チャンネルなどの情報を見るためなどのコマンドがあるカテゴリーです"""
@@ -16,7 +14,6 @@ class Info(commands.Cog):
         self.user_info = None
         self.channel_info = None
 
-    @check_permission([])
     @commands.command(description='サーバーの情報を表示します',
                       aliases=['si', 'server_info'])
     async def serverinfo(self, ctx):
@@ -73,7 +70,6 @@ class Info(commands.Cog):
                         inline=False)
         await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='指定された役職の情報を表示します',
                       usage='[ID/メンション/名前]',
                       aliases=['ri', 'role_info'],
@@ -216,7 +212,6 @@ class Info(commands.Cog):
 
         await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='チャンネルの情報を表示します',
                       usage='<ID/メンション/名前>',
                       aliases=['ci', 'channel_info', 'chinfo'],
@@ -297,7 +292,6 @@ class Info(commands.Cog):
             perm_embed.add_field(name='ボイスチャンネル権限', value=f'```\n{v_perm}\n```')
             await embed_msg.edit(embed=perm_embed, allowed_mentions=discord.AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='指定された絵文字の情報を表示します',
                       usage='[ID/名前]',
                       aliases=['ei', 'emoji_info'],
@@ -327,7 +321,6 @@ class Info(commands.Cog):
             embed.set_thumbnail(url=emoji_url)
             return await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='指定された招待リンクの情報を表示します',
                       usage='[リンク/コード]',
                       aliases=['ii', 'invite_info'],

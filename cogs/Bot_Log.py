@@ -2,12 +2,10 @@ import json
 import sys
 import traceback
 
-from discord import Embed, AllowedMentions
+from discord import Embed, AllowedMentions, Forbidden
 from discord.ext import commands
 from datetime import datetime
 from pytz import timezone
-
-from libs import MissingBotPermission
 
 
 class BotLog(commands.Cog):
@@ -53,6 +51,8 @@ class BotLog(commands.Cog):
                     log_embed.set_thumbnail(url=msg.author.avatar_url)
                     log_embed.set_footer(text=f'{datetime.now().strftime("%Y/%m/%d %H:%M:%S")}')
                     await log_channel.send(embed=log_embed)
+        else:
+            print(event)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -83,11 +83,6 @@ class BotLog(commands.Cog):
             # BotMissingPermissions
             elif isinstance(error, commands.BotMissingPermissions):
                 return await ctx.reply('BOTの権限を確認して下さい', allowed_mentions=AllowedMentions.none())
-            elif isinstance(error, MissingBotPermission):
-                text = '```{}```'.format("\n".join(error.missing_permissions))
-                missing_msg = Embed(title='権限不足エラー',
-                                    description=f'コマンドを実行するための権限がBOTに不足しています。\n{text}')
-                return await ctx.reply(embed=missing_msg, allowed_mentions=AllowedMentions.none())
 
             elif isinstance(error, commands.CommandOnCooldown):
                 r_after = error.retry_after
@@ -140,6 +135,20 @@ class BotLog(commands.Cog):
                 )
             elif isinstance(error, commands.BadUnionArgument):
                 return
+            elif isinstance(error, commands.CommandInvokeError):
+                error_o = error.original
+                if isinstance(error_o, Forbidden):
+                    r_perm = ['add_reactions', 'read_messages', 'send_messages', 'embed_links', 'manage_messages']
+                    with open("./data/permission_list.json", "r", encoding='UTF-8') as json_perm:
+                        data = json.load(json_perm)
+
+                    deny_ja_list = [f'・{data[perm]}' for perm in r_perm]
+                    msg = await ctx.reply('BOTの権限を確認して下さい。'
+                                          '\n【最低限必要な権限】\n```{}```'.format('\n'.join(deny_ja_list)),
+                                          allowed_mentions=AllowedMentions.none())
+                    await msg.delete(delay=3)
+                else:
+                    raise error
             else:
                 raise error
 

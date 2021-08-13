@@ -7,8 +7,6 @@ import requests
 from discord.ext import commands
 from discord import Embed, AllowedMentions
 
-from libs import check_permission
-
 
 class Game(commands.Cog):
     """トレーニングといったお遊び系のコマンドがあるカテゴリーです"""
@@ -141,7 +139,6 @@ class Game(commands.Cog):
             embed.set_image(url=image_url)
             await ctx.reply(embed=embed, allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.group(description='Splatoon2のいろんな情報を取得します',
                     usage='[取得キー] <find/f> <su=名前/sp=名前>',
                     aliases=['splainfo', 'sp-info', 'spinfo'],
@@ -155,7 +152,6 @@ class Game(commands.Cog):
         if ctx.invoked_subcommand is None:
             return
 
-    @check_permission([])
     @spla_info.command()
     async def we(self, ctx, search=None, name=None):
         endpoint = f'{self.s_endpoint}/weapon'
@@ -249,7 +245,6 @@ class Game(commands.Cog):
                     re_embed = self.bot.splatoon.sort_weapons(su_name, res)
                     await ctx.reply(embed=re_embed, allowed_mentions=AllowedMentions.none())
 
-    @check_permission([])
     @commands.command(description='三字熟語のトレーニングが出来ます')
     async def tt(self, ctx):
         with open("./data/tt_data.json", "r", encoding='UTF-8') as config:
@@ -276,7 +271,6 @@ class Game(commands.Cog):
                                   color=15409787)
                 return await q_msg.edit(embed=fal_embed)
 
-    @check_permission([])
     @commands.group(description='難易度別のマルバツクイズが出来ます',
                     usage='[e(簡単) | n(普通) | h(難しい)]',
                     aliases=['mb'])
@@ -346,7 +340,6 @@ class Game(commands.Cog):
                         color=15409787)
         await self.send_question(ctx, q_embed, q)
 
-    @check_permission([])
     @commands.command(description='サイコロを振ります')
     async def dice(self, ctx):
         image = {

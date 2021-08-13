@@ -207,7 +207,7 @@ class Bot(commands.Cog):
                     for cl in data:
                         chenged_msg.add_field(name=f'🔹 {cl}', value=f'```\n{data[cl]["text"]}\n```', inline=False)
                         cog_meta = self.bot.get_cog(data[cl]['cog_name'])
-                        if cog_meta is 'None':
+                        if cog_meta == 'None':
                             chenged_msg.add_field(name='> コマンドリスト', value='なし')
                         else:
                             cmd_list = [cmd.name for cmd in cog_meta.get_commands() if data[cl]["brief"] == cmd.brief[2]]

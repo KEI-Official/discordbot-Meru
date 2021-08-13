@@ -205,10 +205,13 @@ class Bot(commands.Cog):
                                                 color=261888)  # カラー:ライトグリーン
                     chenged_msg.set_footer(text='2ページ目/2ページ | 他の機能のHelp')
                     for cl in data:
-                        cog_meta = self.bot.get_cog(data[cl]['cog_name'])
-                        cmd_list = [cmd.name for cmd in cog_meta.get_commands() if data[cl]["brief"] == cmd.brief[2]]
                         chenged_msg.add_field(name=f'🔹 {cl}', value=f'```\n{data[cl]["text"]}\n```', inline=False)
-                        chenged_msg.add_field(name='> コマンドリスト', value=f'`{", ".join(cmd_list)}`')
+                        cog_meta = self.bot.get_cog(data[cl]['cog_name'])
+                        if cog_meta is 'None':
+                            chenged_msg.add_field(name='> コマンドリスト', value='なし')
+                        else:
+                            cmd_list = [cmd.name for cmd in cog_meta.get_commands() if data[cl]["brief"] == cmd.brief[2]]
+                            chenged_msg.add_field(name='> コマンドリスト', value=f'`{", ".join(cmd_list)}`')
 
                     await help_embed_msg.edit(embed=chenged_msg)
                 except discord.errors.NotFound:

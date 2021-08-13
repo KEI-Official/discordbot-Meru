@@ -207,7 +207,7 @@ class Bot(commands.Cog):
                     for cl in data:
                         chenged_msg.add_field(name=f'🔹 {cl}', value=f'```\n{data[cl]["text"]}\n```', inline=False)
                         cog_meta = self.bot.get_cog(data[cl]['cog_name'])
-                        if cog_meta == 'None':
+                        if not cog_meta:
                             chenged_msg.add_field(name='> コマンドリスト', value='なし')
                         else:
                             cmd_list = [cmd.name for cmd in cog_meta.get_commands() if data[cl]["brief"] == cmd.brief[2]]
@@ -218,7 +218,7 @@ class Bot(commands.Cog):
                     return
         else:
             cmd_get_name = self.bot.get_command(command_names)
-            cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.commands))
+            cmd_find_name = discord.utils.find(lambda cm: command_names in cm.name, list(self.bot.walk_commands()))
             no_cmd_error = discord.Embed(title='📃 CommandHelp Error',
                                          description='指定されたコマンドが見つかりませんでした',
                                          color=16715008)  # カラー:赤色

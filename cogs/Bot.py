@@ -129,6 +129,7 @@ class Bot(commands.Cog):
             how_use_text = f'`{command_prefix}{command.name} {command.usage if command.usage else ""}`'
 
             command_embed = discord.Embed(title=f'📃 CommandHelp - `{command.name}`',
+                                          url='https://merubot.com/command',
                                           description=f'{command.description}',
                                           color=261888)  # カラー:ライトグリーン
             command_embed.set_footer(text='[]: 必要引数 | <>: オプション引数')
@@ -151,6 +152,7 @@ class Bot(commands.Cog):
 
         if command_names is None:
             embed = discord.Embed(title='📃 Help',
+                                  url='https://merubot.com/command',
                                   description=f'Command Prefix: ` {command_prefix} `',
                                   color=261888)  # カラー:ライトグリーン
             embed.set_footer(text=f'コマンドの詳しい説明: {command_prefix} <コマンド名> | 1ページ目/2ページ')
@@ -196,6 +198,7 @@ class Bot(commands.Cog):
                     with open('./data/function_info.json', 'r', encoding='UTF-8') as config:
                         data = json.load(config)
                     chenged_msg = discord.Embed(title='📃 Help - コマンド以外の機能',
+                                                url='https://merubot.com/function',
                                                 description='他についている機能についての説明が載っています\n'
                                                             f'Command Prefix:` {command_prefix} `',
                                                 color=261888)  # カラー:ライトグリーン

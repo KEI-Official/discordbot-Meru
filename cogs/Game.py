@@ -17,7 +17,7 @@ class Game(commands.Cog):
         self.spla_api_key = os.getenv('SPLATOON2_KEY')
 
     @commands.command(description='Splatoon2のステージ情報を取得します',
-                      usage='[対戦ルールタイプ] <-n(次の時間帯)>')
+                      usage='[対戦ルールタイプ] <n(次の時間帯)>')
     async def spla2(self, ctx, s_type=None, s_next=None):
         def get_stage(game, time_next: bool):
             if game == 'regular':
@@ -56,7 +56,7 @@ class Game(commands.Cog):
         elif s_type == 'r':
             if s_next is None:
                 self.stage_info = get_stage('regular', False)
-            elif s_next == '-n':
+            elif s_next == 'n':
                 self.stage_info = get_stage('regular', True)
 
             stage_info = self.stage_info
@@ -77,7 +77,7 @@ class Game(commands.Cog):
         elif s_type == 'g':
             if s_next is None:
                 self.stage_info = get_stage('gachi', False)
-            elif s_next == '-n':
+            elif s_next == 'n':
                 self.stage_info = get_stage('gachi', True)
 
             stage_info = self.stage_info
@@ -98,7 +98,7 @@ class Game(commands.Cog):
         elif s_type == 'l':
             if s_next is None:
                 self.stage_info = get_stage('league', False)
-            elif s_next == '-n':
+            elif s_next == 'n':
                 self.stage_info = get_stage('league', True)
 
             stage_info = self.stage_info
@@ -119,7 +119,7 @@ class Game(commands.Cog):
         elif s_type == 's':
             if s_next is None:
                 self.stage_info = get_stage('coop', False)
-            elif s_next == '-n':
+            elif s_next == 'n':
                 self.stage_info = get_stage('coop', True)
 
             stage_info = self.stage_info

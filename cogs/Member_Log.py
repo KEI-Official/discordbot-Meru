@@ -56,7 +56,7 @@ class Member_Log(commands.Cog):
     async def on_member_join(self, member):
         if member.guild.id in self.welcome_notice:
             if not member.bot:
-                if datetime.utcnow() - member.created_at > timedelta(days=4):
+                if datetime.utcnow() - member.created_at < timedelta(days=4):
                     created_jst = member.created_at.astimezone(timezone("Asia/Tokyo"))
                     created_at = (created_jst + timedelta(hours=9)).strftime("%Y/%m/%d %H:%M:%S")
                     notice_embed = Embed(title='メンバー参加通知',
